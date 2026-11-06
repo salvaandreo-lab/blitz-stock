@@ -538,7 +538,7 @@ def confirmar_borrado_diccionario(datos_editados):
 # ==========================================
 st.set_page_config(page_title="Blitz Stock", page_icon="🍔", layout="wide", initial_sidebar_state="expanded")
 
-# Ocultar cabeceras tecnicas pero mantener siempre accesible el boton del menu en moviles
+# Ocultar cabeceras tecnicas pero mantener siempre accesible la flecha nativa del menu en moviles
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden !important; display: none !important;}
@@ -547,40 +547,20 @@ st.markdown("""
     [data-testid="stDecoration"] {visibility: hidden !important; display: none !important;}
     [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
     
-    /* El fondo del header transparente */
+    /* El header transparente para no tapar contenido */
     header[data-testid="stHeader"] {
         background: transparent !important;
     }
     
-    /* Boton flotante de apertura de menu (>) en telefonos moviles */
+    /* Flecha nativa (>) de apertura de barra lateral en moviles */
     [data-testid="stSidebarCollapsedControl"] {
         visibility: visible !important;
         display: flex !important;
-        position: fixed !important;
-        top: 12px !important;
-        left: 12px !important;
-        z-index: 1000000 !important;
-        background: #0066ff !important;
-        border-radius: 10px !important;
-        width: 44px !important;
-        height: 44px !important;
-        box-shadow: 0 4px 14px rgba(0, 102, 255, 0.45) !important;
-        border: 2px solid #ffffff !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-    }
-    [data-testid="stSidebarCollapsedControl"] svg {
-        fill: #ffffff !important;
-        stroke: #ffffff !important;
-        width: 24px !important;
-        height: 24px !important;
+        z-index: 999999 !important;
     }
     [data-testid="stSidebarCollapsedControl"] button {
-        color: #ffffff !important;
-        width: 100% !important;
-        height: 100% !important;
-        background: transparent !important;
+        visibility: visible !important;
+        display: flex !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -663,6 +643,23 @@ def guardar_nueva_password(nueva_clave):
 
 def verificar_autenticacion():
     if st.session_state.get("autenticado", False):
+        # Restaurar la barra lateral y la flecha nativa arriba a la izquierda
+        st.markdown("""
+        <style>
+            [data-testid="stSidebar"] {
+                display: block !important;
+            }
+            [data-testid="stSidebarCollapsedControl"] {
+                display: flex !important;
+                visibility: visible !important;
+                z-index: 999999 !important;
+            }
+            [data-testid="stSidebarCollapsedControl"] button {
+                display: flex !important;
+                visibility: visible !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
         return True
 
     cfg = obtener_configuracion_seguridad()
