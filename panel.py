@@ -552,19 +552,35 @@ st.markdown("""
         background: transparent !important;
     }
     
-    /* Boton de apertura de menu (>) en telefonos moviles */
+    /* Boton flotante de apertura de menu (>) en telefonos moviles */
     [data-testid="stSidebarCollapsedControl"] {
         visibility: visible !important;
         display: flex !important;
-        z-index: 999999 !important;
-        color: #0066ff !important;
-        background: #ffffff !important;
-        border-radius: 8px !important;
-        border: 1px solid #d1d5db !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important;
-        margin-left: 10px !important;
-        margin-top: 6px !important;
-        padding: 4px !important;
+        position: fixed !important;
+        top: 12px !important;
+        left: 12px !important;
+        z-index: 1000000 !important;
+        background: #0066ff !important;
+        border-radius: 10px !important;
+        width: 44px !important;
+        height: 44px !important;
+        box-shadow: 0 4px 14px rgba(0, 102, 255, 0.45) !important;
+        border: 2px solid #ffffff !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+    }
+    [data-testid="stSidebarCollapsedControl"] svg {
+        fill: #ffffff !important;
+        stroke: #ffffff !important;
+        width: 24px !important;
+        height: 24px !important;
+    }
+    [data-testid="stSidebarCollapsedControl"] button {
+        color: #ffffff !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: transparent !important;
     }
 </style>
 """, unsafe_allow_html=True)
