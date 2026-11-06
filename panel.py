@@ -581,16 +581,16 @@ def obtener_configuracion_seguridad():
         "password": "Blitz008",
         "recovery_email": "salvaandreo@gmail.com",
         "recovery_pin": "2004",
-        "whatsapp_apikey": "5995648",
-        "whatsapp_phone": "34690315864"
+        "telegram_bot_token": "9094467418:AAF_392aZ2KLYT9ZDxam_W3hnphsKXUFkLc",
+        "telegram_chat_id": "9177850452"
     }
     try:
         if hasattr(st, "secrets"):
             if "password" in st.secrets: cfg["password"] = str(st.secrets["password"]).strip()
             if "recovery_email" in st.secrets: cfg["recovery_email"] = str(st.secrets["recovery_email"]).strip()
             if "recovery_pin" in st.secrets: cfg["recovery_pin"] = str(st.secrets["recovery_pin"]).strip()
-            if "whatsapp_apikey" in st.secrets: cfg["whatsapp_apikey"] = str(st.secrets["whatsapp_apikey"]).strip()
-            if "whatsapp_phone" in st.secrets: cfg["whatsapp_phone"] = str(st.secrets["whatsapp_phone"]).strip()
+            if "telegram_bot_token" in st.secrets: cfg["telegram_bot_token"] = str(st.secrets["telegram_bot_token"]).strip()
+            if "telegram_chat_id" in st.secrets: cfg["telegram_chat_id"] = str(st.secrets["telegram_chat_id"]).strip()
     except Exception:
         pass
         
@@ -600,7 +600,7 @@ def obtener_configuracion_seguridad():
             with open(secrets_path, "r", encoding="utf-8") as f:
                 for line in f:
                     line_s = line.strip()
-                    for k in ["password", "recovery_email", "recovery_pin", "whatsapp_apikey", "whatsapp_phone"]:
+                    for k in ["password", "recovery_email", "recovery_pin", "telegram_bot_token", "telegram_chat_id"]:
                         if line_s.startswith(k):
                             parts = line_s.split("=", 1)
                             if len(parts) == 2:
@@ -609,12 +609,12 @@ def obtener_configuracion_seguridad():
             pass
     return cfg
 
-def enviar_notificacion_whatsapp(proveedor, centro, articulos):
-    """Envía un resumen del albarán archivado por WhatsApp."""
+def enviar_notificacion_telegram(proveedor, centro, articulos):
+    """Envía un resumen inmediato del albarán archivado por Telegram."""
     cfg = obtener_configuracion_seguridad()
-    apikey = cfg.get("whatsapp_apikey", "").strip()
-    phone = cfg.get("whatsapp_phone", "").strip()
-    if not apikey or not phone:
+    token = cfg.get("telegram_bot_token", "").strip()
+    chat_id = cfg.get("telegram_chat_id", "").strip()
+    if not token or not chat_id:
         return
         
     lineas_art = []
@@ -629,11 +629,11 @@ def enviar_notificacion_whatsapp(proveedor, centro, articulos):
             total_dinero += float(c) * float(p)
         except:
             pass
-        lineas_art.append(f"• {c} {u} {n}")
+        lineas_art.append(f"• {c} {u} *{n}*")
         
-    resumen_items = "\n".join(lineas_art[:5])
-    if len(lineas_art) > 5:
-        resumen_items += f"\n... y {len(lineas_art) - 5} productos más"
+    resumen_items = "\n".join(lineas_art[:6])
+    if len(lineas_art) > 6:
+        resumen_items += f"\n_... y {len(lineas_art) - 6} productos más_"
         
     mensaje = (
         f"🍔 *BLITZ STOCK · ALBARÁN ARCHIVADO*\n\n"
@@ -641,16 +641,23 @@ def enviar_notificacion_whatsapp(proveedor, centro, articulos):
         f"🏢 *Proveedor:* {proveedor}\n"
         f"💰 *Total estimado:* {total_dinero:.2f} €\n\n"
         f"📦 *Productos:* \n{resumen_items}\n\n"
-        f"✅ _Stock actualizado correctamente en sistema_"
+        f"✅ _Stock sumado y actualizado en tiempo real_"
     )
     
     try:
-        import urllib.parse
         import urllib.request
-        phone_clean = phone.replace("+", "").replace(" ", "").replace("-", "")
-        encoded_texto = urllib.parse.quote_plus(mensaje)
-        url = f"https://api.callmebot.com/whatsapp.php?phone={phone_clean}&text={encoded_texto}&apikey={apikey}"
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        import json
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        payload = {
+            "chat_id": chat_id,
+            "text": mensaje,
+            "parse_mode": "Markdown"
+        }
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json", "User-Agent": "Blitz-Stock-App"}
+        )
         with urllib.request.urlopen(req, timeout=5) as r:
             pass
     except Exception:
@@ -1886,12 +1893,12 @@ if seccion_activa == "📡 Radar de Albaranes":
                     ruta_destino = os.path.join(CARPETA_PROCESADOS, archivo_actual)
                     shutil.move(ruta_origen, ruta_destino)
                     
-                    # Notificación automática por WhatsApp
-                    enviar_notificacion_whatsapp(st.session_state.proveedor_ia, st.session_state.centro_destino, st.session_state.articulos_ia)
+                    # Notificación instantánea en tiempo real por Telegram
+                    enviar_notificacion_telegram(st.session_state.proveedor_ia, st.session_state.centro_destino, st.session_state.articulos_ia)
                     
                     st.session_state.ia_procesada = False
                     st.session_state.centro_destino = ""
-                    st.success("✅ Albarán archivado, stock sumado y aviso enviado por WhatsApp.")
+                    st.success("✅ Albarán archivado, stock sumado y aviso enviado por Telegram.")
                     import time; time.sleep(0.8)
                     st.rerun()
 
