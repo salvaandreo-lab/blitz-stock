@@ -72,12 +72,43 @@ def normalizar_proveedor(nombre_crudo):
 
 # Configuración de clave Gemini (local o Streamlit Secrets)
 API_KEY_GOOGLE = "AQ.Ab8RN6J0yz8U9aXL6l9vdqXdlTIDNMVECWAlH2EAgf38My1bAA"
+
+def obtener_api_key_gemini():
+    """Recupera la clave API válida de Google AI Studio (debe empezar por AIzaSy...)."""
+    # 1. Streamlit Secrets (Nube o local)
+    try:
+        if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
+            k = str(st.secrets["GEMINI_API_KEY"]).strip()
+            if k and not k.startswith("AQ."):
+                return k
+    except Exception:
+        pass
+    # 2. Session state si el usuario la introdujo en pantalla
+    if st.session_state.get("gemini_api_key") and not str(st.session_state.gemini_api_key).startswith("AQ."):
+        return str(st.session_state.gemini_api_key).strip()
+    # 3. Variable de entorno
+    env_k = os.environ.get("GEMINI_API_KEY", "").strip()
+    if env_k and not env_k.startswith("AQ."):
+        return env_k
+    # 4. Fallback si no es token no soportado
+    if API_KEY_GOOGLE and not API_KEY_GOOGLE.startswith("AQ.") and API_KEY_GOOGLE != "TU_CLAVE_API_AQUI":
+        return API_KEY_GOOGLE
+    return ""
+
+def obtener_cliente_ia():
+    k = obtener_api_key_gemini()
+    if k:
+        try:
+            return genai.Client(api_key=k)
+        except Exception:
+            return None
+    return None
+
 try:
-    if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
-        API_KEY_GOOGLE = str(st.secrets["GEMINI_API_KEY"]).strip()
+    _init_k = obtener_api_key_gemini()
+    cliente_ia = genai.Client(api_key=_init_k if _init_k else "PENDIENTE")
 except Exception:
-    pass
-cliente_ia = genai.Client(api_key=API_KEY_GOOGLE)
+    cliente_ia = None
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_EQUIVALENCIAS = os.path.join(BASE_DIR, "Equivalencias.csv")
@@ -1328,6 +1359,42 @@ if seccion_activa == "📡 Radar de Albaranes":
     col_k4.markdown(f'<div class="kpi-card"><div class="kpi-title">⚡ Motor IA Vision</div><div class="kpi-value" style="color:#10b981;font-size:1.4rem;margin-top:6px;">ACTIVO (v3.8)</div></div>', unsafe_allow_html=True)
     st.write("")
 
+    # 📤 Subida de albaranes desde Móvil o Web
+    with st.expander("📤 Subir Nuevos Albaranes (Móvil / Web)", expanded=(total_albaranes == 0)):
+        st.markdown("Puedes tomar una foto con la cámara del móvil o subir archivos/fotos del albarán directamente:")
+        c_up1, c_up2 = st.columns([2, 1])
+        with c_up1:
+            archivos_subidos = st.file_uploader(
+                "Selecciona o arrastra fotos del albarán:", 
+                type=['png', 'jpg', 'jpeg', 'webp'], 
+                accept_multiple_files=True,
+                key="subida_albaranes_web"
+            )
+        with c_up2:
+            centro_subida = st.selectbox(
+                "Centro receptor:",
+                ["Blitz  Juan de Borbón", "Blitz Ronda Sur", "Food Truck Grande", "Food Truck Pequeña"],
+                key="centro_subida_web"
+            )
+            mapeo_carpetas = {
+                "Blitz  Juan de Borbón": "Entrada_Juan_Borbon",
+                "Blitz Ronda Sur": "Entrada_Ronda_Sur",
+                "Food Truck Grande": "Entrada_FoodTruck_1",
+                "Food Truck Pequeña": "Entrada_FoodTruck_2"
+            }
+            if archivos_subidos and st.button("📥 Añadir a la Cola", type="primary", use_container_width=True):
+                nom_carpeta = mapeo_carpetas.get(centro_subida, "Albaranes_Pendientes")
+                dir_destino = os.path.join(BASE_DIR, nom_carpeta)
+                os.makedirs(dir_destino, exist_ok=True)
+                guardados = 0
+                for arch in archivos_subidos:
+                    ruta_guardar = os.path.join(dir_destino, arch.name)
+                    with open(ruta_guardar, "wb") as f_out:
+                        f_out.write(arch.getbuffer())
+                    guardados += 1
+                st.success(f"✅ ¡{guardados} albarán(es) añadido(s) a la cola de {centro_subida}!")
+                st.rerun()
+
     archivos_en_cola = []
     for carpeta in CARPETAS_ENTRADA:
         if os.path.exists(carpeta):
@@ -1385,13 +1452,48 @@ if seccion_activa == "📡 Radar de Albaranes":
             st.info(f"📁 Origen del escaneo: **{carpeta_origen}**")
 
             
+            clave_activa_check = obtener_api_key_gemini()
+            if not clave_activa_check:
+                st.error("🔑 **Falta configurar la clave API de Google Gemini (Google AI Studio)**")
+                st.markdown("""
+                Para leer albaranes con Inteligencia Artificial se requiere una clave gratuita de **Google AI Studio** (empieza siempre por `AIzaSy...`).
+                
+                👉 **[Consigue tu clave gratis en 15 segundos aquí](https://aistudio.google.com/app/apikey)** (Inicia sesión con tu cuenta de Google y pulsa *Create API key*).
+                """)
+                c_k1, c_k2 = st.columns([3, 1])
+                with c_k1:
+                    k_input = st.text_input("Pega tu API Key de Gemini aquí:", type="password", placeholder="AIzaSy...", label_visibility="collapsed", key=f"input_k_{archivo_actual}")
+                with c_k2:
+                    if st.button("💾 Guardar Clave", key=f"btn_save_k_{archivo_actual}", use_container_width=True):
+                        if k_input.strip().startswith("AIzaSy"):
+                            st.session_state.gemini_api_key = k_input.strip()
+                            try:
+                                sec_file = os.path.join(BASE_DIR, ".streamlit", "secrets.toml")
+                                os.makedirs(os.path.dirname(sec_file), exist_ok=True)
+                                txt = ""
+                                if os.path.exists(sec_file):
+                                    with open(sec_file, "r", encoding="utf-8") as sf:
+                                        txt = sf.read()
+                                lines = [l for l in txt.splitlines() if not l.startswith("GEMINI_API_KEY")]
+                                lines.append(f'GEMINI_API_KEY = "{k_input.strip()}"')
+                                with open(sec_file, "w", encoding="utf-8") as sf:
+                                    sf.write("\n".join(lines) + "\n")
+                            except Exception:
+                                pass
+                            st.success("✅ ¡Clave guardada con éxito!")
+                            st.rerun()
+                        else:
+                            st.error("La clave de Google AI Studio debe comenzar por 'AIzaSy'.")
+
             if st.button("🧠 Procesar con Inteligencia Artificial", type="primary"):
                 st.session_state.centro_destino = centro_seleccionado
                 with st.spinner('Analizando documento con Visión Artificial...'):
                     try:
-                        if not API_KEY_GOOGLE or API_KEY_GOOGLE == "TU_CLAVE_API_AQUI":
-                            raise ValueError("Clave API de Google no configurada.")
+                        clave_activa = obtener_api_key_gemini()
+                        if not clave_activa:
+                            raise ValueError("Clave API de Google no configurada o incompatible. Debe ser una clave de Google AI Studio que empiece por 'AIzaSy...'.")
 
+                        cliente_ia_activo = genai.Client(api_key=clave_activa)
                         img = Image.open(ruta_origen)
                         img.thumbnail((1500, 1500))
                         
@@ -1419,14 +1521,14 @@ if seccion_activa == "📡 Radar de Albaranes":
                         
                         import time
                         # Cadena de modelos de máxima resiliencia ante picos de demanda (503 / 429)
-                        modelos_a_probar = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash']
+                        modelos_a_probar = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash']
                         respuesta = None
                         ultimo_error = None
                         
                         for mod in modelos_a_probar:
                             for intento in range(2):
                                 try:
-                                    respuesta = cliente_ia.models.generate_content(
+                                    respuesta = cliente_ia_activo.models.generate_content(
                                         model=mod,
                                         contents=[prompt_estricto, img]
                                     )
@@ -1515,6 +1617,10 @@ if seccion_activa == "📡 Radar de Albaranes":
                         if any(s in err_str.lower() for s in ['503', 'unavailable', 'demand', 'high demand']):
                             st.error("⚠️ **Los servidores de Google Gemini están experimentando un pico temporal de saturación (Error 503).**")
                             st.info("💡 Este aviso es momentáneo debido a sobrecarga en los servidores mundiales de Google. Simplemente espera 5-10 segundos y vuelve a pulsar **🧠 Procesar con Inteligencia Artificial**.")
+                        elif any(s in err_str.lower() for s in ['401', 'unauthenticated', 'access_token_type_unsupported', 'api key not valid']):
+                            st.error("🛑 **DIAGNÓSTICO DE ERROR: 401 UNAUTHENTICATED (Clave rechazada por Google).**")
+                            st.warning("Google ha rechazado la clave configurada (`ACCESS_TOKEN_TYPE_UNSUPPORTED`). La clave debe ser una API Key oficial de **Google AI Studio** que empiece por **`AIzaSy...`**.")
+                            st.info("👉 Puedes generar tu clave gratuita en 15 segundos en: [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)")
                         else:
                             st.error(f"🛑 DIAGNÓSTICO DE ERROR: {err_str}")
                         st.session_state.ia_procesada = False
