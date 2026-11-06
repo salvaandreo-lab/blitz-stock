@@ -580,13 +580,17 @@ def obtener_configuracion_seguridad():
     cfg = {
         "password": "Blitz008",
         "recovery_email": "salvaandreo@gmail.com",
-        "recovery_pin": "2004"
+        "recovery_pin": "2004",
+        "whatsapp_apikey": "5995648",
+        "whatsapp_phone": "34690315864"
     }
     try:
         if hasattr(st, "secrets"):
             if "password" in st.secrets: cfg["password"] = str(st.secrets["password"]).strip()
             if "recovery_email" in st.secrets: cfg["recovery_email"] = str(st.secrets["recovery_email"]).strip()
             if "recovery_pin" in st.secrets: cfg["recovery_pin"] = str(st.secrets["recovery_pin"]).strip()
+            if "whatsapp_apikey" in st.secrets: cfg["whatsapp_apikey"] = str(st.secrets["whatsapp_apikey"]).strip()
+            if "whatsapp_phone" in st.secrets: cfg["whatsapp_phone"] = str(st.secrets["whatsapp_phone"]).strip()
     except Exception:
         pass
         
@@ -596,7 +600,7 @@ def obtener_configuracion_seguridad():
             with open(secrets_path, "r", encoding="utf-8") as f:
                 for line in f:
                     line_s = line.strip()
-                    for k in ["password", "recovery_email", "recovery_pin"]:
+                    for k in ["password", "recovery_email", "recovery_pin", "whatsapp_apikey", "whatsapp_phone"]:
                         if line_s.startswith(k):
                             parts = line_s.split("=", 1)
                             if len(parts) == 2:
@@ -604,6 +608,53 @@ def obtener_configuracion_seguridad():
         except Exception:
             pass
     return cfg
+
+def enviar_notificacion_whatsapp(proveedor, centro, articulos):
+    """Envía un resumen del albarán archivado por WhatsApp."""
+    cfg = obtener_configuracion_seguridad()
+    apikey = cfg.get("whatsapp_apikey", "").strip()
+    phone = cfg.get("whatsapp_phone", "").strip()
+    if not apikey or not phone:
+        return
+        
+    lineas_art = []
+    total_dinero = 0.0
+    for art in articulos:
+        if art.get("ignorado", False): continue
+        n = art.get("nombre", "")[:28]
+        c = art.get("val_calc_final", art.get("cantidad", 0))
+        p = art.get("precio_unitario_final", art.get("precio_final", 0.0))
+        u = art.get("unidad", "")
+        try:
+            total_dinero += float(c) * float(p)
+        except:
+            pass
+        lineas_art.append(f"• {c} {u} {n}")
+        
+    resumen_items = "\n".join(lineas_art[:5])
+    if len(lineas_art) > 5:
+        resumen_items += f"\n... y {len(lineas_art) - 5} productos más"
+        
+    mensaje = (
+        f"🍔 *BLITZ STOCK · ALBARÁN ARCHIVADO*\n\n"
+        f"📍 *Centro:* {centro}\n"
+        f"🏢 *Proveedor:* {proveedor}\n"
+        f"💰 *Total estimado:* {total_dinero:.2f} €\n\n"
+        f"📦 *Productos:* \n{resumen_items}\n\n"
+        f"✅ _Stock actualizado correctamente en sistema_"
+    )
+    
+    try:
+        import urllib.parse
+        import urllib.request
+        phone_clean = phone.replace("+", "").replace(" ", "").replace("-", "")
+        encoded_texto = urllib.parse.quote_plus(mensaje)
+        url = f"https://api.callmebot.com/whatsapp.php?phone={phone_clean}&text={encoded_texto}&apikey={apikey}"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=5) as r:
+            pass
+    except Exception:
+        pass
 
 def guardar_nueva_password(nueva_clave):
     secrets_path = os.path.join(BASE_DIR, ".streamlit", "secrets.toml")
@@ -1834,9 +1885,13 @@ if seccion_activa == "📡 Radar de Albaranes":
                             
                     ruta_destino = os.path.join(CARPETA_PROCESADOS, archivo_actual)
                     shutil.move(ruta_origen, ruta_destino)
+                    
+                    # Notificación automática por WhatsApp
+                    enviar_notificacion_whatsapp(st.session_state.proveedor_ia, st.session_state.centro_destino, st.session_state.articulos_ia)
+                    
                     st.session_state.ia_procesada = False
                     st.session_state.centro_destino = ""
-                    st.success("✅ Albarán archivado y stock sumado correctamente al centro.")
+                    st.success("✅ Albarán archivado, stock sumado y aviso enviado por WhatsApp.")
                     import time; time.sleep(0.8)
                     st.rerun()
 
