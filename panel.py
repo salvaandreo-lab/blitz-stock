@@ -1358,42 +1358,6 @@ if seccion_activa == "📡 Radar de Albaranes":
     col_k4.markdown(f'<div class="kpi-card"><div class="kpi-title">⚡ Motor IA Vision</div><div class="kpi-value" style="color:#10b981;font-size:1.4rem;margin-top:6px;">ACTIVO (v3.8)</div></div>', unsafe_allow_html=True)
     st.write("")
 
-    # 📤 Subida de albaranes desde Móvil o Web
-    with st.expander("📤 Subir Nuevos Albaranes (Móvil / Web)", expanded=(total_albaranes == 0)):
-        st.markdown("Puedes tomar una foto con la cámara del móvil o subir archivos/fotos del albarán directamente:")
-        c_up1, c_up2 = st.columns([2, 1])
-        with c_up1:
-            archivos_subidos = st.file_uploader(
-                "Selecciona o arrastra fotos del albarán:", 
-                type=['png', 'jpg', 'jpeg', 'webp'], 
-                accept_multiple_files=True,
-                key="subida_albaranes_web"
-            )
-        with c_up2:
-            centro_subida = st.selectbox(
-                "Centro receptor:",
-                ["Blitz  Juan de Borbón", "Blitz Ronda Sur", "Food Truck Grande", "Food Truck Pequeña"],
-                key="centro_subida_web"
-            )
-            mapeo_carpetas = {
-                "Blitz  Juan de Borbón": "Entrada_Juan_Borbon",
-                "Blitz Ronda Sur": "Entrada_Ronda_Sur",
-                "Food Truck Grande": "Entrada_FoodTruck_1",
-                "Food Truck Pequeña": "Entrada_FoodTruck_2"
-            }
-            if archivos_subidos and st.button("📥 Añadir a la Cola", type="primary", use_container_width=True):
-                nom_carpeta = mapeo_carpetas.get(centro_subida, "Albaranes_Pendientes")
-                dir_destino = os.path.join(BASE_DIR, nom_carpeta)
-                os.makedirs(dir_destino, exist_ok=True)
-                guardados = 0
-                for arch in archivos_subidos:
-                    ruta_guardar = os.path.join(dir_destino, arch.name)
-                    with open(ruta_guardar, "wb") as f_out:
-                        f_out.write(arch.getbuffer())
-                    guardados += 1
-                st.success(f"✅ ¡{guardados} albarán(es) añadido(s) a la cola de {centro_subida}!")
-                st.rerun()
-
     archivos_en_cola = []
     for carpeta in CARPETAS_ENTRADA:
         if os.path.exists(carpeta):
@@ -2010,6 +1974,22 @@ if seccion_activa == "📡 Radar de Albaranes":
                             
                     ruta_destino = os.path.join(CARPETA_PROCESADOS, archivo_actual)
                     shutil.move(ruta_origen, ruta_destino)
+                    
+                    # Eliminar de la cola de GitHub y sincronizar CSVs en background
+                    try:
+                        import threading
+                        from sync_repo import delete_file_from_github, sync_file
+                        rel_origen = os.path.relpath(ruta_origen, BASE_DIR)
+                        def _bg_sync():
+                            try:
+                                delete_file_from_github(rel_origen)
+                                sync_file("Stock_Actual.csv")
+                                sync_file("Historico_Precios.csv")
+                            except Exception:
+                                pass
+                        threading.Thread(target=_bg_sync, daemon=True).start()
+                    except Exception:
+                        pass
                     
                     # Notificación instantánea en tiempo real por Telegram
                     enviar_notificacion_telegram(st.session_state.proveedor_ia, st.session_state.centro_destino, st.session_state.articulos_ia)
