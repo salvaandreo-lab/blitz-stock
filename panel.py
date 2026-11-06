@@ -536,32 +536,13 @@ def confirmar_borrado_diccionario(datos_editados):
 # ==========================================
 # 3. INTERFAZ Y MEMORIA
 # ==========================================
-st.set_page_config(page_title="Blitz Stock", page_icon="🍔", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Blitz Stock", page_icon="🍔", layout="wide")
 
-# Ocultar cabeceras tecnicas pero mantener siempre accesible la flecha nativa del menu en moviles
+# Ocultar unicamente menu de desarrollo y pie de pagina
 st.markdown("""
 <style>
-    #MainMenu {visibility: hidden !important; display: none !important;}
-    footer {visibility: hidden !important; display: none !important;}
-    [data-testid="stToolbar"] {visibility: hidden !important; display: none !important;}
-    [data-testid="stDecoration"] {visibility: hidden !important; display: none !important;}
-    [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
-    
-    /* El header transparente para no tapar contenido */
-    header[data-testid="stHeader"] {
-        background: transparent !important;
-    }
-    
-    /* Flecha nativa (>) de apertura de barra lateral en moviles */
-    [data-testid="stSidebarCollapsedControl"] {
-        visibility: visible !important;
-        display: flex !important;
-        z-index: 999999 !important;
-    }
-    [data-testid="stSidebarCollapsedControl"] button {
-        visibility: visible !important;
-        display: flex !important;
-    }
+    #MainMenu {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -643,31 +624,12 @@ def guardar_nueva_password(nueva_clave):
 
 def verificar_autenticacion():
     if st.session_state.get("autenticado", False):
-        # Restaurar la barra lateral y la flecha nativa arriba a la izquierda
-        st.markdown("""
-        <style>
-            [data-testid="stSidebar"] {
-                display: block !important;
-            }
-            [data-testid="stSidebarCollapsedControl"] {
-                display: flex !important;
-                visibility: visible !important;
-                z-index: 999999 !important;
-            }
-            [data-testid="stSidebarCollapsedControl"] button {
-                display: flex !important;
-                visibility: visible !important;
-            }
-        </style>
-        """, unsafe_allow_html=True)
         return True
 
     cfg = obtener_configuracion_seguridad()
 
-    # Ocultar la barra lateral en el login para que la interfaz quede limpia y centrada
     st.markdown("""
     <style>
-        [data-testid="stSidebar"] { display: none; }
         .login-card {
             max-width: 440px;
             margin: 24px auto 10px auto;
