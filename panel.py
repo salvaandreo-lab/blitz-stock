@@ -550,14 +550,28 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Forzar idioma español y bloquear el traductor de Chrome
+# Forzar idioma español, bloquear traductor y desactivar el generador automatico de contraseñas de Google
 import streamlit.components.v1 as components
 components.html(
     """
     <script>
         const html = window.parent.document.querySelector("html");
-        html.setAttribute("lang", "es");
-        html.setAttribute("translate", "no");
+        if (html) {
+            html.setAttribute("lang", "es");
+            html.setAttribute("translate", "no");
+        }
+        function bloquearSugerenciasGoogle() {
+            try {
+                const doc = window.parent.document;
+                const passInputs = doc.querySelectorAll('input[type="password"]');
+                passInputs.forEach(inp => {
+                    inp.setAttribute('autocomplete', 'current-password');
+                    inp.setAttribute('data-lpignore', 'true');
+                    inp.setAttribute('data-1p-ignore', 'true');
+                });
+            } catch (e) {}
+        }
+        setInterval(bloquearSugerenciasGoogle, 400);
     </script>
     """,
     width=0, height=0
