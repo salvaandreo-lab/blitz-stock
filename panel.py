@@ -71,28 +71,27 @@ def normalizar_proveedor(nombre_crudo):
     return str(nombre_crudo).strip()
 
 # Configuración de clave Gemini (local o Streamlit Secrets)
-API_KEY_GOOGLE = "AQ.Ab8RN6J0yz8U9aXL6l9vdqXdlTIDNMVECWAlH2EAgf38My1bAA"
+API_KEY_GOOGLE = ""
 
 def obtener_api_key_gemini():
-    """Recupera la clave API válida de Google AI Studio (debe empezar por AIzaSy...)."""
+    """Recupera la clave API activa para Google Gemini."""
     # 1. Streamlit Secrets (Nube o local)
     try:
         if hasattr(st, "secrets") and "GEMINI_API_KEY" in st.secrets:
             k = str(st.secrets["GEMINI_API_KEY"]).strip()
-            if k and not k.startswith("AQ."):
+            if k and k != "TU_CLAVE_API_AQUI":
                 return k
     except Exception:
         pass
     # 2. Session state si el usuario la introdujo en pantalla
-    if st.session_state.get("gemini_api_key") and not str(st.session_state.gemini_api_key).startswith("AQ."):
-        return str(st.session_state.gemini_api_key).strip()
+    if st.session_state.get("gemini_api_key"):
+        k = str(st.session_state.gemini_api_key).strip()
+        if k and k != "TU_CLAVE_API_AQUI":
+            return k
     # 3. Variable de entorno
     env_k = os.environ.get("GEMINI_API_KEY", "").strip()
-    if env_k and not env_k.startswith("AQ."):
+    if env_k and env_k != "TU_CLAVE_API_AQUI":
         return env_k
-    # 4. Fallback si no es token no soportado
-    if API_KEY_GOOGLE and not API_KEY_GOOGLE.startswith("AQ.") and API_KEY_GOOGLE != "TU_CLAVE_API_AQUI":
-        return API_KEY_GOOGLE
     return ""
 
 def obtener_cliente_ia():
@@ -1465,7 +1464,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                     k_input = st.text_input("Pega tu API Key de Gemini aquí:", type="password", placeholder="AIzaSy...", label_visibility="collapsed", key=f"input_k_{archivo_actual}")
                 with c_k2:
                     if st.button("💾 Guardar Clave", key=f"btn_save_k_{archivo_actual}", use_container_width=True):
-                        if k_input.strip().startswith("AIzaSy"):
+                        if len(k_input.strip()) >= 15:
                             st.session_state.gemini_api_key = k_input.strip()
                             try:
                                 sec_file = os.path.join(BASE_DIR, ".streamlit", "secrets.toml")
@@ -1483,7 +1482,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                             st.success("✅ ¡Clave guardada con éxito!")
                             st.rerun()
                         else:
-                            st.error("La clave de Google AI Studio debe comenzar por 'AIzaSy'.")
+                            st.error("Por favor, introduce una clave API válida de Google.")
 
             if st.button("🧠 Procesar con Inteligencia Artificial", type="primary"):
                 st.session_state.centro_destino = centro_seleccionado
@@ -1491,7 +1490,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                     try:
                         clave_activa = obtener_api_key_gemini()
                         if not clave_activa:
-                            raise ValueError("Clave API de Google no configurada o incompatible. Debe ser una clave de Google AI Studio que empiece por 'AIzaSy...'.")
+                            raise ValueError("Clave API de Google no configurada.")
 
                         cliente_ia_activo = genai.Client(api_key=clave_activa)
                         img = Image.open(ruta_origen)
@@ -1521,7 +1520,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                         
                         import time
                         # Cadena de modelos de máxima resiliencia ante picos de demanda (503 / 429)
-                        modelos_a_probar = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.5-flash']
+                        modelos_a_probar = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-3.8-flash']
                         respuesta = None
                         ultimo_error = None
                         
