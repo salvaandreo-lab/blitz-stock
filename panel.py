@@ -538,6 +538,18 @@ def confirmar_borrado_diccionario(datos_editados):
 # ==========================================
 st.set_page_config(page_title="Blitz Stock", page_icon="🍔", layout="wide")
 
+# Ocultar cabeceras tecnicas de Streamlit/GitHub para dejar la interfaz 100% corporativa
+st.markdown("""
+<style>
+    #MainMenu {visibility: hidden !important;}
+    header {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
+    [data-testid="stToolbar"] {visibility: hidden !important;}
+    [data-testid="stDecoration"] {visibility: hidden !important;}
+    [data-testid="stStatusWidget"] {visibility: hidden !important;}
+</style>
+""", unsafe_allow_html=True)
+
 # Forzar idioma español y bloquear el traductor de Chrome
 import streamlit.components.v1 as components
 components.html(
