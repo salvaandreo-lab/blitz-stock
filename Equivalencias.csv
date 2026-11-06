@@ -1,4 +1,4 @@
-﻿Proveedor,Sinonimo_Proveedor,Producto_Maestro_Blitz,Referencia_Blitz,Unidad_Compra,Factor_Multiplicador,Unidad_Inventario,Precio_Actual,Rendimiento,Unidad_Receta
+Proveedor,Sinonimo_Proveedor,Producto_Maestro_Blitz,Referencia_Blitz,Unidad_Compra,Factor_Multiplicador,Unidad_Inventario,Precio_Actual,Rendimiento,Unidad_Receta
 Makro,HIGIENICO MPRO 2C 36M 24R,PAPEL HIGIENICO,0003,ROLLOS,1.0,ROLLOS,0.0,1.0,ROLLOS
 Makro,BOBINA ECO MPRO 2C 106MT 6R,ROLLO PAPEL COCINA,0004,ROLLOS,6.0,ROLLOS,9.35,1.0,ROLLOS
 Makro,QSO CREMA CB MC 2KG,QUESO CREMA,0005,BOTE,1.0,BOTE,0.0,2000,GRS
