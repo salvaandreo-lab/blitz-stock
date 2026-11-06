@@ -1676,31 +1676,44 @@ if seccion_activa == "📡 Radar de Albaranes":
                                     if p_v > 0.0:
                                         p_envase_guardado = p_v
                                         
-                            # 2. DETERMINAR KILOS POR UNIDAD DE INVENTARIO (kilos_por_uinv)
+                            # 2. DETERMINAR SI ES PRODUCTO DE PESO/KILO (kilos_por_uinv)
+                            # Las unidades discretas (botes, botellas, garrafas, tarrinas, bolsas, bandejas, etc.) se gestionan por unidades físicas exactas
+                            UNIDADES_DISCRETAS_ESTRICTAS = ["BOTE", "BOTES", "BOTELLAS", "BOTELLA", "GARRAFA", "GARRAFAS", "ROLLOS", "ESTUCHE", "UNIDADES", "PACK", "CUBO", "TARRINA", "TARRINAS", "FRASCO", "FRASCOS", "BANDEJA", "BANDEJAS", "BRIK", "PAQUETES", "PQ"]
+                            
                             kilos_por_uinv = None
-                            if uinv in ["KG", "KGS", "KILO", "KILOS"]:
+                            if uinv in UNIDADES_DISCRETAS_ESTRICTAS:
+                                es_producto_peso = False
+                            elif uinv in ["KG", "KGS", "KILO", "KILOS"]:
                                 kilos_por_uinv = 1.0
+                                es_producto_peso = True
                             elif factor_kg is not None and factor_kg > 0:
                                 kilos_por_uinv = round(1.0 / factor_kg, 4)
-                            elif urec == "GRS" and rendimiento > 0:
-                                kilos_por_uinv = rendimiento / 1000.0
-                            elif urec in ["KG", "KGS", "KILO", "KILOS"] and rendimiento > 0:
-                                kilos_por_uinv = rendimiento
+                                es_producto_peso = True
                             elif m_nombre in ["BONIATO", "PATATAS FRITAS"]:
                                 kilos_por_uinv = 2.5
+                                es_producto_peso = True
                             elif m_nombre in ["BACON DADOS", "CEBOLLA CRISPY"]:
                                 kilos_por_uinv = 2.0
+                                es_producto_peso = True
                             elif m_nombre in ["CARNE BURGUER 90 GRS", "CARNE BURGUER"]:
                                 kilos_por_uinv = 9.54
+                                es_producto_peso = True
                             elif m_nombre in ["NUGGETS POLLO", "NUGGETS"]:
                                 kilos_por_uinv = 4.5
+                                es_producto_peso = True
+                            elif ud_leida in ["KG", "KGS", "KILO", "KILOS"] and uinv in ["CAJAS", "CAJA", "BOLSAS", "BOLSA"]:
+                                if urec == "GRS" and rendimiento > 0:
+                                    kilos_por_uinv = rendimiento / 1000.0
+                                elif urec in ["KG", "KGS", "KILO", "KILOS"] and rendimiento > 0:
+                                    kilos_por_uinv = rendimiento
+                                es_producto_peso = (kilos_por_uinv is not None and kilos_por_uinv > 0)
+                            else:
+                                es_producto_peso = False
                                 
-                            if kilos_por_uinv and p_kilo_guardado and not p_envase_guardado:
+                            if es_producto_peso and kilos_por_uinv and p_kilo_guardado and not p_envase_guardado:
                                 p_envase_guardado = round(p_kilo_guardado * kilos_por_uinv, 2)
-                            elif kilos_por_uinv and p_envase_guardado and not p_kilo_guardado:
+                            elif es_producto_peso and kilos_por_uinv and p_envase_guardado and not p_kilo_guardado:
                                 p_kilo_guardado = round(p_envase_guardado / kilos_por_uinv, 2)
-                                
-                            es_producto_peso = (kilos_por_uinv is not None and kilos_por_uinv > 0) or (ud_leida in ["KG", "KGS", "KILO", "KILOS"])
                             
                             # =========================================================================
                             # [BLOQUE PROTEGIDO]: CONVERSIÓN DE KILOS A CAJAS/BOLSAS Y PRECIOS HOMOGÉNEOS
@@ -1783,7 +1796,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                                     val_calc = round(cant_float if es_directa else cant_float * factor, 2)
                                 else:
                                     val_calc = cant_float * factor
-                                    unidades_discretas = ["CAJAS", "BANDEJAS", "BOLSAS", "BOTELLAS", "ESTUCHE", "BOTE", "GARRAFA", "ROLLOS", "UNIDADES"]
+                                    unidades_discretas = ["CAJAS", "BANDEJAS", "BOLSAS", "BOTELLAS", "ESTUCHE", "BOTE", "GARRAFA", "ROLLOS", "UNIDADES", "TARRINA", "TARRINAS", "FRASCO", "FRASCOS", "CUBO", "BRIK", "PAQUETES", "PQ"]
                                     if uinv in unidades_discretas:
                                         val_calc = int(round(val_calc))
                                     else:
@@ -1976,7 +1989,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                                         val_calc = round(cant * factor, 2)
                                 else:
                                     val_calc = cant * factor
-                                    unidades_discretas = ["CAJAS", "BANDEJAS", "BOLSAS", "BOTELLAS", "ESTUCHE", "BOTE", "GARRAFA", "ROLLOS", "UNIDADES"]
+                                    unidades_discretas = ["CAJAS", "BANDEJAS", "BOLSAS", "BOTELLAS", "ESTUCHE", "BOTE", "GARRAFA", "ROLLOS", "UNIDADES", "TARRINA", "TARRINAS", "FRASCO", "FRASCOS", "CUBO", "BRIK", "PAQUETES", "PQ"]
                                     if uinv in unidades_discretas:
                                         val_calc = int(round(val_calc))
                                     else:
