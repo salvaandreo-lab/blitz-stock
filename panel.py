@@ -536,17 +536,36 @@ def confirmar_borrado_diccionario(datos_editados):
 # ==========================================
 # 3. INTERFAZ Y MEMORIA
 # ==========================================
-st.set_page_config(page_title="Blitz Stock", page_icon="🍔", layout="wide")
+st.set_page_config(page_title="Blitz Stock", page_icon="🍔", layout="wide", initial_sidebar_state="expanded")
 
-# Ocultar cabeceras tecnicas de Streamlit/GitHub para dejar la interfaz 100% corporativa
+# Ocultar cabeceras tecnicas pero mantener siempre accesible el boton del menu en moviles
 st.markdown("""
 <style>
-    #MainMenu {visibility: hidden !important;}
-    header {visibility: hidden !important;}
-    footer {visibility: hidden !important;}
-    [data-testid="stToolbar"] {visibility: hidden !important;}
-    [data-testid="stDecoration"] {visibility: hidden !important;}
-    [data-testid="stStatusWidget"] {visibility: hidden !important;}
+    #MainMenu {visibility: hidden !important; display: none !important;}
+    footer {visibility: hidden !important; display: none !important;}
+    [data-testid="stToolbar"] {visibility: hidden !important; display: none !important;}
+    [data-testid="stDecoration"] {visibility: hidden !important; display: none !important;}
+    [data-testid="stStatusWidget"] {visibility: hidden !important; display: none !important;}
+    
+    /* El fondo del header transparente */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+    }
+    
+    /* Boton de apertura de menu (>) en telefonos moviles */
+    [data-testid="stSidebarCollapsedControl"] {
+        visibility: visible !important;
+        display: flex !important;
+        z-index: 999999 !important;
+        color: #0066ff !important;
+        background: #ffffff !important;
+        border-radius: 8px !important;
+        border: 1px solid #d1d5db !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12) !important;
+        margin-left: 10px !important;
+        margin-top: 6px !important;
+        padding: 4px !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
