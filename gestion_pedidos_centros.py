@@ -285,30 +285,43 @@ def render_interfaz_centro(centro_param):
         st.markdown("</div>", unsafe_allow_html=True)
 
     # =========================================================================
-    # VISTA 2: ESCANEAR ALBARÁN (CÁMARA DEL MÓVIL)
+    # VISTA 2: ESCANEAR ALBARÁN (CÁMARA DEL MÓVIL / ESCÁNER NATIVO)
     # =========================================================================
     elif vista_actual == "escaner":
         if st.button("⬅️ Volver al Menú Principal", use_container_width=True):
             st.session_state[session_vista_key] = "menu"
             st.rerun()
 
-        st.subheader("📸 Escanear Albarán")
-        st.markdown(f"Toma una foto nítida del albarán recibido en **{nombre_centro}**:")
-
-        foto_camara = st.camera_input("Haz la foto con la cámara:", label_visibility="collapsed")
+        st.subheader(f"📸 Escanear Albarán · {nombre_centro}")
         
-        st.markdown("<div style='text-align:center; color:#9ca3af; margin: 10px 0;'>— O —</div>", unsafe_allow_html=True)
-        foto_archivo = st.file_uploader("Sube una foto desde la galería del móvil:", type=["jpg", "jpeg", "png", "webp"], label_visibility="collapsed")
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px dashed #2563eb; border-radius: 18px; padding: 20px 14px; text-align: center; margin: 10px 0 16px 0; box-shadow: 0 4px 14px rgba(37,99,235,0.08);">
+            <div style="font-size: 3.2rem; margin-bottom: 6px;">📷</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #1e3a8a;">Toca abajo para Abrir la Cámara / Escáner</div>
+            <div style="font-size: 0.90rem; color: #2563eb; margin-top: 6px; line-height: 1.4;">
+                Se abrirá tu <b>cámara nativa a pantalla completa</b> o el <b>escáner de documentos de Google Drive</b> para que el albarán salga recto, nítido y sin distorsión.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-        foto_final = foto_camara or foto_archivo
+        foto_final = st.file_uploader(
+            "Toca para abrir la cámara o escanear documento:",
+            type=["jpg", "jpeg", "png", "webp", "pdf"],
+            help="Al tocar, tu móvil te permitirá elegir 'Cámara' (pantalla completa) o 'Escanear documento' de Google Drive."
+        )
 
         if foto_final is not None:
-            st.image(foto_final, caption="Vista previa del albarán", use_container_width=True)
+            es_pdf = foto_final.name.lower().endswith(".pdf")
+            if not es_pdf:
+                st.image(foto_final, caption="Vista previa del albarán (alta resolución)", use_container_width=True)
+            else:
+                st.info(f"📄 Albarán PDF preparado: **{foto_final.name}**")
             
             if st.button("🚀 Enviar Albarán a Salva", use_container_width=True, type="primary"):
                 with st.spinner("Enviando y notificando..."):
                     ahora = datetime.datetime.now()
-                    nombre_archivo = f"Albaran_{centro_key}_{ahora.strftime('%Y%m%d_%H%M%S')}.jpg"
+                    ext = "pdf" if es_pdf else "jpg"
+                    nombre_archivo = f"Albaran_{centro_key}_{ahora.strftime('%Y%m%d_%H%M%S')}.{ext}"
                     
                     # 1. Guardar en la carpeta física de entrada del centro
                     carpeta_ruta = os.path.join(BASE_DIR, carpeta_destino)
@@ -327,7 +340,7 @@ def render_interfaz_centro(centro_param):
                         f"🔔 *¡TIENES UN ALBARÁN PENDIENTE!*\n\n"
                         f"📍 *Centro:* {nombre_centro}\n"
                         f"📄 *Archivo:* `{nombre_archivo}`\n\n"
-                        f"👀 _Foto disparada directamente desde el móvil del centro._"
+                        f"👀 _Escaneado a máxima resolución desde el móvil del centro._"
                     )
                     enviar_telegram(mensaje_telegram)
 
