@@ -220,29 +220,70 @@ def render_interfaz_centro(centro_param):
             font-weight: 700;
         }
 
-        /* Estilo para Cámara Directa sin distorsión ni recortes */
-        [data-testid="stCameraInput"] {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 10px 0 !important;
+        /* Tarjeta táctil para abrir la Cámara Completa */
+        div[data-testid="stFileUploader"] {
+            margin: 12px 0 16px 0 !important;
         }
-        [data-testid="stCameraInput"] video {
-            width: 100% !important;
-            max-height: 70vh !important;
-            object-fit: contain !important; /* Muestra el folio completo sin cortar bordes */
-            border-radius: 16px !important;
-            background: #111827 !important;
+        div[data-testid="stFileUploader"] > label {
+            display: none !important;
         }
-        [data-testid="stCameraInput"] button {
-            border-radius: 14px !important;
-            font-size: 1.15rem !important;
-            font-weight: 800 !important;
-            padding: 14px 20px !important;
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+            border: 3px dashed #2563eb !important;
+            border-radius: 22px !important;
+            padding: 32px 18px !important;
+            text-align: center !important;
+            cursor: pointer !important;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15) !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"]:hover,
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"]:active {
+            background: #dbeafe !important;
+            border-color: #1d4ed8 !important;
+            transform: scale(0.99) !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"]::before {
+            content: "📸\\A Pulsa aquí para abrir la CÁMARA COMPLETA";
+            white-space: pre-wrap;
+            font-size: 1.40rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            line-height: 1.35;
+            margin-bottom: 14px;
+            display: block;
+            text-align: center;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] span {
+            display: none !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] small {
+            display: none !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] button {
             background: #2563eb !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 14px rgba(37,99,235,0.3) !important;
+            font-size: 1.15rem !important;
+            font-weight: 800 !important;
+            border-radius: 14px !important;
+            padding: 14px 24px !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            cursor: pointer !important;
         }
-            font-size: 1.10rem;
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] button * {
+            display: none !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] button::after {
+            content: "Abrir Cámara Completa";
+            display: inline-block;
+            font-size: 1.15rem;
             color: #ffffff;
             font-weight: 700;
         }
@@ -321,27 +362,31 @@ def render_interfaz_centro(centro_param):
 
         st.subheader(f"📸 Escanear Albarán · {nombre_centro}")
 
-        tab_cam, tab_arch = st.tabs(["📷 Cámara Rápida (Directa)", "📁 Subir Foto o PDF Escaneado"])
-        
-        with tab_cam:
-            st.caption("Enfoca el albarán completo y pulsa el botón redondo para disparar:")
-            foto_cam = st.camera_input("Capturar Albarán:", label_visibility="collapsed", key=f"cam_input_{centro_key}")
+        # Inyectar capture="environment" para abrir la camara nativa completa inmediatamente
+        st.markdown("""
+        <script>
+        setTimeout(() => {
+            const inputs = window.parent.document.querySelectorAll('input[type="file"]');
+            inputs.forEach(i => i.setAttribute('capture', 'environment'));
+        }, 300);
+        </script>
+        """, unsafe_allow_html=True)
 
-        with tab_arch:
-            st.caption("O selecciona una foto de la galería o el PDF del escáner de Google Drive:")
-            foto_arch = st.file_uploader("Seleccionar archivo:", type=["jpg", "jpeg", "png", "webp", "pdf", "heic", "heif"], label_visibility="collapsed", key=f"arch_input_{centro_key}")
-
-        foto_final = foto_cam or foto_arch
+        foto_final = st.file_uploader(
+            "Pulsa aquí para abrir la CÁMARA COMPLETA:",
+            type=["jpg", "jpeg", "png", "webp", "pdf", "heic", "heif", "JPG", "JPEG", "PNG"],
+            key=f"uploader_camara_completa_{centro_key}"
+        )
 
         if foto_final is not None:
             es_pdf = foto_final.name.lower().endswith(".pdf")
             
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 16px; padding: 14px 12px; text-align: center; margin: 14px 0 10px 0; box-shadow: 0 4px 14px rgba(16,185,129,0.18);">
-                <div style="font-size: 1.25rem; font-weight: 800; color: #065f46; margin-bottom: 2px;">
+            <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 16px; padding: 14px 12px; text-align: center; margin: 12px 0 10px 0; box-shadow: 0 4px 14px rgba(16,185,129,0.18);">
+                <div style="font-size: 1.30rem; font-weight: 800; color: #065f46; margin-bottom: 2px;">
                     ✅ ¡Foto lista para enviar!
                 </div>
-                <div style="font-size: 0.90rem; color: #047857; font-weight:600;">
+                <div style="font-size: 0.92rem; color: #047857; font-weight:600;">
                     Toca el botón verde de abajo para enviarla a Salva:
                 </div>
             </div>
@@ -349,7 +394,7 @@ def render_interfaz_centro(centro_param):
 
             btn_enviar = st.button("🚀 ENVIAR ALBARÁN A SALVA AHORA", use_container_width=True, type="primary", key="btn_send_albaran_directo")
 
-            # Vista previa compacta (no empuja el botón fuera de pantalla)
+            # Vista previa compacta
             st.markdown("<div style='text-align:center; margin: 10px 0 4px 0; font-size:0.85rem; color:#6b7280; font-weight:600;'>Vista previa:</div>", unsafe_allow_html=True)
             if not es_pdf:
                 st.image(foto_final, use_container_width=True)
