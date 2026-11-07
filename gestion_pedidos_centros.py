@@ -299,7 +299,12 @@ def render_interfaz_centro(centro_param):
             <div style="font-size: 3.2rem; margin-bottom: 6px;">📷</div>
             <div style="font-size: 1.25rem; font-weight: 800; color: #1e3a8a;">Toca abajo para Abrir la Cámara / Escáner</div>
             <div style="font-size: 0.90rem; color: #2563eb; margin-top: 6px; line-height: 1.4;">
-                Se abrirá tu <b>cámara nativa a pantalla completa</b> o el <b>escáner de documentos de Google Drive</b> para que el albarán salga recto, nítido y sin distorsión.
+                Se abrirá tu <b>cámara nativa a pantalla completa</b> a máxima resolución.
+            </div>
+            <div style="background:#ffffff; border-radius:12px; padding:10px 14px; margin-top:12px; font-size:0.84rem; color:#1e40af; text-align:left; border: 1px solid #bfdbfe;">
+                📄 <b>Modo Escaneo (Bordes automáticos):</b><br>
+                Al abrir la cámara y apuntar al albarán sobre la mesa, aparecerá en la pantalla un <b>botón amarillo "Escanear"</b> (o un icono de folio / 'T').<br>
+                👉 <b>Tócalo:</b> recortará la mesa automáticamente, centrará el papel y lo dejará perfecto como un escáner.
             </div>
         </div>
         """, unsafe_allow_html=True)
