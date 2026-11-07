@@ -219,6 +219,74 @@ def render_interfaz_centro(centro_param):
             border-radius: 12px;
             font-weight: 700;
         }
+
+        /* Tarjeta de escaneo 100% interactiva y táctil */
+        div[data-testid="stFileUploader"] {
+            margin: 12px 0 16px 0 !important;
+        }
+        div[data-testid="stFileUploader"] > label {
+            display: none !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+            border: 3px dashed #2563eb !important;
+            border-radius: 22px !important;
+            padding: 32px 18px !important;
+            text-align: center !important;
+            cursor: pointer !important;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15) !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"]:hover,
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"]:active {
+            background: #dbeafe !important;
+            border-color: #1d4ed8 !important;
+            transform: scale(0.99) !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"]::before {
+            content: "📸\\A Pulsa aquí para tomar la foto";
+            white-space: pre-wrap;
+            font-size: 1.40rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            line-height: 1.35;
+            margin-bottom: 12px;
+            display: block;
+            text-align: center;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] span {
+            display: none !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] small {
+            display: none !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] button {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            font-size: 1.15rem !important;
+            font-weight: 800 !important;
+            border-radius: 14px !important;
+            padding: 14px 24px !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            cursor: pointer !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] button * {
+            display: none !important;
+        }
+        div[data-testid="stFileUploader"] section[data-testid="stFileUploaderDropzone"] button::after {
+            content: "Abrir Cámara";
+            display: inline-block;
+            font-size: 1.10rem;
+            color: #ffffff;
+            font-weight: 700;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -293,27 +361,20 @@ def render_interfaz_centro(centro_param):
             st.rerun()
 
         st.subheader(f"📸 Escanear Albarán · {nombre_centro}")
-        
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px dashed #2563eb; border-radius: 18px; padding: 20px 14px; text-align: center; margin: 10px 0 16px 0; box-shadow: 0 4px 14px rgba(37,99,235,0.08);">
-            <div style="font-size: 3.2rem; margin-bottom: 6px;">📷</div>
-            <div style="font-size: 1.25rem; font-weight: 800; color: #1e3a8a;">Toca abajo para Abrir la Cámara / Escáner</div>
-            <div style="font-size: 0.90rem; color: #2563eb; margin-top: 6px; line-height: 1.4;">
-                Se abrirá tu <b>cámara nativa a pantalla completa</b> a máxima resolución.
-            </div>
-            <div style="background:#ffffff; border-radius:12px; padding:10px 14px; margin-top:12px; font-size:0.84rem; color:#1e40af; text-align:left; border: 1px solid #bfdbfe;">
-                📄 <b>Modo Escaneo (Bordes automáticos):</b><br>
-                Al abrir la cámara y apuntar al albarán sobre la mesa, aparecerá en la pantalla un <b>botón amarillo "Escanear"</b> (o un icono de folio / 'T').<br>
-                👉 <b>Tócalo:</b> recortará la mesa automáticamente, centrará el papel y lo dejará perfecto como un escáner.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
 
         foto_final = st.file_uploader(
-            "Toca para abrir la cámara o escanear documento:",
+            "Pulsa aquí para tomar la foto:",
             type=["jpg", "jpeg", "png", "webp", "pdf"],
             help="Al tocar, tu móvil te permitirá elegir 'Cámara' (pantalla completa) o 'Escanear documento' de Google Drive."
         )
+
+        st.markdown("""
+        <div style="background:#ffffff; border-radius:12px; padding:12px 14px; margin-top:10px; font-size:0.86rem; color:#1e40af; text-align:left; border: 1px solid #bfdbfe; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+            📄 <b>Modo Escaneo (Recorte de mesa automático):</b><br>
+            Al abrirse la cámara y apuntar al albarán sobre la mesa, aparecerá en la pantalla un <b>botón amarillo "Escanear"</b> (o un icono de folio / 'T').<br>
+            👉 <b>Tócalo:</b> recortará la mesa automáticamente, centrará el papel y lo dejará perfecto como un escáner.
+        </div>
+        """, unsafe_allow_html=True)
 
         if foto_final is not None:
             es_pdf = foto_final.name.lower().endswith(".pdf")
