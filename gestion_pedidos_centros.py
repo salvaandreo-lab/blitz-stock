@@ -381,7 +381,24 @@ def render_interfaz_centro(centro_param):
         for art in arts_filtrados:
             zonas_dict[art.get("zona", "📦 Almacén Seco")].append(art)
 
-        for nombre_zona, items_zona in zonas_dict.items():
+        ORDEN_ZONAS_PREFERIDO = [
+            "🧊 Congelador 1 (Patatas, Boniato, Pollo)",
+            "🧊 Congelador 2 (Alitas, Nuggets, Tequeños, Croquetas)",
+            "❄️ Cámara Frigorífica",
+            "❄️ Cámara",
+            "📦 Almacén Seco",
+            "🧼 Limpieza y Desechables"
+        ]
+
+        def orden_zona_key(z):
+            if z in ORDEN_ZONAS_PREFERIDO:
+                return ORDEN_ZONAS_PREFERIDO.index(z)
+            return 999
+
+        zonas_ordenadas = sorted(zonas_dict.keys(), key=orden_zona_key)
+
+        for nombre_zona in zonas_ordenadas:
+            items_zona = zonas_dict[nombre_zona]
             st.markdown(f"<div style='background:#f3f4f6; padding:6px 12px; border-radius:8px; font-weight:700; margin: 14px 0 8px 0; color:#1f2937;'>{nombre_zona} ({len(items_zona)})</div>", unsafe_allow_html=True)
             for art in items_zona:
                 nom = art["nombre"]
