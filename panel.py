@@ -830,6 +830,20 @@ def verificar_autenticacion():
 
     st.stop()
 
+# -------------------------------------------------------------------------
+# ACCESO DIRECTO PARA CENTROS (SIN CONTRASEÑAS NI PINS)
+# E.g. https://blitz-stock.streamlit.app/?centro=ronda_sur
+# -------------------------------------------------------------------------
+centro_param = st.query_params.get("centro", "")
+if isinstance(centro_param, list):
+    centro_param = centro_param[0] if centro_param else ""
+centro_param = str(centro_param).strip().lower()
+
+if centro_param in ["ronda_sur", "juan_borbon", "ronda", "borbon", "juan"]:
+    from gestion_pedidos_centros import render_interfaz_centro
+    render_interfaz_centro(centro_param)
+    st.stop()
+
 verificar_autenticacion()
 
 # ==========================================
@@ -881,6 +895,15 @@ with st.sidebar:
     # 1. Radar de Albaranes
     if st.button("📡 Radar de Albaranes", use_container_width=True, type="primary" if es_radar else "secondary", key="btn_nav_radar"):
         st.session_state.seccion_activa = "📡 Radar de Albaranes"
+        st.session_state.nav_counter += 1
+        st.rerun()
+        
+    st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+    
+    # 1.1 Pedidos Centros
+    es_pedidos_centros = (st.session_state.seccion_activa == "📋 Pedidos Centros")
+    if st.button("📋 Pedidos Centros", use_container_width=True, type="primary" if es_pedidos_centros else "secondary", key="btn_nav_pedidos_centros"):
+        st.session_state.seccion_activa = "📋 Pedidos Centros"
         st.session_state.nav_counter += 1
         st.rerun()
         
@@ -1999,6 +2022,10 @@ if seccion_activa == "📡 Radar de Albaranes":
                     st.success("✅ Albarán archivado, stock sumado y aviso enviado por Telegram.")
                     import time; time.sleep(0.8)
                     st.rerun()
+
+elif seccion_activa == "📋 Pedidos Centros":
+    from gestion_pedidos_centros import render_panel_admin_pedidos
+    render_panel_admin_pedidos()
 
 elif seccion_activa == "📚 Gestor de Diccionario":
     st.subheader("🛠️ Panel de Control y Auditoría del Diccionario")
