@@ -378,13 +378,33 @@ def render_interfaz_centro(centro_param):
 
         if foto_final is not None:
             es_pdf = foto_final.name.lower().endswith(".pdf")
-            if not es_pdf:
-                st.image(foto_final, caption="Vista previa del albarán (alta resolución)", use_container_width=True)
-            else:
-                st.info(f"📄 Albarán PDF preparado: **{foto_final.name}**")
             
-            if st.button("🚀 Enviar Albarán a Salva", use_container_width=True, type="primary"):
-                with st.spinner("Enviando y notificando..."):
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 16px; padding: 14px 12px; text-align: center; margin: 12px 0 10px 0; box-shadow: 0 4px 14px rgba(16,185,129,0.18);">
+                <div style="font-size: 1.25rem; font-weight: 800; color: #065f46; margin-bottom: 2px;">
+                    ✅ ¡Foto capturada correctamente!
+                </div>
+                <div style="font-size: 0.90rem; color: #047857; font-weight:600;">
+                    Toca el botón grande para enviarla a Salva:
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            btn_enviar_top = st.button("🚀 ENVIAR ALBARÁN A SALVA AHORA", use_container_width=True, type="primary", key="btn_send_albaran_top")
+
+            # Vista previa compacta (no empuja el botón fuera de pantalla)
+            st.markdown("<div style='text-align:center; margin: 12px 0 6px 0; font-size:0.88rem; color:#6b7280; font-weight:600;'>Vista previa:</div>", unsafe_allow_html=True)
+            c_p1, c_p2, c_p3 = st.columns([1, 4, 1])
+            with c_p2:
+                if not es_pdf:
+                    st.image(foto_final, use_container_width=True)
+                else:
+                    st.info(f"📄 Archivo PDF preparado: **{foto_final.name}**")
+
+            btn_enviar_bottom = st.button("🚀 Confirmar y Enviar Albarán", use_container_width=True, type="primary", key="btn_send_albaran_bottom")
+
+            if btn_enviar_top or btn_enviar_bottom:
+                with st.spinner("Enviando albarán a Salva..."):
                     ahora = datetime.datetime.now()
                     ext = "pdf" if es_pdf else "jpg"
                     nombre_archivo = f"Albaran_{centro_key}_{ahora.strftime('%Y%m%d_%H%M%S')}.{ext}"
@@ -413,7 +433,7 @@ def render_interfaz_centro(centro_param):
                     st.success("✅ ¡Albarán enviado con éxito! Salva ya ha recibido la notificación en Telegram.")
                     st.balloons()
                     
-                    if st.button("⬅️ Terminar y volver al inicio", use_container_width=True):
+                    if st.button("⬅️ Terminar y volver al menú principal", use_container_width=True):
                         st.session_state[session_vista_key] = "menu"
                         st.rerun()
 
