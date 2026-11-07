@@ -10,6 +10,7 @@ import streamlit as st
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_PEDIDOS = os.path.join(BASE_DIR, "Pedidos_Centros.json")
 ARCHIVO_EQUIVALENCIAS = os.path.join(BASE_DIR, "Equivalencias.csv")
+ARCHIVO_CATALOGO_PEDIDOS = os.path.join(BASE_DIR, "Catalogo_Pedidos.csv")
 
 MAPA_CENTROS_CONFIG = {
     "ronda_sur": {
@@ -123,7 +124,21 @@ def guardar_pedidos_archivo(pedidos_dict):
         return False
 
 def obtener_articulos_maestros():
-    """Obtiene la lista única de artículos maestros y su unidad desde Equivalencias.csv."""
+    """Obtiene el catálogo de artículos para pedidos, priorizando Catalogo_Pedidos.csv."""
+    if os.path.isfile(ARCHIVO_CATALOGO_PEDIDOS):
+        try:
+            df = pd.read_csv(ARCHIVO_CATALOGO_PEDIDOS)
+            resultado = []
+            for _, r in df.iterrows():
+                resultado.append({
+                    "nombre": str(r["Producto"]).strip(),
+                    "unidad": str(r.get("Unidad", "UD")).strip(),
+                    "zona": str(r.get("Zona", "📦 Almacén Seco")).strip()
+                })
+            return resultado
+        except Exception as e:
+            print(f"[Error leyendo Catalogo_Pedidos] {e}")
+
     if not os.path.isfile(ARCHIVO_EQUIVALENCIAS):
         return []
     try:
@@ -137,12 +152,13 @@ def obtener_articulos_maestros():
                 for _, r in sub.iterrows():
                     resultado.append({
                         "nombre": str(r["Producto_Maestro_Blitz"]).strip(),
-                        "unidad": str(r[col_uni]).strip()
+                        "unidad": str(r[col_uni]).strip(),
+                        "zona": "General"
                     })
                 return resultado
             else:
                 unicos = sorted(df["Producto_Maestro_Blitz"].dropna().unique())
-                return [{"nombre": str(u).strip(), "unidad": "UD"} for u in unicos]
+                return [{"nombre": str(u).strip(), "unidad": "UD", "zona": "General"} for u in unicos]
     except Exception as e:
         print(f"[Error leyendo Equivalencias] {e}")
     return []
@@ -354,34 +370,41 @@ def render_interfaz_centro(centro_param):
             b = busqueda.strip().lower()
             arts_filtrados = [a for a in articulos if b in a["nombre"].lower()]
 
-        # Contenedor de formulario de pedido
+        # Contenedor de formulario de pedido agrupado por zonas
         st.markdown(f"Mostrando **{len(arts_filtrados)}** artículos:")
 
         cantidades_actuales = {}
 
+        # Agrupar por zona para optimizar el recorrido físico del trabajador
+        from collections import defaultdict
+        zonas_dict = defaultdict(list)
         for art in arts_filtrados:
-            nom = art["nombre"]
-            uni = art["unidad"]
-            key_input = f"cant_{centro_key}_{nom}"
-            
-            # Valor por defecto (0 para empezar limpio cada semana, o el previo si lo desea)
-            c1, c2 = st.columns([3, 2])
-            with c1:
-                st.markdown(f"**{nom}**")
-                st.caption(f"Unidad: {uni}")
-            with c2:
-                val = st.number_input(
-                    label=nom,
-                    min_value=0,
-                    step=1,
-                    value=0,
-                    key=key_input,
-                    label_visibility="collapsed"
-                )
-                cantidades_actuales[nom] = {
-                    "cantidad": val,
-                    "unidad": uni
-                }
+            zonas_dict[art.get("zona", "📦 Almacén Seco")].append(art)
+
+        for nombre_zona, items_zona in zonas_dict.items():
+            st.markdown(f"<div style='background:#f3f4f6; padding:6px 12px; border-radius:8px; font-weight:700; margin: 14px 0 8px 0; color:#1f2937;'>{nombre_zona} ({len(items_zona)})</div>", unsafe_allow_html=True)
+            for art in items_zona:
+                nom = art["nombre"]
+                uni = art["unidad"]
+                key_input = f"cant_{centro_key}_{nom}"
+                
+                c1, c2 = st.columns([3, 2])
+                with c1:
+                    st.markdown(f"**{nom}**")
+                    st.caption(f"Unidad: {uni}")
+                with c2:
+                    val = st.number_input(
+                        label=nom,
+                        min_value=0,
+                        step=1,
+                        value=0,
+                        key=key_input,
+                        label_visibility="collapsed"
+                    )
+                    cantidades_actuales[nom] = {
+                        "cantidad": val,
+                        "unidad": uni
+                    }
 
         st.divider()
         observaciones = st.text_area(
