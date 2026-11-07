@@ -20,6 +20,7 @@ FILES_TO_BACKUP = [
     "Precios_Venta.csv",
     "blitz_logo.jpg",
     "blitz_icon.ico",
+    "Catalogo_Pedidos.csv",
     "Pedidos_Centros.json"
 ]
 
