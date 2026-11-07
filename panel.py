@@ -833,6 +833,7 @@ def verificar_autenticacion():
 # -------------------------------------------------------------------------
 # ACCESO DIRECTO PARA CENTROS (SIN CONTRASEÑAS NI PINS)
 # E.g. https://blitz-stock.streamlit.app/?centro=ronda_sur
+# Build: v3.9.2 - Camara nativa y escáner directo
 # -------------------------------------------------------------------------
 centro_param = st.query_params.get("centro", "")
 if isinstance(centro_param, list):
@@ -840,8 +841,10 @@ if isinstance(centro_param, list):
 centro_param = str(centro_param).strip().lower()
 
 if centro_param in ["ronda_sur", "juan_borbon", "ronda", "borbon", "juan"]:
-    from gestion_pedidos_centros import render_interfaz_centro
-    render_interfaz_centro(centro_param)
+    import importlib
+    import gestion_pedidos_centros
+    importlib.reload(gestion_pedidos_centros)
+    gestion_pedidos_centros.render_interfaz_centro(centro_param)
     st.stop()
 
 verificar_autenticacion()
@@ -2024,8 +2027,10 @@ if seccion_activa == "📡 Radar de Albaranes":
                     st.rerun()
 
 elif seccion_activa == "📋 Pedidos Centros":
-    from gestion_pedidos_centros import render_panel_admin_pedidos
-    render_panel_admin_pedidos()
+    import importlib
+    import gestion_pedidos_centros
+    importlib.reload(gestion_pedidos_centros)
+    gestion_pedidos_centros.render_panel_admin_pedidos()
 
 elif seccion_activa == "📚 Gestor de Diccionario":
     st.subheader("🛠️ Panel de Control y Auditoría del Diccionario")
