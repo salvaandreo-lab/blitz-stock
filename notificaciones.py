@@ -1,0 +1,143 @@
+import os
+import time
+import json
+import urllib.request
+import urllib.parse
+from win11toast import toast
+import functools
+
+print = functools.partial(print, flush=True)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+MAPA_CENTROS = {
+    "Entrada_Juan_Borbon": "Blitz Juan de Borbón",
+    "Entrada_Ronda_Sur": "Blitz Ronda Sur",
+    "Entrada_FoodTruck_1": "Food Truck Grande",
+    "Entrada_FoodTruck_2": "Food Truck Pequeña",
+    "Albaranes_Pendientes": "Albaranes Pendientes"
+}
+
+CARPETAS_ENTRADA = [os.path.join(BASE_DIR, k) for k in MAPA_CENTROS.keys()]
+
+def cargar_configuracion():
+    secrets_file = os.path.join(BASE_DIR, ".streamlit", "secrets.toml")
+    cfg = {}
+    if os.path.exists(secrets_file):
+        try:
+            import tomllib
+            with open(secrets_file, "rb") as f:
+                cfg = tomllib.load(f)
+        except Exception:
+            pass
+    return cfg
+
+def enviar_telegram(texto):
+    cfg = cargar_configuracion()
+    token = cfg.get("telegram_bot_token", "").strip()
+    chat_id = cfg.get("telegram_chat_id", "").strip()
+    if not token or not chat_id:
+        print("[Telegram] Token o Chat ID no configurados.")
+        return False
+        
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": texto,
+        "parse_mode": "Markdown"
+    }
+    data = urllib.parse.urlencode(payload).encode("utf-8")
+    try:
+        req = urllib.request.Request(url, data=data, method="POST")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            print("[Telegram] Mensaje enviado con éxito.")
+            return resp.status == 200
+    except Exception as e:
+        print(f"[Telegram] Error: {e}")
+        return False
+
+def procesar_nuevo_albaran(ruta_completa):
+    nom_archivo = os.path.basename(ruta_completa)
+    nom_carpeta = os.path.basename(os.path.dirname(ruta_completa))
+    centro = MAPA_CENTROS.get(nom_carpeta, nom_carpeta)
+    rel_path = os.path.join(nom_carpeta, nom_archivo)
+    
+    print(f"\n[ALBARÁN DETECTADO] {nom_archivo} en {centro}")
+    
+    # 1. ENVIAR AVISO INMEDIATO A TELEGRAM (SIN ESPERAS, < 1 seg)
+    mensaje = (
+        f"🔔 *¡TIENES UN ALBARÁN PENDIENTE!*\n\n"
+        f"📍 *Centro:* {centro}\n"
+        f"📄 *Archivo:* `{nom_archivo}`\n\n"
+        f"👀 _Foto subida desde el centro. Ya disponible en Blitz Stock para revisar y archivar._"
+    )
+    enviar_telegram(mensaje)
+    
+    # 2. Notificación local en Windows
+    try:
+        toast("🍔 Blitz Stock", f"Nuevo albarán en {centro}: {nom_archivo}", icon="🍔", duration="short")
+    except Exception:
+        pass
+        
+    # 3. Sincronizar de inmediato a GitHub para que aparezca en Streamlit Cloud
+    try:
+        from sync_repo import sync_file
+        sync_file(rel_path, f"Nuevo albarán en {centro}: {nom_archivo}")
+    except Exception as e:
+        print(f"[GitHub Sync] Error: {e}")
+
+def vigilar_carpetas():
+    print("==================================================")
+    print("   VIGILANTE BLITZ STOCK ACTIVO (AVISOS TELEGRAM)")
+    print("==================================================")
+    archivos_conocidos = set()
+    
+    # Lectura inicial de lo que ya está en cola para no duplicar avisos al arrancar
+    for carpeta in CARPETAS_ENTRADA:
+        if os.path.exists(carpeta):
+            for f in os.listdir(carpeta):
+                if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                    archivos_conocidos.add(os.path.join(carpeta, f))
+                    
+    print(f"Estado inicial: {len(archivos_conocidos)} albaranes existentes monitorizados.")
+    
+    # Comprobación de copia de seguridad semanal al arrancar
+    try:
+        from copia_seguridad import verificar_y_ejecutar_semanal
+        verificar_y_ejecutar_semanal()
+    except Exception as e:
+        print(f"[Backup] Error: {e}")
+        
+    ciclo_backup = 0
+    while True:
+        time.sleep(3) # Comprobar cada 3 segundos
+        
+        archivos_actuales = set()
+        for carpeta in CARPETAS_ENTRADA:
+            if os.path.exists(carpeta):
+                for f in os.listdir(carpeta):
+                    if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                        archivos_actuales.add(os.path.join(carpeta, f))
+                        
+        nuevos = archivos_actuales - archivos_conocidos
+        
+        if nuevos:
+            for ruta_nueva in nuevos:
+                try:
+                    procesar_nuevo_albaran(ruta_nueva)
+                except Exception as e:
+                    print(f"Error procesando {ruta_nueva}: {e}")
+                    
+        archivos_conocidos = archivos_actuales
+        
+        ciclo_backup += 1
+        if ciclo_backup >= 1200: # ~1 hora
+            ciclo_backup = 0
+            try:
+                from copia_seguridad import verificar_y_ejecutar_semanal
+                verificar_y_ejecutar_semanal()
+            except Exception as e:
+                pass
+
+if __name__ == "__main__":
+    vigilar_carpetas()
