@@ -124,10 +124,11 @@ def guardar_pedidos_archivo(pedidos_dict):
         return False
 
 def obtener_articulos_maestros():
-    """Obtiene el catálogo de artículos para pedidos, priorizando Catalogo_Pedidos.csv."""
+    """Obtiene el catálogo de artículos para pedidos, priorizando Catalogo_Pedidos.csv y garantizando unicidad."""
     if os.path.isfile(ARCHIVO_CATALOGO_PEDIDOS):
         try:
             df = pd.read_csv(ARCHIVO_CATALOGO_PEDIDOS)
+            df = df.drop_duplicates(subset=["Producto"], keep="first")
             resultado = []
             for _, r in df.iterrows():
                 resultado.append({
@@ -145,20 +146,20 @@ def obtener_articulos_maestros():
         df = pd.read_csv(ARCHIVO_EQUIVALENCIAS)
         if "Producto_Maestro_Blitz" in df.columns:
             col_uni = "Unidad_Inventario" if "Unidad_Inventario" in df.columns else None
-            if col_uni:
-                sub = df[["Producto_Maestro_Blitz", col_uni]].dropna().drop_duplicates()
-                sub = sub.sort_values("Producto_Maestro_Blitz")
-                resultado = []
-                for _, r in sub.iterrows():
-                    resultado.append({
-                        "nombre": str(r["Producto_Maestro_Blitz"]).strip(),
-                        "unidad": str(r[col_uni]).strip(),
-                        "zona": "General"
-                    })
-                return resultado
-            else:
-                unicos = sorted(df["Producto_Maestro_Blitz"].dropna().unique())
-                return [{"nombre": str(u).strip(), "unidad": "UD", "zona": "General"} for u in unicos]
+            df_unicos = df.drop_duplicates(subset=["Producto_Maestro_Blitz"], keep="first")
+            df_unicos = df_unicos.sort_values("Producto_Maestro_Blitz")
+            resultado = []
+            for _, r in df_unicos.iterrows():
+                u = str(r[col_uni]).strip() if col_uni and pd.notna(r[col_uni]) else "UD"
+                resultado.append({
+                    "nombre": str(r["Producto_Maestro_Blitz"]).strip(),
+                    "unidad": u,
+                    "zona": "General"
+                })
+            return resultado
+        else:
+            unicos = sorted(df["Producto_Maestro_Blitz"].dropna().unique())
+            return [{"nombre": str(u).strip(), "unidad": "UD", "zona": "General"} for u in unicos]
     except Exception as e:
         print(f"[Error leyendo Equivalencias] {e}")
     return []
@@ -396,9 +397,15 @@ def render_interfaz_centro(centro_param):
             return 999
 
         zonas_ordenadas = sorted(zonas_dict.keys(), key=orden_zona_key)
+        vistos = set()
 
         for nombre_zona in zonas_ordenadas:
-            items_zona = zonas_dict[nombre_zona]
+            items_zona = [it for it in zonas_dict[nombre_zona] if it["nombre"] not in vistos]
+            for it in items_zona:
+                vistos.add(it["nombre"])
+            if not items_zona:
+                continue
+
             st.markdown(f"<div style='background:#f3f4f6; padding:6px 12px; border-radius:8px; font-weight:700; margin: 14px 0 8px 0; color:#1f2937;'>{nombre_zona} ({len(items_zona)})</div>", unsafe_allow_html=True)
             for art in items_zona:
                 nom = art["nombre"]
