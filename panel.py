@@ -2781,9 +2781,46 @@ elif seccion_activa == "📈 Evolución y Comparativa de Precios":
                 
                 st.subheader(f"Evolución del precio: {maestro_sel}")
                 
-                # Gráfica de línea
-                chart_df = df_prod.set_index("Fecha")[["Precio"]]
-                st.line_chart(chart_df)
+                # Selector de estilo para comparar Plotly vs Clásico
+                col_tg1, col_tg2 = st.columns([2, 1])
+                tipo_grafica = col_tg1.radio(
+                    "Estilo de visualización:",
+                    ["✨ Gráfica Interactiva Plotly", "📊 Gráfica Clásica Streamlit"],
+                    horizontal=True,
+                    key=f"tg_{maestro_sel}"
+                )
+                
+                if "Plotly" in tipo_grafica:
+                    try:
+                        import plotly.express as px
+                        
+                        cols_custom = [c for c in ["Proveedor", "Sinonimo", "Centro"] if c in df_prod.columns]
+                        fig = px.line(
+                            df_prod,
+                            x="Fecha",
+                            y="Precio",
+                            markers=True,
+                            hover_data=cols_custom if cols_custom else None,
+                            labels={"Precio": "Precio Unitario (€)", "Fecha": "Fecha Albarán"}
+                        )
+                        fig.update_traces(
+                            line=dict(color="#2563eb", width=3),
+                            marker=dict(size=9, color="#ef4444", symbol="circle")
+                        )
+                        fig.update_layout(
+                            template="plotly_white",
+                            hovermode="x unified",
+                            margin=dict(l=10, r=10, t=20, b=20),
+                            height=380
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
+                    except Exception as e:
+                        chart_df = df_prod.set_index("Fecha")[["Precio"]]
+                        st.line_chart(chart_df)
+                else:
+                    # Gráfica de línea clásica
+                    chart_df = df_prod.set_index("Fecha")[["Precio"]]
+                    st.line_chart(chart_df)
                 
                 st.write("📋 **Registro Histórico de Compras y Albaranes:**")
                 df_prod_show = df_prod.copy()
