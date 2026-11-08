@@ -833,7 +833,7 @@ def verificar_autenticacion():
 # -------------------------------------------------------------------------
 # ACCESO DIRECTO PARA CENTROS (SIN CONTRASEÑAS NI PINS)
 # E.g. https://blitz-stock.streamlit.app/?centro=ronda_sur
-# Build: v3.9.7 - Camara completa nativa garantizada
+# Build: v3.9.8 - Las 2 opciones de escaneo listas para elegir
 # -------------------------------------------------------------------------
 centro_param = st.query_params.get("centro", "")
 if isinstance(centro_param, list):
