@@ -362,6 +362,21 @@ def render_interfaz_centro(centro_param):
 
         st.subheader(f"📸 Escanear Albarán · {nombre_centro}")
 
+        # Opción A: Botón directo a Google Drive
+        st.markdown("""
+        <div style="background:#f0fdf4; border:1.5px solid #22c55e; border-radius:14px; padding:12px; margin-bottom:10px; text-align:center;">
+            <div style="font-weight:800; color:#15803d; font-size:1.05rem; margin-bottom:3px;">
+                📄 Opción 1: Escáner con Recorte (Google Drive)
+            </div>
+            <div style="font-size:0.86rem; color:#166534; margin-bottom:8px;">
+                Abre Google Drive para recortar los bordes de la mesa y enderezar el albarán:
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.link_button("📲 Abrir Escáner de Google Drive", "https://drive.google.com/drive/my-drive", type="primary", use_container_width=True)
+
+        st.markdown("<div style='text-align:center; color:#9ca3af; font-size:0.85rem; margin: 16px 0 10px 0;'>— O DISPARAR FOTO DIRECTA DESDE LA WEB —</div>", unsafe_allow_html=True)
+
         # Inyectar capture="environment" para abrir la camara nativa completa inmediatamente
         st.markdown("""
         <script>
