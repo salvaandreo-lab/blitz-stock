@@ -629,17 +629,83 @@ def renderizar_panel_centro(centro_nombre):
     real_today = datetime.date.today()
     hoy = real_today if real_today >= FECHA_MINIMA else datetime.date(2026, 11, 10)
     
-    # Recuperar fechas activas del filtro
-    fecha_desde = st.session_state.filtro_fecha_desde
-    fecha_hasta = st.session_state.filtro_fecha_hasta
-    if fecha_desde < FECHA_MINIMA:
-        fecha_desde = FECHA_MINIMA
-        st.session_state.filtro_fecha_desde = FECHA_MINIMA
-    if fecha_hasta < fecha_desde:
-        fecha_hasta = fecha_desde
+    # 1. Contenedor superior para KPIs (se renderizará visualmente arriba de las fechas)
+    kpis_container = st.container()
 
+    # 2. ENCABEZADO CON SELECTOR DE FECHAS (JUSTO ENCIMA DE LOS DONUTS)
+    st.markdown("#### 📅 Período de Análisis (Filtro Desde / Hasta)")
+    
+    col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
+    with col_rap1:
+        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
+            st.session_state.widget_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.widget_fecha_hasta = datetime.date(2026, 11, 1)
+            st.rerun()
+    with col_rap2:
+        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
+            st.session_state.widget_fecha_desde = datetime.date(2026, 11, 1)
+            st.session_state.widget_fecha_hasta = datetime.date(2026, 11, 30)
+            st.rerun()
+    with col_rap3:
+        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
+            f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
+            st.session_state.filtro_fecha_desde = f_d_4s
+            st.session_state.filtro_fecha_hasta = hoy
+            st.session_state.widget_fecha_desde = f_d_4s
+            st.session_state.widget_fecha_hasta = hoy
+            st.rerun()
+    with col_rap4:
+        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
+            st.session_state.filtro_fecha_desde = FECHA_MINIMA
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
+            st.session_state.widget_fecha_desde = FECHA_MINIMA
+            st.session_state.widget_fecha_hasta = datetime.date(2026, 12, 31)
+            st.rerun()
+
+    # Inputs "Desde" y "Hasta"
+    val_desde = st.session_state.filtro_fecha_desde
+    val_hasta = st.session_state.filtro_fecha_hasta
+    if val_desde < FECHA_MINIMA:
+        val_desde = FECHA_MINIMA
+    if val_hasta < val_desde:
+        val_hasta = val_desde
+
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        f_desde_in = st.date_input(
+            "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
+            value=val_desde,
+            min_value=FECHA_MINIMA,
+            format="DD/MM/YYYY",
+            key="widget_fecha_desde"
+        )
+
+    with col_f2:
+        f_hasta_in = st.date_input(
+            "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
+            value=val_hasta,
+            min_value=FECHA_MINIMA,
+            format="DD/MM/YYYY",
+            key="widget_fecha_hasta"
+        )
+
+    if f_desde_in < FECHA_MINIMA:
+        f_desde_in = FECHA_MINIMA
+    if f_hasta_in < f_desde_in:
+        f_hasta_in = f_desde_in
+
+    st.session_state.filtro_fecha_desde = f_desde_in
+    st.session_state.filtro_fecha_hasta = f_hasta_in
+
+    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
+
+    # 3. Cargar datos consolidados con las fechas activas
     kpis, semanas_tabla, prov_compras, matriz_prov_sem, semanas_ordenadas = cargar_datos_balance(
-        centro_nombre, fecha_desde, fecha_hasta
+        centro_nombre, f_desde_in, f_hasta_in
     )
 
     optimo = kpis["umbral_optimo"]
@@ -666,7 +732,7 @@ def renderizar_panel_centro(centro_nombre):
         badge_ratio = f"🔴 ALTO / ALERTA ({ratio_global:.1f}%)"
         color_ratio = "#ef4444"
 
-    # TARJETAS DE MÉTRICAS KPI SUPERIORES
+    # TARJETAS DE MÉTRICAS KPI SUPERIORES (Se inyectan en el contenedor superior)
     kpis_html = f"""
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 10px 0 20px 0;">
         <div style="background: #1e293b; border-left: 5px solid #3b82f6; padding: 14px 18px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
@@ -691,74 +757,10 @@ def renderizar_panel_centro(centro_nombre):
         </div>
     </div>
     """
-    render_html_seguro(kpis_html)
+    with kpis_container:
+        render_html_seguro(kpis_html)
 
-    # 2. ENCABEZADO CON SELECTOR DE FECHAS (JUSTO ENCIMA DE LOS DONUTS)
-    st.markdown("#### 📅 Período de Análisis (Filtro Desde / Hasta)")
-    
-    col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
-    with col_rap1:
-        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
-            st.session_state.widget_consumo_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.widget_consumo_fecha_hasta = datetime.date(2026, 11, 1)
-            st.rerun()
-    with col_rap2:
-        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
-            st.session_state.widget_consumo_fecha_desde = datetime.date(2026, 11, 1)
-            st.session_state.widget_consumo_fecha_hasta = datetime.date(2026, 11, 30)
-            st.rerun()
-    with col_rap3:
-        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
-            f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
-            st.session_state.filtro_fecha_desde = f_d_4s
-            st.session_state.filtro_fecha_hasta = hoy
-            st.session_state.widget_consumo_fecha_desde = f_d_4s
-            st.session_state.widget_consumo_fecha_hasta = hoy
-            st.rerun()
-    with col_rap4:
-        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
-            st.session_state.filtro_fecha_desde = FECHA_MINIMA
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
-            st.session_state.widget_consumo_fecha_desde = FECHA_MINIMA
-            st.session_state.widget_consumo_fecha_hasta = datetime.date(2026, 12, 31)
-            st.rerun()
-
-    # Inputs "Desde" y "Hasta" con valor explícito seguro y fecha mínima fijada en 01/10/2026
-    col_f1, col_f2 = st.columns(2)
-    with col_f1:
-        f_desde_in = st.date_input(
-            "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
-            value=fecha_desde,
-            min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="widget_consumo_fecha_desde"
-        )
-
-    with col_f2:
-        f_hasta_in = st.date_input(
-            "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
-            value=fecha_hasta,
-            min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="widget_consumo_fecha_hasta"
-        )
-
-    if f_hasta_in < f_desde_in:
-        f_hasta_in = f_desde_in
-
-    # Si el usuario modificó manualmente la fecha con el calendario o teclado, sincronizamos y recargamos
-    if f_desde_in != fecha_desde or f_hasta_in != fecha_hasta:
-        st.session_state.filtro_fecha_desde = f_desde_in
-        st.session_state.filtro_fecha_hasta = f_hasta_in
-        st.rerun()
-
-    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
-
-    # 3. GRÁFICAS DE CÍRCULO (DONUT / TARTA)
+    # 4. GRÁFICAS DE CÍRCULO (DONUT / TARTA)
     st.markdown("#### 🍩 Gráficas Circulares de Ratio y Reparto")
     col_g1, col_g2 = st.columns(2)
 
