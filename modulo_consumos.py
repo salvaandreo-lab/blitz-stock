@@ -583,14 +583,27 @@ def render_modulo_consumos():
     """
     render_html_seguro(header_html)
 
-    # 1. Selector de Centro (3 pestañas limpias: Total, Ronda Sur, Juan de Borbón)
-    c_tab1, c_tab2, c_tab3 = st.tabs([
-        "🏢 Total Empresa (Global)",
-        "📍 Blitz Ronda Sur",
-        "📍 Blitz Juan de Borbón"
-    ])
-    tab_names = ["🏢 Total Empresa (Global)", "📍 Blitz Ronda Sur", "📍 Blitz Juan de Borbón"]
-    
+    # 1. Selector de Centro (3 botones táctiles de alta visibilidad)
+    if "centro_consumos_activo" not in st.session_state:
+        st.session_state.centro_consumos_activo = "🏢 Total Empresa (Global)"
+
+    col_c1, col_c2, col_c3 = st.columns(3)
+    with col_c1:
+        es_glob = (st.session_state.centro_consumos_activo == "🏢 Total Empresa (Global)")
+        if st.button("🏢 Total Empresa (Global)", use_container_width=True, type="primary" if es_glob else "secondary", key="btn_c_glob"):
+            st.session_state.centro_consumos_activo = "🏢 Total Empresa (Global)"
+            st.rerun()
+    with col_c2:
+        es_rs = (st.session_state.centro_consumos_activo == "📍 Blitz Ronda Sur")
+        if st.button("📍 Blitz Ronda Sur", use_container_width=True, type="primary" if es_rs else "secondary", key="btn_c_rs"):
+            st.session_state.centro_consumos_activo = "📍 Blitz Ronda Sur"
+            st.rerun()
+    with col_c3:
+        es_jb = (st.session_state.centro_consumos_activo == "📍 Blitz Juan de Borbón")
+        if st.button("📍 Blitz Juan de Borbón", use_container_width=True, type="primary" if es_jb else "secondary", key="btn_c_jb"):
+            st.session_state.centro_consumos_activo = "📍 Blitz Juan de Borbón"
+            st.rerun()
+
     # Fecha mínima obligatoria: 01/10/2026 (según directriz de Salva)
     FECHA_MINIMA = datetime.date(2026, 10, 1)
     hoy = datetime.date.today()
@@ -602,20 +615,24 @@ def render_modulo_consumos():
     if "filtro_fecha_hasta" not in st.session_state or st.session_state.filtro_fecha_hasta < FECHA_MINIMA:
         st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
 
-    # Renderizar el contenido según el tab activo
-    tabs = [c_tab1, c_tab2, c_tab3]
-    for idx_tab, tab in enumerate(tabs):
-        with tab:
-            centro_actual = tab_names[idx_tab]
-            renderizar_panel_centro(centro_actual)
+    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
+    
+    centro_actual = st.session_state.centro_consumos_activo
+    renderizar_panel_centro(centro_actual)
 
 
 def renderizar_panel_centro(centro_nombre):
     """Renderiza todas las gráficas circulares, KPIs y tablas para el centro seleccionado."""
     FECHA_MINIMA = datetime.date(2026, 10, 1)
     hoy = datetime.date.today()
-    fecha_desde = st.session_state.filtro_fecha_desde
-    fecha_hasta = st.session_state.filtro_fecha_hasta
+    
+    # Recuperar fechas activas (del input o del estado inicial)
+    fecha_desde = st.session_state.get("input_date_desde", st.session_state.filtro_fecha_desde)
+    fecha_hasta = st.session_state.get("input_date_hasta", st.session_state.filtro_fecha_hasta)
+    if fecha_desde < FECHA_MINIMA:
+        fecha_desde = FECHA_MINIMA
+    if fecha_hasta < fecha_desde:
+        fecha_hasta = fecha_desde
 
     kpis, semanas_tabla, prov_compras, matriz_prov_sem, semanas_ordenadas = cargar_datos_balance(
         centro_nombre, fecha_desde, fecha_hasta
@@ -677,24 +694,34 @@ def renderizar_panel_centro(centro_nombre):
     
     col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
     with col_rap1:
-        if st.button("📅 Mes Octubre 2026", use_container_width=True, key=f"btn_oct_{centro_nombre}"):
+        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
             st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
             st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
+            st.session_state.input_date_desde = datetime.date(2026, 10, 1)
+            st.session_state.input_date_hasta = datetime.date(2026, 11, 1)
             st.rerun()
     with col_rap2:
-        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key=f"btn_mes_act_{centro_nombre}"):
-            st.session_state.filtro_fecha_desde = datetime.date(hoy.year, hoy.month, 1) if datetime.date(hoy.year, hoy.month, 1) >= FECHA_MINIMA else FECHA_MINIMA
+        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
+            f_d_nov = datetime.date(hoy.year, hoy.month, 1) if datetime.date(hoy.year, hoy.month, 1) >= FECHA_MINIMA else FECHA_MINIMA
+            st.session_state.filtro_fecha_desde = f_d_nov
             st.session_state.filtro_fecha_hasta = hoy
+            st.session_state.input_date_desde = f_d_nov
+            st.session_state.input_date_hasta = hoy
             st.rerun()
     with col_rap3:
-        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key=f"btn_4sem_{centro_nombre}"):
-            st.session_state.filtro_fecha_desde = max(FECHA_MINIMA, hoy - timedelta(days=28))
+        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
+            f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
+            st.session_state.filtro_fecha_desde = f_d_4s
             st.session_state.filtro_fecha_hasta = hoy
+            st.session_state.input_date_desde = f_d_4s
+            st.session_state.input_date_hasta = hoy
             st.rerun()
     with col_rap4:
-        if st.button("📅 Todo el Histórico", use_container_width=True, key=f"btn_todo_{centro_nombre}"):
+        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
             st.session_state.filtro_fecha_desde = FECHA_MINIMA
             st.session_state.filtro_fecha_hasta = hoy + timedelta(days=30)
+            st.session_state.input_date_desde = FECHA_MINIMA
+            st.session_state.input_date_hasta = hoy + timedelta(days=30)
             st.rerun()
 
     # Inputs "Desde" y "Hasta" con fecha mínima fijada en 01/10/2026
@@ -702,26 +729,28 @@ def renderizar_panel_centro(centro_nombre):
     with col_f1:
         f_desde_in = st.date_input(
             "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
-            value=st.session_state.filtro_fecha_desde,
+            value=fecha_desde,
             min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
-            key=f"input_date_desde_{centro_nombre}"
+            key="input_date_desde"
         )
-        if f_desde_in != st.session_state.filtro_fecha_desde:
-            st.session_state.filtro_fecha_desde = f_desde_in
-            st.rerun()
 
     with col_f2:
         f_hasta_in = st.date_input(
             "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
-            value=st.session_state.filtro_fecha_hasta,
+            value=fecha_hasta,
             min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
-            key=f"input_date_hasta_{centro_nombre}"
+            key="input_date_hasta"
         )
-        if f_hasta_in != st.session_state.filtro_fecha_hasta:
-            st.session_state.filtro_fecha_hasta = f_hasta_in
-            st.rerun()
+
+    # Actualizar estado si el usuario modificó alguna fecha manualmente o con el calendario
+    if f_desde_in != fecha_desde or f_hasta_in != fecha_hasta:
+        st.session_state.filtro_fecha_desde = f_desde_in
+        st.session_state.filtro_fecha_hasta = f_hasta_in
+        st.session_state.input_date_desde = f_desde_in
+        st.session_state.input_date_hasta = f_hasta_in
+        st.rerun()
 
     st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
@@ -771,7 +800,7 @@ def renderizar_panel_centro(centro_nombre):
             st.plotly_chart(fig_ratio, use_container_width=True, key=f"donut_ratio_{centro_nombre}")
         else:
             # Versión visual nativa en HTML5 si Plotly no estuviera disponible
-            st.markdown(f"""
+            fallback_ratio_html = f"""
             <div style="background: #1e293b; border-radius: 12px; padding: 22px; text-align: center; border: 1px solid #334155;">
                 <div style="font-size: 2.4rem; font-weight: 900; color: {color_ratio};">{ratio_global:.1f} %</div>
                 <div style="color: #f8fafc; font-weight: 700; margin-top: 4px;">Ratio de Compras vs Ventas</div>
@@ -784,7 +813,8 @@ def renderizar_panel_centro(centro_nombre):
                     <span>🟢 Margen: <strong>{margen_euros:,.2f} €</strong></span>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """
+            render_html_seguro(fallback_ratio_html)
 
     # GRÁFICA CIRCULAR 2: REPARTO DE COMPRAS POR PROVEEDOR
     with col_g2:
@@ -821,11 +851,11 @@ def renderizar_panel_centro(centro_nombre):
                 )
                 st.plotly_chart(fig_prov, use_container_width=True, key=f"donut_prov_{centro_nombre}")
             else:
-                st.markdown("""<div style="background: #1e293b; border-radius: 12px; padding: 14px; border: 1px solid #334155;">""", unsafe_allow_html=True)
-                for pr, val in top_provs:
-                    pct = (val / total_compras * 100.0) if total_compras > 0 else 0.0
-                    st.write(f"• **{pr}**: {val:,.2f} € ({pct:.1f}%)")
-                st.markdown("""</div>""", unsafe_allow_html=True)
+                top_items_html = "".join([
+                    f"<div style='margin-bottom: 6px;'>• <strong style='color:#f8fafc;'>{pr}</strong>: <span style='color:#38bdf8;'>{val:,.2f} €</span> <span style='color:#94a3b8;'>({(val / total_compras * 100.0) if total_compras > 0 else 0.0:.1f}%)</span></div>"
+                    for pr, val in top_provs
+                ])
+                render_html_seguro(f"<div style='background: #1e293b; border-radius: 12px; padding: 14px; border: 1px solid #334155;'>{top_items_html}</div>")
         else:
             st.info("ℹ️ No hay compras registradas de albaranes en el período seleccionado.")
 
