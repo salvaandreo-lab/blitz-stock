@@ -154,18 +154,18 @@ def inicializar_datos_si_no_existen():
             
             # Datos reales de Octubre (Excel Salva)
             # Ronda Sur
-            writer.writerow(["2024-M10-Sem1", "1", "02/10/2024", "06/10/2024", "Octubre", "2024", "Blitz Ronda Sur", "7048.40", ""])
-            writer.writerow(["2024-M10-Sem2", "2", "09/10/2024", "13/10/2024", "Octubre", "2024", "Blitz Ronda Sur", "5825.09", ""])
-            writer.writerow(["2024-M10-Sem3", "3", "16/10/2024", "20/10/2024", "Octubre", "2024", "Blitz Ronda Sur", "5471.33", ""])
-            writer.writerow(["2024-M10-Sem4", "4", "23/10/2024", "27/10/2024", "Octubre", "2024", "Blitz Ronda Sur", "6187.51", ""])
-            writer.writerow(["2024-M10-Sem5", "5", "30/10/2024", "03/11/2024", "Octubre", "2024", "Blitz Ronda Sur", "6869.46", ""])
+            writer.writerow(["2026-M10-Sem1", "1", "02/10/2026", "06/10/2026", "Octubre", "2026", "Blitz Ronda Sur", "7048.40", ""])
+            writer.writerow(["2026-M10-Sem2", "2", "09/10/2026", "13/10/2026", "Octubre", "2026", "Blitz Ronda Sur", "5825.09", ""])
+            writer.writerow(["2026-M10-Sem3", "3", "16/10/2026", "20/10/2026", "Octubre", "2026", "Blitz Ronda Sur", "5471.33", ""])
+            writer.writerow(["2026-M10-Sem4", "4", "23/10/2026", "27/10/2026", "Octubre", "2026", "Blitz Ronda Sur", "6187.51", ""])
+            writer.writerow(["2026-M10-Sem5", "5", "30/10/2026", "03/11/2026", "Octubre", "2026", "Blitz Ronda Sur", "6869.46", ""])
             
             # Juan de Borbón
-            writer.writerow(["2024-M10-Sem1", "1", "02/10/2024", "06/10/2024", "Octubre", "2024", "Blitz Juan de Borbón", "9061.49", ""])
-            writer.writerow(["2024-M10-Sem2", "2", "09/10/2024", "13/10/2024", "Octubre", "2024", "Blitz Juan de Borbón", "8439.09", ""])
-            writer.writerow(["2024-M10-Sem3", "3", "16/10/2024", "20/10/2024", "Octubre", "2024", "Blitz Juan de Borbón", "8151.70", ""])
-            writer.writerow(["2024-M10-Sem4", "4", "23/10/2024", "27/10/2024", "Octubre", "2024", "Blitz Juan de Borbón", "8367.77", ""])
-            writer.writerow(["2024-M10-Sem5", "5", "30/10/2024", "03/11/2024", "Octubre", "2024", "Blitz Juan de Borbón", "9033.10", ""])
+            writer.writerow(["2026-M10-Sem1", "1", "02/10/2026", "06/10/2026", "Octubre", "2026", "Blitz Juan de Borbón", "9061.49", ""])
+            writer.writerow(["2026-M10-Sem2", "2", "09/10/2026", "13/10/2026", "Octubre", "2026", "Blitz Juan de Borbón", "8439.09", ""])
+            writer.writerow(["2026-M10-Sem3", "3", "16/10/2026", "20/10/2026", "Octubre", "2026", "Blitz Juan de Borbón", "8151.70", ""])
+            writer.writerow(["2026-M10-Sem4", "4", "23/10/2026", "27/10/2026", "Octubre", "2026", "Blitz Juan de Borbón", "8367.77", ""])
+            writer.writerow(["2026-M10-Sem5", "5", "30/10/2026", "03/11/2026", "Octubre", "2026", "Blitz Juan de Borbón", "9033.10", ""])
 
     # 2. Registro de Albaranes de Compras
     if not os.path.exists(ARCHIVO_COMPRAS_ALBARANES) or os.path.getsize(ARCHIVO_COMPRAS_ALBARANES) == 0:
@@ -176,121 +176,121 @@ def inicializar_datos_si_no_existen():
             # Datos reales de compras desglosadas por proveedor de Octubre (Excel Salva)
             compras_octubre = [
                 # RONDA SUR
-                ("04/10/2024", "Paco Rosa", "Blitz Ronda Sur", 658.98, "2024-M10-Sem1"),
-                ("04/10/2024", "Jasa", "Blitz Ronda Sur", 206.94, "2024-M10-Sem1"),
-                ("04/10/2024", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2024-M10-Sem1"),
-                ("04/10/2024", "Lucas Caballero", "Blitz Ronda Sur", 192.80, "2024-M10-Sem1"),
-                ("04/10/2024", "Makro", "Blitz Ronda Sur", 323.14, "2024-M10-Sem1"),
-                ("04/10/2024", "Macanao", "Blitz Ronda Sur", 341.70, "2024-M10-Sem1"),
-                ("04/10/2024", "Pedro Díaz", "Blitz Ronda Sur", 93.80, "2024-M10-Sem1"),
+                ("04/10/2026", "Paco Rosa", "Blitz Ronda Sur", 658.98, "2026-M10-Sem1"),
+                ("04/10/2026", "Jasa", "Blitz Ronda Sur", 206.94, "2026-M10-Sem1"),
+                ("04/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem1"),
+                ("04/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 192.80, "2026-M10-Sem1"),
+                ("04/10/2026", "Makro", "Blitz Ronda Sur", 323.14, "2026-M10-Sem1"),
+                ("04/10/2026", "Macanao", "Blitz Ronda Sur", 341.70, "2026-M10-Sem1"),
+                ("04/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 93.80, "2026-M10-Sem1"),
                 
-                ("11/10/2024", "Paco Rosa", "Blitz Ronda Sur", 1255.22, "2024-M10-Sem2"),
-                ("11/10/2024", "Jasa", "Blitz Ronda Sur", 491.31, "2024-M10-Sem2"),
-                ("11/10/2024", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2024-M10-Sem2"),
-                ("11/10/2024", "Lucas Caballero", "Blitz Ronda Sur", 125.00, "2024-M10-Sem2"),
-                ("11/10/2024", "Makro", "Blitz Ronda Sur", 379.81, "2024-M10-Sem2"),
-                ("11/10/2024", "Coca-Cola", "Blitz Ronda Sur", 101.58, "2024-M10-Sem2"),
-                ("11/10/2024", "Pedro Díaz", "Blitz Ronda Sur", 226.90, "2024-M10-Sem2"),
-                ("11/10/2024", "Morales", "Blitz Ronda Sur", 109.25, "2024-M10-Sem2"),
+                ("11/10/2026", "Paco Rosa", "Blitz Ronda Sur", 1255.22, "2026-M10-Sem2"),
+                ("11/10/2026", "Jasa", "Blitz Ronda Sur", 491.31, "2026-M10-Sem2"),
+                ("11/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem2"),
+                ("11/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 125.00, "2026-M10-Sem2"),
+                ("11/10/2026", "Makro", "Blitz Ronda Sur", 379.81, "2026-M10-Sem2"),
+                ("11/10/2026", "Coca-Cola", "Blitz Ronda Sur", 101.58, "2026-M10-Sem2"),
+                ("11/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 226.90, "2026-M10-Sem2"),
+                ("11/10/2026", "Morales", "Blitz Ronda Sur", 109.25, "2026-M10-Sem2"),
                 
-                ("18/10/2024", "Paco Rosa", "Blitz Ronda Sur", 796.12, "2024-M10-Sem3"),
-                ("18/10/2024", "Jasa", "Blitz Ronda Sur", 174.83, "2024-M10-Sem3"),
-                ("18/10/2024", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2024-M10-Sem3"),
-                ("18/10/2024", "Lucas Caballero", "Blitz Ronda Sur", 150.40, "2024-M10-Sem3"),
-                ("18/10/2024", "Makro", "Blitz Ronda Sur", 362.65, "2024-M10-Sem3"),
-                ("18/10/2024", "Coca-Cola", "Blitz Ronda Sur", 51.00, "2024-M10-Sem3"),
-                ("18/10/2024", "Pedro Díaz", "Blitz Ronda Sur", 71.30, "2024-M10-Sem3"),
-                ("18/10/2024", "Manzano", "Blitz Ronda Sur", 119.25, "2024-M10-Sem3"),
-                ("18/10/2024", "Morales", "Blitz Ronda Sur", 105.00, "2024-M10-Sem3"),
-                ("18/10/2024", "Riscales", "Blitz Ronda Sur", 55.80, "2024-M10-Sem3"),
+                ("18/10/2026", "Paco Rosa", "Blitz Ronda Sur", 796.12, "2026-M10-Sem3"),
+                ("18/10/2026", "Jasa", "Blitz Ronda Sur", 174.83, "2026-M10-Sem3"),
+                ("18/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem3"),
+                ("18/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 150.40, "2026-M10-Sem3"),
+                ("18/10/2026", "Makro", "Blitz Ronda Sur", 362.65, "2026-M10-Sem3"),
+                ("18/10/2026", "Coca-Cola", "Blitz Ronda Sur", 51.00, "2026-M10-Sem3"),
+                ("18/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 71.30, "2026-M10-Sem3"),
+                ("18/10/2026", "Manzano", "Blitz Ronda Sur", 119.25, "2026-M10-Sem3"),
+                ("18/10/2026", "Morales", "Blitz Ronda Sur", 105.00, "2026-M10-Sem3"),
+                ("18/10/2026", "Riscales", "Blitz Ronda Sur", 55.80, "2026-M10-Sem3"),
                 
-                ("25/10/2024", "Paco Rosa", "Blitz Ronda Sur", 1109.80, "2024-M10-Sem4"),
-                ("25/10/2024", "Jasa", "Blitz Ronda Sur", 193.48, "2024-M10-Sem4"),
-                ("25/10/2024", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2024-M10-Sem4"),
-                ("25/10/2024", "Lucas Caballero", "Blitz Ronda Sur", 119.01, "2024-M10-Sem4"),
-                ("25/10/2024", "Makro", "Blitz Ronda Sur", 343.03, "2024-M10-Sem4"),
-                ("25/10/2024", "Macanao", "Blitz Ronda Sur", 306.00, "2024-M10-Sem4"),
-                ("25/10/2024", "Pedro Díaz", "Blitz Ronda Sur", 168.90, "2024-M10-Sem4"),
-                ("25/10/2024", "Manzano", "Blitz Ronda Sur", 79.50, "2024-M10-Sem4"),
-                ("25/10/2024", "Morales", "Blitz Ronda Sur", 81.00, "2024-M10-Sem4"),
+                ("25/10/2026", "Paco Rosa", "Blitz Ronda Sur", 1109.80, "2026-M10-Sem4"),
+                ("25/10/2026", "Jasa", "Blitz Ronda Sur", 193.48, "2026-M10-Sem4"),
+                ("25/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem4"),
+                ("25/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 119.01, "2026-M10-Sem4"),
+                ("25/10/2026", "Makro", "Blitz Ronda Sur", 343.03, "2026-M10-Sem4"),
+                ("25/10/2026", "Macanao", "Blitz Ronda Sur", 306.00, "2026-M10-Sem4"),
+                ("25/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 168.90, "2026-M10-Sem4"),
+                ("25/10/2026", "Manzano", "Blitz Ronda Sur", 79.50, "2026-M10-Sem4"),
+                ("25/10/2026", "Morales", "Blitz Ronda Sur", 81.00, "2026-M10-Sem4"),
                 
-                ("01/11/2024", "Paco Rosa", "Blitz Ronda Sur", 785.62, "2024-M10-Sem5"),
-                ("01/11/2024", "Jasa", "Blitz Ronda Sur", 302.71, "2024-M10-Sem5"),
-                ("01/11/2024", "Cielo de Boca", "Blitz Ronda Sur", 340.50, "2024-M10-Sem5"),
-                ("01/11/2024", "Lucas Caballero", "Blitz Ronda Sur", 221.40, "2024-M10-Sem5"),
-                ("01/11/2024", "Coca-Cola", "Blitz Ronda Sur", 117.76, "2024-M10-Sem5"),
-                ("01/11/2024", "Pedro Díaz", "Blitz Ronda Sur", 138.60, "2024-M10-Sem5"),
-                ("01/11/2024", "Morales", "Blitz Ronda Sur", 123.85, "2024-M10-Sem5"),
-                ("01/11/2024", "Riscales", "Blitz Ronda Sur", 75.44, "2024-M10-Sem5"),
+                ("01/11/2026", "Paco Rosa", "Blitz Ronda Sur", 785.62, "2026-M10-Sem5"),
+                ("01/11/2026", "Jasa", "Blitz Ronda Sur", 302.71, "2026-M10-Sem5"),
+                ("01/11/2026", "Cielo de Boca", "Blitz Ronda Sur", 340.50, "2026-M10-Sem5"),
+                ("01/11/2026", "Lucas Caballero", "Blitz Ronda Sur", 221.40, "2026-M10-Sem5"),
+                ("01/11/2026", "Coca-Cola", "Blitz Ronda Sur", 117.76, "2026-M10-Sem5"),
+                ("01/11/2026", "Pedro Díaz", "Blitz Ronda Sur", 138.60, "2026-M10-Sem5"),
+                ("01/11/2026", "Morales", "Blitz Ronda Sur", 123.85, "2026-M10-Sem5"),
+                ("01/11/2026", "Riscales", "Blitz Ronda Sur", 75.44, "2026-M10-Sem5"),
                 
                 # JUAN DE BORBÓN
-                ("04/10/2024", "Paco Rosa", "Blitz Juan de Borbón", 1213.36, "2024-M10-Sem1"),
-                ("04/10/2024", "Jasa", "Blitz Juan de Borbón", 158.40, "2024-M10-Sem1"),
-                ("04/10/2024", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2024-M10-Sem1"),
-                ("04/10/2024", "Lucas Caballero", "Blitz Juan de Borbón", 308.80, "2024-M10-Sem1"),
-                ("04/10/2024", "Makro", "Blitz Juan de Borbón", 364.00, "2024-M10-Sem1"),
-                ("04/10/2024", "Macanao", "Blitz Juan de Borbón", 231.20, "2024-M10-Sem1"),
-                ("04/10/2024", "Pedro Díaz", "Blitz Juan de Borbón", 168.90, "2024-M10-Sem1"),
-                ("04/10/2024", "Zambú", "Blitz Juan de Borbón", 101.67, "2024-M10-Sem1"),
-                ("04/10/2024", "Andrés Mármol", "Blitz Juan de Borbón", 109.10, "2024-M10-Sem1"),
-                ("04/10/2024", "Morales", "Blitz Juan de Borbón", 162.00, "2024-M10-Sem1"),
+                ("04/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 1213.36, "2026-M10-Sem1"),
+                ("04/10/2026", "Jasa", "Blitz Juan de Borbón", 158.40, "2026-M10-Sem1"),
+                ("04/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem1"),
+                ("04/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 308.80, "2026-M10-Sem1"),
+                ("04/10/2026", "Makro", "Blitz Juan de Borbón", 364.00, "2026-M10-Sem1"),
+                ("04/10/2026", "Macanao", "Blitz Juan de Borbón", 231.20, "2026-M10-Sem1"),
+                ("04/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 168.90, "2026-M10-Sem1"),
+                ("04/10/2026", "Zambú", "Blitz Juan de Borbón", 101.67, "2026-M10-Sem1"),
+                ("04/10/2026", "Andrés Mármol", "Blitz Juan de Borbón", 109.10, "2026-M10-Sem1"),
+                ("04/10/2026", "Morales", "Blitz Juan de Borbón", 162.00, "2026-M10-Sem1"),
                 
-                ("11/10/2024", "Paco Rosa", "Blitz Juan de Borbón", 1437.63, "2024-M10-Sem2"),
-                ("11/10/2024", "Jasa", "Blitz Juan de Borbón", 491.46, "2024-M10-Sem2"),
-                ("11/10/2024", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2024-M10-Sem2"),
-                ("11/10/2024", "Lucas Caballero", "Blitz Juan de Borbón", 150.40, "2024-M10-Sem2"),
-                ("11/10/2024", "Makro", "Blitz Juan de Borbón", 428.76, "2024-M10-Sem2"),
-                ("11/10/2024", "Coca-Cola", "Blitz Juan de Borbón", 122.53, "2024-M10-Sem2"),
-                ("11/10/2024", "Pedro Díaz", "Blitz Juan de Borbón", 191.40, "2024-M10-Sem2"),
-                ("11/10/2024", "Morales", "Blitz Juan de Borbón", 225.05, "2024-M10-Sem2"),
+                ("11/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 1437.63, "2026-M10-Sem2"),
+                ("11/10/2026", "Jasa", "Blitz Juan de Borbón", 491.46, "2026-M10-Sem2"),
+                ("11/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem2"),
+                ("11/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 150.40, "2026-M10-Sem2"),
+                ("11/10/2026", "Makro", "Blitz Juan de Borbón", 428.76, "2026-M10-Sem2"),
+                ("11/10/2026", "Coca-Cola", "Blitz Juan de Borbón", 122.53, "2026-M10-Sem2"),
+                ("11/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 191.40, "2026-M10-Sem2"),
+                ("11/10/2026", "Morales", "Blitz Juan de Borbón", 225.05, "2026-M10-Sem2"),
                 
-                ("18/10/2024", "Paco Rosa", "Blitz Juan de Borbón", 1226.01, "2024-M10-Sem3"),
-                ("18/10/2024", "Jasa", "Blitz Juan de Borbón", 108.43, "2024-M10-Sem3"),
-                ("18/10/2024", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2024-M10-Sem3"),
-                ("18/10/2024", "Lucas Caballero", "Blitz Juan de Borbón", 96.60, "2024-M10-Sem3"),
-                ("18/10/2024", "Makro", "Blitz Juan de Borbón", 262.22, "2024-M10-Sem3"),
-                ("18/10/2024", "Pedro Díaz", "Blitz Juan de Borbón", 146.40, "2024-M10-Sem3"),
-                ("18/10/2024", "Manzano", "Blitz Juan de Borbón", 119.25, "2024-M10-Sem3"),
-                ("18/10/2024", "Morales", "Blitz Juan de Borbón", 257.00, "2024-M10-Sem3"),
-                ("18/10/2024", "Riscales", "Blitz Juan de Borbón", 55.80, "2024-M10-Sem3"),
+                ("18/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 1226.01, "2026-M10-Sem3"),
+                ("18/10/2026", "Jasa", "Blitz Juan de Borbón", 108.43, "2026-M10-Sem3"),
+                ("18/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem3"),
+                ("18/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 96.60, "2026-M10-Sem3"),
+                ("18/10/2026", "Makro", "Blitz Juan de Borbón", 262.22, "2026-M10-Sem3"),
+                ("18/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 146.40, "2026-M10-Sem3"),
+                ("18/10/2026", "Manzano", "Blitz Juan de Borbón", 119.25, "2026-M10-Sem3"),
+                ("18/10/2026", "Morales", "Blitz Juan de Borbón", 257.00, "2026-M10-Sem3"),
+                ("18/10/2026", "Riscales", "Blitz Juan de Borbón", 55.80, "2026-M10-Sem3"),
                 
-                ("25/10/2024", "Paco Rosa", "Blitz Juan de Borbón", 333.53, "2024-M10-Sem4"),
-                ("25/10/2024", "Jasa", "Blitz Juan de Borbón", 219.83, "2024-M10-Sem4"),
-                ("25/10/2024", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2024-M10-Sem4"),
-                ("25/10/2024", "Lucas Caballero", "Blitz Juan de Borbón", 221.40, "2024-M10-Sem4"),
-                ("25/10/2024", "Makro", "Blitz Juan de Borbón", 443.57, "2024-M10-Sem4"),
-                ("25/10/2024", "Macanao", "Blitz Juan de Borbón", 231.20, "2024-M10-Sem4"),
-                ("25/10/2024", "Pedro Díaz", "Blitz Juan de Borbón", 168.90, "2024-M10-Sem4"),
-                ("25/10/2024", "Manzano", "Blitz Juan de Borbón", 79.50, "2024-M10-Sem4"),
-                ("25/10/2024", "Nicolás Valero", "Blitz Juan de Borbón", 120.40, "2024-M10-Sem4"),
-                ("25/10/2024", "Morales", "Blitz Juan de Borbón", 54.00, "2024-M10-Sem4"),
+                ("25/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 333.53, "2026-M10-Sem4"),
+                ("25/10/2026", "Jasa", "Blitz Juan de Borbón", 219.83, "2026-M10-Sem4"),
+                ("25/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem4"),
+                ("25/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 221.40, "2026-M10-Sem4"),
+                ("25/10/2026", "Makro", "Blitz Juan de Borbón", 443.57, "2026-M10-Sem4"),
+                ("25/10/2026", "Macanao", "Blitz Juan de Borbón", 231.20, "2026-M10-Sem4"),
+                ("25/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 168.90, "2026-M10-Sem4"),
+                ("25/10/2026", "Manzano", "Blitz Juan de Borbón", 79.50, "2026-M10-Sem4"),
+                ("25/10/2026", "Nicolás Valero", "Blitz Juan de Borbón", 120.40, "2026-M10-Sem4"),
+                ("25/10/2026", "Morales", "Blitz Juan de Borbón", 54.00, "2026-M10-Sem4"),
                 
-                ("01/11/2024", "Paco Rosa", "Blitz Juan de Borbón", 333.53, "2024-M10-Sem5"),
-                ("01/11/2024", "Jasa", "Blitz Juan de Borbón", 282.56, "2024-M10-Sem5"),
-                ("01/11/2024", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2024-M10-Sem5"),
-                ("01/11/2024", "Lucas Caballero", "Blitz Juan de Borbón", 75.52, "2024-M10-Sem5"),
-                ("01/11/2024", "Makro", "Blitz Juan de Borbón", 482.85, "2024-M10-Sem5"),
-                ("01/11/2024", "Coca-Cola", "Blitz Juan de Borbón", 124.16, "2024-M10-Sem5"),
-                ("01/11/2024", "Pedro Díaz", "Blitz Juan de Borbón", 89.80, "2024-M10-Sem5"),
-                ("01/11/2024", "Riscales", "Blitz Juan de Borbón", 55.80, "2024-M10-Sem5"),
+                ("01/11/2026", "Paco Rosa", "Blitz Juan de Borbón", 333.53, "2026-M10-Sem5"),
+                ("01/11/2026", "Jasa", "Blitz Juan de Borbón", 282.56, "2026-M10-Sem5"),
+                ("01/11/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem5"),
+                ("01/11/2026", "Lucas Caballero", "Blitz Juan de Borbón", 75.52, "2026-M10-Sem5"),
+                ("01/11/2026", "Makro", "Blitz Juan de Borbón", 482.85, "2026-M10-Sem5"),
+                ("01/11/2026", "Coca-Cola", "Blitz Juan de Borbón", 124.16, "2026-M10-Sem5"),
+                ("01/11/2026", "Pedro Díaz", "Blitz Juan de Borbón", 89.80, "2026-M10-Sem5"),
+                ("01/11/2026", "Riscales", "Blitz Juan de Borbón", 55.80, "2026-M10-Sem5"),
                 
                 # EVENTOS
-                ("04/10/2024", "Jasa", "Eventos / Food Truck", 327.60, "2024-M10-Sem1"),
-                ("04/10/2024", "Lucas Caballero", "Eventos / Food Truck", 168.60, "2024-M10-Sem1"),
-                ("04/10/2024", "Pedro Díaz", "Eventos / Food Truck", 195.20, "2024-M10-Sem1"),
-                ("04/10/2024", "Morales", "Eventos / Food Truck", 54.00, "2024-M10-Sem1"),
+                ("04/10/2026", "Jasa", "Eventos / Food Truck", 327.60, "2026-M10-Sem1"),
+                ("04/10/2026", "Lucas Caballero", "Eventos / Food Truck", 168.60, "2026-M10-Sem1"),
+                ("04/10/2026", "Pedro Díaz", "Eventos / Food Truck", 195.20, "2026-M10-Sem1"),
+                ("04/10/2026", "Morales", "Eventos / Food Truck", 54.00, "2026-M10-Sem1"),
                 
-                ("11/10/2024", "Paco Rosa", "Eventos / Food Truck", 1817.16, "2024-M10-Sem2"),
-                ("11/10/2024", "Jasa", "Eventos / Food Truck", 924.20, "2024-M10-Sem2"),
-                ("11/10/2024", "Lucas Caballero", "Eventos / Food Truck", 654.68, "2024-M10-Sem2"),
+                ("11/10/2026", "Paco Rosa", "Eventos / Food Truck", 1817.16, "2026-M10-Sem2"),
+                ("11/10/2026", "Jasa", "Eventos / Food Truck", 924.20, "2026-M10-Sem2"),
+                ("11/10/2026", "Lucas Caballero", "Eventos / Food Truck", 654.68, "2026-M10-Sem2"),
                 
-                ("18/10/2024", "Paco Rosa", "Eventos / Food Truck", 437.04, "2024-M10-Sem3"),
-                ("18/10/2024", "Manzano", "Eventos / Food Truck", 79.50, "2024-M10-Sem3"),
-                ("18/10/2024", "Ángel Linares", "Eventos / Food Truck", 62.09, "2024-M10-Sem3"),
+                ("18/10/2026", "Paco Rosa", "Eventos / Food Truck", 437.04, "2026-M10-Sem3"),
+                ("18/10/2026", "Manzano", "Eventos / Food Truck", 79.50, "2026-M10-Sem3"),
+                ("18/10/2026", "Ángel Linares", "Eventos / Food Truck", 62.09, "2026-M10-Sem3"),
                 
-                ("25/10/2024", "Paco Rosa", "Eventos / Food Truck", 338.13, "2024-M10-Sem4"),
-                ("25/10/2024", "Macanao", "Eventos / Food Truck", 312.80, "2024-M10-Sem4"),
-                ("25/10/2024", "Gloria", "Eventos / Food Truck", 79.80, "2024-M10-Sem4")
+                ("25/10/2026", "Paco Rosa", "Eventos / Food Truck", 338.13, "2026-M10-Sem4"),
+                ("25/10/2026", "Macanao", "Eventos / Food Truck", 312.80, "2026-M10-Sem4"),
+                ("25/10/2026", "Gloria", "Eventos / Food Truck", 79.80, "2026-M10-Sem4")
             ]
             
             for i, c in enumerate(compras_octubre, 1):
@@ -376,7 +376,7 @@ def registrar_ventas_semana(id_semana, num_semana, f_ini, f_fin, mes, año, cent
 # ==========================================
 def parsear_fecha_str(f_str):
     if not f_str:
-        return datetime.date(2024, 1, 1)
+        return datetime.date(2026, 10, 1)
     try:
         if "/" in f_str:
             p = f_str.split("/")
@@ -388,7 +388,7 @@ def parsear_fecha_str(f_str):
             return datetime.date(int(p[0]), int(p[1]), int(p[2]))
     except Exception:
         pass
-    return datetime.date(2024, 1, 1)
+    return datetime.date(2026, 10, 1)
 
 def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
     """
@@ -614,45 +614,47 @@ def render_modulo_consumos():
     # 2. ENCABEZADO CON SELECTOR DE FECHAS (DESDE / HASTA CON ESCRITURA Y CALENDARIO)
     st.markdown("### 📅 Período de Análisis (Filtro Desde / Hasta)")
     
-    # Fechas por defecto: Mes de Octubre 2024 para mostrar los datos cargados del balance
+    # Fecha mínima obligatoria: 01/10/2026 (según directriz de Salva)
+    FECHA_MINIMA = datetime.date(2026, 10, 1)
     hoy = datetime.date.today()
-    primer_dia_defecto = datetime.date(2024, 10, 1)
-    ultimo_dia_defecto = datetime.date(2024, 11, 3)
+    primer_dia_defecto = FECHA_MINIMA
+    ultimo_dia_defecto = datetime.date(2026, 11, 1) if hoy < datetime.date(2026, 11, 1) else hoy
 
-    if "filtro_fecha_desde" not in st.session_state:
+    if "filtro_fecha_desde" not in st.session_state or st.session_state.filtro_fecha_desde < FECHA_MINIMA:
         st.session_state.filtro_fecha_desde = primer_dia_defecto
-    if "filtro_fecha_hasta" not in st.session_state:
+    if "filtro_fecha_hasta" not in st.session_state or st.session_state.filtro_fecha_hasta < FECHA_MINIMA:
         st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
 
     # Botones de acceso rápido
     col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
     with col_rap1:
-        if st.button("📅 Mes Octubre (Balance)", use_container_width=True, key="btn_oct"):
-            st.session_state.filtro_fecha_desde = datetime.date(2024, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2024, 11, 3)
+        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
             st.rerun()
     with col_rap2:
-        if st.button("📅 Este Mes Actual", use_container_width=True, key="btn_mes_act"):
-            st.session_state.filtro_fecha_desde = datetime.date(hoy.year, hoy.month, 1)
+        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
+            st.session_state.filtro_fecha_desde = datetime.date(hoy.year, hoy.month, 1) if datetime.date(hoy.year, hoy.month, 1) >= FECHA_MINIMA else FECHA_MINIMA
             st.session_state.filtro_fecha_hasta = hoy
             st.rerun()
     with col_rap3:
         if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
-            st.session_state.filtro_fecha_desde = hoy - timedelta(days=28)
+            st.session_state.filtro_fecha_desde = max(FECHA_MINIMA, hoy - timedelta(days=28))
             st.session_state.filtro_fecha_hasta = hoy
             st.rerun()
     with col_rap4:
         if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
-            st.session_state.filtro_fecha_desde = datetime.date(2024, 1, 1)
+            st.session_state.filtro_fecha_desde = FECHA_MINIMA
             st.session_state.filtro_fecha_hasta = hoy + timedelta(days=30)
             st.rerun()
 
-    # Inputs "Desde" y "Hasta" con escritura manual y botón de icono de calendario interactivo
+    # Inputs "Desde" y "Hasta" con fecha mínima fijada en 01/10/2026
     col_f1, col_f2 = st.columns(2)
     with col_f1:
         f_desde = st.date_input(
             "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
             value=st.session_state.filtro_fecha_desde,
+            min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
             key="input_date_desde"
         )
@@ -662,6 +664,7 @@ def render_modulo_consumos():
         f_hasta = st.date_input(
             "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
             value=st.session_state.filtro_fecha_hasta,
+            min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
             key="input_date_hasta"
         )
