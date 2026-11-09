@@ -404,6 +404,9 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
     optimo = config.get("umbral_optimo", UMBRAL_OPTIMO_DEFECTO)
     alerta = config.get("umbral_alerta", UMBRAL_ALERTA_DEFECTO)
     
+    c_filtro_norm = normalizar_nombre_centro(centro_filtro)
+    es_global = "total" in str(centro_filtro).lower() or "global" in str(centro_filtro).lower()
+    
     # 1. Leer Compras de Albaranes
     compras_filtradas = []
     if os.path.exists(ARCHIVO_COMPRAS_ALBARANES):
@@ -413,7 +416,7 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
                 f_obj = parsear_fecha_str(r.get("Fecha", ""))
                 if fecha_desde <= f_obj <= fecha_hasta:
                     c_norm = normalizar_nombre_centro(r.get("Centro", ""))
-                    if centro_filtro == "🏢 Total Empresa (Global)" or c_norm == centro_filtro:
+                    if es_global or c_norm == c_filtro_norm:
                         try:
                             bi = float(r.get("Base_Imponible", 0.0))
                         except Exception:
@@ -439,7 +442,7 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
                 # Se incluye si solapa con el rango
                 if (f_ini <= fecha_hasta and f_fin >= fecha_desde) or (fecha_desde <= f_ini <= fecha_hasta):
                     c_norm = normalizar_nombre_centro(r.get("Centro", ""))
-                    if centro_filtro == "🏢 Total Empresa (Global)" or c_norm == centro_filtro:
+                    if es_global or c_norm == c_filtro_norm:
                         id_sem = r.get("Id_Semana", "")
                         try:
                             v = float(r.get("Ventas", 0.0))
@@ -467,14 +470,15 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
         if not sem_id:
             ciclo = calcular_ciclo_operativo(c["Fecha_obj"])
             sem_id = ciclo["id_semana"]
-            if sem_id not in ventas_info:
-                ventas_info[sem_id] = {
-                    "Num_Semana": str(ciclo["num_semana"]),
-                    "Fecha_Inicio": ciclo["fecha_inicio"],
-                    "Fecha_Fin": ciclo["fecha_fin"],
-                    "Mes": ciclo["mes"],
-                    "Observaciones": ""
-                }
+        if sem_id not in ventas_info:
+            ciclo = calcular_ciclo_operativo(c["Fecha_obj"])
+            ventas_info[sem_id] = {
+                "Num_Semana": str(ciclo["num_semana"]),
+                "Fecha_Inicio": ciclo["fecha_inicio"],
+                "Fecha_Fin": ciclo["fecha_fin"],
+                "Mes": ciclo["mes"],
+                "Observaciones": ""
+            }
         semanas_keys.add(sem_id)
         bi = c["Base_Imponible"]
         compras_por_semana[sem_id] = compras_por_semana.get(sem_id, 0.0) + bi
@@ -498,12 +502,12 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
     
     for sem_id in semanas_ordenadas:
         v_total_sem = 0.0
-        if centro_filtro == "🏢 Total Empresa (Global)":
+        if es_global:
             for (s_id, c_n), v_val in ventas_filtradas.items():
                 if s_id == sem_id:
                     v_total_sem += v_val
         else:
-            v_total_sem = ventas_filtradas.get((sem_id, centro_filtro), 0.0)
+            v_total_sem = ventas_filtradas.get((sem_id, c_filtro_norm), 0.0)
             
         c_total_sem = compras_por_semana.get(sem_id, 0.0)
         
@@ -532,7 +536,12 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
             badge = f"🔴 Alerta ({ratio:.1f}%)"
             
         info = ventas_info.get(sem_id, {"Num_Semana": sem_id, "Fecha_Inicio": "", "Fecha_Fin": "", "Mes": "", "Observaciones": ""})
-        etiqueta_semana = f"Semana {info['Num_Semana']}"
+        num_s_raw = str(info.get('Num_Semana', ''))
+        if "Sem" in num_s_raw:
+            num_s_final = num_s_raw.split("Sem")[-1].replace("-", "").strip()
+        else:
+            num_s_final = num_s_raw
+        etiqueta_semana = f"Semana {num_s_final}"
         fechas_rango = f"{info['Fecha_Inicio']} - {info['Fecha_Fin']}" if info['Fecha_Inicio'] else ""
         
         semanas_tabla.append({
