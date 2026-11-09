@@ -828,19 +828,37 @@ def verificar_autenticacion():
                 st.rerun()
             st.markdown("</div>", unsafe_allow_html=True)
 
+            st.markdown("<div style='margin: 22px 0 14px 0; border-top: 1px solid #e5e7eb; position: relative; text-align: center;'><span style='background: white; padding: 0 10px; color: #6b7280; font-size: 0.8rem; font-weight: 700; position: relative; top: -10px;'>¿ERES UN LOCAL? ACCESO DIRECTO</span></div>", unsafe_allow_html=True)
+            col_acc1, col_acc2 = st.columns(2)
+            with col_acc1:
+                if st.button("📍 Blitz Ronda Sur", key="btn_login_ronda", use_container_width=True):
+                    st.session_state["centro_movil"] = "ronda_sur"
+                    st.rerun()
+            with col_acc2:
+                if st.button("📍 Juan de Borbón", key="btn_login_borbon", use_container_width=True):
+                    st.session_state["centro_movil"] = "juan_borbon"
+                    st.rerun()
+
     st.stop()
 
 # -------------------------------------------------------------------------
 # ACCESO DIRECTO PARA CENTROS (SIN CONTRASEÑAS NI PINS)
 # E.g. https://blitz-stock.streamlit.app/?centro=ronda_sur
-# Build: v3.9.8 - Las 2 opciones de escaneo listas para elegir
 # -------------------------------------------------------------------------
-centro_param = st.query_params.get("centro", "")
-if isinstance(centro_param, list):
-    centro_param = centro_param[0] if centro_param else ""
-centro_param = str(centro_param).strip().lower()
+centro_param = ""
+try:
+    for qk, qv in st.query_params.items():
+        if qk.lower() in ["centro", "c", "local", "sede"]:
+            val = qv[0] if isinstance(qv, list) else qv
+            centro_param = str(val).strip().lower()
+            break
+except Exception:
+    pass
 
-if centro_param in ["ronda_sur", "juan_borbon", "ronda", "borbon", "juan"]:
+if not centro_param and st.session_state.get("centro_movil"):
+    centro_param = str(st.session_state.get("centro_movil")).strip().lower()
+
+if centro_param and any(k in centro_param for k in ["ronda", "borbon", "juan"]):
     import importlib
     import gestion_pedidos_centros
     importlib.reload(gestion_pedidos_centros)
