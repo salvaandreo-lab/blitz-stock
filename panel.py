@@ -796,48 +796,63 @@ def verificar_autenticacion():
 
         else:
             # -------------------------------------------------------------
-            # MODO LOGIN HABITUAL
+            # ACCESO DIRECTO PARA LOCALES (DESTACADO Y SIN CONTRASEÑA)
             # -------------------------------------------------------------
             st.markdown(f"""
-            <div class="login-card">
+            <div class="login-card" style="margin-bottom: 12px; padding-bottom: 16px;">
                 {logo_tag}
-                <div class="login-title">🍔 Blitz Stock</div>
-                <div class="login-sub">Acceso restringido · Introduce tu contraseña</div>
+                <div class="login-title">🍔 Blitz Food</div>
+                <div class="login-sub" style="margin-bottom: 10px;">Gestión de Stock y Operaciones</div>
             </div>
             """, unsafe_allow_html=True)
 
-            if st.session_state.get("pass_restablecida", False):
-                st.success("✅ Contraseña actualizada correctamente. Entra con tu nueva clave.")
-                st.session_state["pass_restablecida"] = False
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 2px solid #2563eb; border-radius: 16px; padding: 18px 16px; margin-bottom: 14px; text-align: center; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);">
+                <div style="font-size: 1.15rem; font-weight: 800; color: #1e3a8a; margin-bottom: 4px;">
+                    📱 ACCESO LOCALES (SIN CONTRASEÑA)
+                </div>
+                <div style="font-size: 0.88rem; color: #2563eb; font-weight: 600;">
+                    Pulsa en tu local para entrar directamente:
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-            with st.form("form_autenticacion", clear_on_submit=False):
-                clave = st.text_input("Contraseña de acceso", type="password", placeholder="Escribe tu contraseña...", label_visibility="collapsed")
-                enviado = st.form_submit_button("🔓 Iniciar Sesión", use_container_width=True, type="primary")
-
-                if enviado:
-                    p_valida = cfg.get("password", "Blitz008")
-                    if clave.strip() in [p_valida, p_valida + "."]:
-                        st.session_state["autenticado"] = True
-                        st.rerun()
-                    else:
-                        st.error("❌ Contraseña incorrecta. Inténtalo de nuevo.")
-
-            st.markdown("<div style='text-align: center; margin-top: 14px;'>", unsafe_allow_html=True)
-            if st.button("❓ ¿Has olvidado tu contraseña?", key="btn_olvide_pass"):
-                st.session_state["modo_recuperacion"] = True
-                st.rerun()
-            st.markdown("</div>", unsafe_allow_html=True)
-
-            st.markdown("<div style='margin: 22px 0 14px 0; border-top: 1px solid #e5e7eb; position: relative; text-align: center;'><span style='background: white; padding: 0 10px; color: #6b7280; font-size: 0.8rem; font-weight: 700; position: relative; top: -10px;'>¿ERES UN LOCAL? ACCESO DIRECTO</span></div>", unsafe_allow_html=True)
             col_acc1, col_acc2 = st.columns(2)
             with col_acc1:
-                if st.button("📍 Blitz Ronda Sur", key="btn_login_ronda", use_container_width=True):
+                if st.button("📍 BLITZ RONDA SUR", key="btn_login_ronda", use_container_width=True, type="primary"):
+                    st.query_params["centro"] = "ronda_sur"
                     st.session_state["centro_movil"] = "ronda_sur"
                     st.rerun()
             with col_acc2:
-                if st.button("📍 Juan de Borbón", key="btn_login_borbon", use_container_width=True):
+                if st.button("📍 JUAN DE BORBÓN", key="btn_login_borbon", use_container_width=True, type="secondary"):
+                    st.query_params["centro"] = "juan_borbon"
                     st.session_state["centro_movil"] = "juan_borbon"
                     st.rerun()
+
+            st.markdown("<div style='margin: 28px 0 16px 0; border-top: 1px solid #e5e7eb; position: relative; text-align: center;'><span style='background: white; padding: 0 12px; color: #9ca3af; font-size: 0.78rem; font-weight: 700; position: relative; top: -11px;'>DIRECCIÓN Y ADMINISTRACIÓN</span></div>", unsafe_allow_html=True)
+
+            with st.expander("🔒 Soy Administrador (Entrar al Panel General)", expanded=False):
+                if st.session_state.get("pass_restablecida", False):
+                    st.success("✅ Contraseña actualizada correctamente. Entra con tu nueva clave.")
+                    st.session_state["pass_restablecida"] = False
+
+                with st.form("form_autenticacion", clear_on_submit=False):
+                    clave = st.text_input("Contraseña de acceso", type="password", placeholder="Escribe tu contraseña...", label_visibility="collapsed")
+                    enviado = st.form_submit_button("🔓 Iniciar Sesión", use_container_width=True, type="primary")
+
+                    if enviado:
+                        p_valida = cfg.get("password", "Blitz008")
+                        if clave.strip() in [p_valida, p_valida + "."]:
+                            st.session_state["autenticado"] = True
+                            st.rerun()
+                        else:
+                            st.error("❌ Contraseña incorrecta. Inténtalo de nuevo.")
+
+                st.markdown("<div style='text-align: center; margin-top: 10px;'>", unsafe_allow_html=True)
+                if st.button("❓ ¿Has olvidado tu contraseña?", key="btn_olvide_pass"):
+                    st.session_state["modo_recuperacion"] = True
+                    st.rerun()
+                st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
 
