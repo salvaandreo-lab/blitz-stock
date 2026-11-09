@@ -701,43 +701,60 @@ def renderizar_panel_centro(centro_nombre):
         if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
             st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
             st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
+            st.session_state.widget_consumo_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.widget_consumo_fecha_hasta = datetime.date(2026, 11, 1)
             st.rerun()
     with col_rap2:
         if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
             st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
             st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
+            st.session_state.widget_consumo_fecha_desde = datetime.date(2026, 11, 1)
+            st.session_state.widget_consumo_fecha_hasta = datetime.date(2026, 11, 30)
             st.rerun()
     with col_rap3:
         if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
-            st.session_state.filtro_fecha_desde = max(FECHA_MINIMA, hoy - timedelta(days=28))
+            f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
+            st.session_state.filtro_fecha_desde = f_d_4s
             st.session_state.filtro_fecha_hasta = hoy
+            st.session_state.widget_consumo_fecha_desde = f_d_4s
+            st.session_state.widget_consumo_fecha_hasta = hoy
             st.rerun()
     with col_rap4:
         if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
             st.session_state.filtro_fecha_desde = FECHA_MINIMA
             st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
+            st.session_state.widget_consumo_fecha_desde = FECHA_MINIMA
+            st.session_state.widget_consumo_fecha_hasta = datetime.date(2026, 12, 31)
             st.rerun()
 
-    # Inputs "Desde" y "Hasta" con fecha mínima fijada en 01/10/2026
+    # Inputs "Desde" y "Hasta" con valor explícito seguro y fecha mínima fijada en 01/10/2026
     col_f1, col_f2 = st.columns(2)
     with col_f1:
-        st.date_input(
+        f_desde_in = st.date_input(
             "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
+            value=fecha_desde,
             min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
-            key="filtro_fecha_desde"
+            key="widget_consumo_fecha_desde"
         )
 
     with col_f2:
-        st.date_input(
+        f_hasta_in = st.date_input(
             "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
+            value=fecha_hasta,
             min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
-            key="filtro_fecha_hasta"
+            key="widget_consumo_fecha_hasta"
         )
 
-    if st.session_state.filtro_fecha_hasta < st.session_state.filtro_fecha_desde:
-        st.caption("ℹ️ La fecha hasta seleccionada es anterior a la inicial; mostrando acumulado para el día inicial.")
+    if f_hasta_in < f_desde_in:
+        f_hasta_in = f_desde_in
+
+    # Si el usuario modificó manualmente la fecha con el calendario o teclado, sincronizamos y recargamos
+    if f_desde_in != fecha_desde or f_hasta_in != fecha_hasta:
+        st.session_state.filtro_fecha_desde = f_desde_in
+        st.session_state.filtro_fecha_hasta = f_hasta_in
+        st.rerun()
 
     st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
