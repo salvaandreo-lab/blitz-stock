@@ -134,7 +134,8 @@ def obtener_articulos_maestros():
                 resultado.append({
                     "nombre": str(r["Producto"]).strip(),
                     "unidad": str(r.get("Unidad", "UD")).strip(),
-                    "zona": str(r.get("Zona", "📦 Almacén Seco")).strip()
+                    "zona": str(r.get("Zona", "📦 Almacén Seco")).strip(),
+                    "proveedor": str(r.get("Proveedor", "Varios")).strip()
                 })
             return resultado
         except Exception as e:
@@ -590,13 +591,15 @@ def render_interfaz_centro(centro_param):
                 for art in articulos:
                     nom = art["nombre"]
                     uni = art["unidad"]
+                    prov = art.get("proveedor", "Varios")
                     key_k = f"cant_{centro_key}_{nom}"
                     cnt = st.session_state.get(key_k, 0)
                     if cnt > 0:
                         items_pedidos.append({
                             "producto": nom,
                             "unidad": uni,
-                            "cantidad": int(cnt)
+                            "cantidad": int(cnt),
+                            "proveedor": prov
                         })
 
                 if not items_pedidos and not observaciones.strip():
@@ -615,12 +618,17 @@ def render_interfaz_centro(centro_param):
                     
                     guardar_pedidos_archivo(pedidos_data)
 
-                    # Notificación Telegram a Salva
+                    # Notificación Telegram a Salva agrupada por PROVEEDOR
+                    from collections import defaultdict
+                    items_por_prov = defaultdict(list)
+                    for it in items_pedidos:
+                        items_por_prov[it.get("proveedor", "Varios")].append(it)
+
                     resumen_telegram = []
-                    for it in items_pedidos[:8]:
-                        resumen_telegram.append(f"• *{it['cantidad']} {it['unidad']}* de {it['producto']}")
-                    if len(items_pedidos) > 8:
-                        resumen_telegram.append(f"_... y {len(items_pedidos)-8} productos más_")
+                    for prov in sorted(items_por_prov.keys()):
+                        resumen_telegram.append(f"\n🏢 *{prov.upper()}*")
+                        for it in items_por_prov[prov]:
+                            resumen_telegram.append(f"  • *{it['cantidad']} {it['unidad']}* de {it['producto']}")
                         
                     items_txt = "\n".join(resumen_telegram) if resumen_telegram else "_(Sin productos de lista)_"
                     notas_txt = f"\n\n📝 *Notas:* {observaciones.strip()}" if observaciones.strip() else ""
@@ -630,7 +638,7 @@ def render_interfaz_centro(centro_param):
                         f"📍 *Centro:* {nombre_centro}\n"
                         f"🕒 *Fecha:* {ahora_str}\n"
                         f"🛢️ *¿Recoger aceite usado?:* *{respuesta_aceite.upper()}*\n\n"
-                        f"📋 *Artículos solicitados ({len(items_pedidos)}):*\n{items_txt}"
+                        f"📋 *Artículos agrupados por Proveedor ({len(items_pedidos)}):*{items_txt}"
                         f"{notas_txt}\n\n"
                         f"✅ _Actualizado en tu panel de Blitz Stock._"
                     )
@@ -687,23 +695,44 @@ def render_panel_admin_pedidos():
                 if items:
                     st.markdown(f"##### 📦 Productos Solicitados ({len(items)}):")
                     df_items = pd.DataFrame(items)
-                    df_items.columns = ["Producto", "Unidad", "Cantidad Pedida"]
+                    # Si no tiene columna proveedor (para pedidos antiguos), mapear desde Catalogo_Pedidos.csv
+                    if "proveedor" not in df_items.columns:
+                        try:
+                            cat_df = pd.read_csv(ARCHIVO_CATALOGO_PEDIDOS)
+                            prov_map = dict(zip(cat_df["Producto"].str.strip(), cat_df["Proveedor"].str.strip()))
+                            df_items["proveedor"] = df_items["producto"].map(prov_map).fillna("Varios")
+                        except Exception:
+                            df_items["proveedor"] = "Varios"
+
+                    # Ordenar por Proveedor y Producto
+                    df_items = df_items.sort_values(by=["proveedor", "producto"])
+                    df_items_display = df_items[["proveedor", "producto", "unidad", "cantidad"]].copy()
+                    df_items_display.columns = ["Proveedor", "Producto", "Unidad", "Cantidad Pedida"]
                     
                     st.dataframe(
-                        df_items,
+                        df_items_display,
                         use_container_width=True,
                         hide_index=True
                     )
 
-                    # Botón para copiar texto rápido
+                    # Botón para copiar texto rápido agrupado por Proveedor
                     resumen_texto = f"PEDIDO {c_nombre.upper()} - {info.get('fecha')}\n"
                     if info.get("recogida_aceite"):
                         resumen_texto += f"Recogida de aceite usado: {str(info.get('recogida_aceite')).upper()}\n"
-                    for it in items:
-                        resumen_texto += f"- {it['cantidad']} {it['unidad']} {it['producto']}\n"
+                    
+                    from collections import defaultdict
+                    prov_dict = defaultdict(list)
+                    for _, row in df_items.iterrows():
+                        prov_dict[row.get("proveedor", "Varios")].append(row)
+                    
+                    for prov in sorted(prov_dict.keys()):
+                        resumen_texto += f"\n--- 🏢 {prov.upper()} ---\n"
+                        for r in prov_dict[prov]:
+                            resumen_texto += f"- {r['cantidad']} {r['unidad']} {r['producto']}\n"
+
                     if info.get("observaciones"):
                         resumen_texto += f"\nNotas: {info.get('observaciones')}\n"
 
-                    st.text_area("📋 Texto rápido para copiar/pegar a proveedores o WhatsApp:", value=resumen_texto, height=130)
+                    st.text_area("📋 Texto rápido agrupado por Proveedor para WhatsApp:", value=resumen_texto, height=220)
                 else:
                     st.write("El centro solo envió notas/observaciones sin artículos de lista.")
