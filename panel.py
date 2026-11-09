@@ -944,6 +944,15 @@ with st.sidebar:
         st.rerun()
         
     st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+
+    # 1.2 Ratio Compras vs Ventas (Food Cost)
+    es_consumos = (st.session_state.seccion_activa == "📊 Ratio Compras vs Ventas")
+    if st.button("📊 Ratio Compras vs Ventas", use_container_width=True, type="primary" if es_consumos else "secondary", key="btn_nav_consumos"):
+        st.session_state.seccion_activa = "📊 Ratio Compras vs Ventas"
+        st.session_state.nav_counter += 1
+        st.rerun()
+        
+    st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
     
     # 2. Desplegable "Opciones de Stock"
     idx_stock = opciones_stock.index(st.session_state.seccion_activa) if st.session_state.seccion_activa in opciones_stock else None
@@ -1654,6 +1663,15 @@ if seccion_activa == "📡 Radar de Albaranes":
                 st.divider()
                 st.subheader(f"🏢 Proveedor: **{st.session_state.proveedor_ia}** ➔ 📍 Destino: **{st.session_state.centro_destino}**")
                 
+                col_fa1, col_fa2 = st.columns([1.5, 2])
+                with col_fa1:
+                    st.date_input(
+                        "📅 Fecha del albarán (imputación semanal):",
+                        value=datetime.date.today(),
+                        format="DD/MM/YYYY",
+                        key=f"fecha_albaran_{archivo_actual}"
+                    )
+                
                 diccionario_eq, indice_norm = cargar_equivalencias()
                 formatos_unidades = ["KG", "BANDEJAS", "BOLSAS", "BOTELLAS", "ESTUCHE", "BOTE", "GARRAFA", "ROLLOS", "UNIDADES", "CAJAS"]
                 
@@ -2034,6 +2052,31 @@ if seccion_activa == "📡 Radar de Albaranes":
                     ruta_destino = os.path.join(CARPETA_PROCESADOS, archivo_actual)
                     shutil.move(ruta_origen, ruta_destino)
                     
+                    # Imputar albarán a Control de Consumos y Compras vs Ventas
+                    try:
+                        import modulo_consumos
+                        total_bi_albaran = 0.0
+                        for art in st.session_state.articulos_ia:
+                            if not art.get("ignorado", False):
+                                try: c_art = float(art.get("cantidad", 0.0))
+                                except: c_art = 0.0
+                                try: p_art = float(art.get("precio_final", art.get("precio_unitario_final", 0.0)))
+                                except: p_art = 0.0
+                                total_bi_albaran += round(c_art * p_art, 2)
+                        
+                        f_alb = st.session_state.get(f"fecha_albaran_{archivo_actual}", datetime.date.today())
+                        f_alb_str = f_alb.strftime("%d/%m/%Y") if hasattr(f_alb, "strftime") else str(f_alb)
+                        modulo_consumos.registrar_albaran_archivado(
+                            fecha=f_alb_str,
+                            proveedor=st.session_state.proveedor_ia,
+                            centro=st.session_state.centro_destino,
+                            base_imponible=total_bi_albaran,
+                            archivo=archivo_actual,
+                            notas=f"Albarán escaneado de {st.session_state.proveedor_ia}"
+                        )
+                    except Exception as e_cons:
+                        print(f"Error registrando compra en consumos: {e_cons}")
+
                     # Eliminar de la cola de GitHub y sincronizar CSVs en background
                     try:
                         import threading
@@ -2044,6 +2087,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                                 delete_file_from_github(rel_origen)
                                 sync_file("Stock_Actual.csv")
                                 sync_file("Historico_Precios.csv")
+                                sync_file("Registro_Albaranes_Compras.csv")
                             except Exception:
                                 pass
                         threading.Thread(target=_bg_sync, daemon=True).start()
@@ -2055,7 +2099,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                     
                     st.session_state.ia_procesada = False
                     st.session_state.centro_destino = ""
-                    st.success("✅ Albarán archivado, stock sumado y aviso enviado por Telegram.")
+                    st.success("✅ Albarán archivado, stock sumado, imputado a compras y aviso enviado por Telegram.")
                     import time; time.sleep(0.8)
                     st.rerun()
 
@@ -2064,6 +2108,12 @@ elif seccion_activa == "📋 Pedidos Centros":
     import gestion_pedidos_centros
     importlib.reload(gestion_pedidos_centros)
     gestion_pedidos_centros.render_panel_admin_pedidos()
+
+elif seccion_activa == "📊 Ratio Compras vs Ventas":
+    import importlib
+    import modulo_consumos
+    importlib.reload(modulo_consumos)
+    modulo_consumos.render_modulo_consumos()
 
 elif seccion_activa == "📚 Gestor de Diccionario":
     st.subheader("🛠️ Panel de Control y Auditoría del Diccionario")
