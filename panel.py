@@ -2113,9 +2113,7 @@ elif seccion_activa == "📋 Pedidos Centros":
     gestion_pedidos_centros.render_panel_admin_pedidos()
 
 elif seccion_activa == "📊 Ratio Compras vs Ventas":
-    import importlib
     import modulo_consumos
-    importlib.reload(modulo_consumos)
     modulo_consumos.render_modulo_consumos()
 
 elif seccion_activa == "📚 Gestor de Diccionario":
