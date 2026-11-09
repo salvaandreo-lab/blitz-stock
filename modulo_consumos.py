@@ -74,6 +74,16 @@ def guardar_config_consumos(optimo, alerta):
     except Exception:
         return False
 
+def render_html_seguro(html_str):
+    """Renderiza HTML eliminando cualquier sangría accidental para que Markdown nunca lo confunda con un bloque de código."""
+    if not html_str:
+        return
+    html_limpio = "".join(l.strip() for l in html_str.splitlines() if l.strip())
+    if hasattr(st, "html"):
+        st.html(html_limpio)
+    else:
+        st.markdown(html_limpio, unsafe_allow_html=True)
+
 # ==========================================
 # CÁLCULO DE SEMANAS OPERATIVAS (MIÉRCOLES A DOMINGO)
 # ==========================================
@@ -554,7 +564,7 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
 # INTERFAZ GRÁFICA PRINCIPAL
 # ==========================================
 def render_modulo_consumos():
-    st.markdown("""
+    header_html = """
     <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 22px 26px; border-radius: 14px; margin-bottom: 22px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.25);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
@@ -570,7 +580,8 @@ def render_modulo_consumos():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    render_html_seguro(header_html)
 
     # 1. Selector de Centro (3 pestañas limpias: Total, Ronda Sur, Juan de Borbón)
     c_tab1, c_tab2, c_tab3 = st.tabs([
@@ -635,7 +646,7 @@ def renderizar_panel_centro(centro_nombre):
         color_ratio = "#ef4444"
 
     # TARJETAS DE MÉTRICAS KPI SUPERIORES
-    st.markdown(f"""
+    kpis_html = f"""
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 10px 0 20px 0;">
         <div style="background: #1e293b; border-left: 5px solid #3b82f6; padding: 14px 18px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
             <div style="color: #94a3b8; font-size: 0.82rem; font-weight: 700; text-transform: uppercase;">💰 Total Ventas</div>
@@ -658,7 +669,8 @@ def renderizar_panel_centro(centro_nombre):
             <div style="color: #64748b; font-size: 0.75rem; margin-top: 2px;">{(100.0 - ratio_global) if total_ventas > 0 else 0.0:.1f}% de las ventas</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    render_html_seguro(kpis_html)
 
     # 2. ENCABEZADO CON SELECTOR DE FECHAS (JUSTO ENCIMA DE LOS DONUTS)
     st.markdown("#### 📅 Período de Análisis (Filtro Desde / Hasta)")
@@ -870,7 +882,7 @@ def renderizar_panel_centro(centro_nombre):
             </table>
         </div>
         """
-        st.markdown(tabla_html, unsafe_allow_html=True)
+        render_html_seguro(tabla_html)
     else:
         st.info("ℹ️ No hay registros de ventas o compras para las fechas seleccionadas.")
 
@@ -990,7 +1002,7 @@ def renderizar_panel_centro(centro_nombre):
             </table>
         </div>
         """
-        st.markdown(tabla_prov_html, unsafe_allow_html=True)
+        render_html_seguro(tabla_prov_html)
     else:
         st.info("ℹ️ No hay facturación desglosada por proveedor en este período.")
 
