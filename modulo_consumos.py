@@ -9,7 +9,10 @@ import csv
 import json
 import datetime
 from datetime import timedelta
-import streamlit as st
+try:
+    import streamlit as st
+except ImportError:
+    st = None
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_VENTAS = os.path.join(BASE_DIR, "Registro_Ventas_Semanales.csv")
