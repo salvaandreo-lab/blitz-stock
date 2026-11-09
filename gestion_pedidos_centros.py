@@ -524,17 +524,18 @@ def render_interfaz_centro(centro_param):
             zonas_dict[art.get("zona", "📦 Almacén Seco")].append(art)
 
         ORDEN_ZONAS_PREFERIDO = [
-            "🧊 Congelador 1 (Patatas, Boniato, Pollo)",
-            "🧊 Congelador 2 (Alitas, Nuggets, Tequeños, Croquetas)",
-            "❄️ Cámara Frigorífica",
-            "❄️ Cámara",
-            "📦 Almacén Seco",
-            "🧼 Limpieza y Desechables"
+            "🧊 1. Congelador Grande",
+            "🧊 2. Congelador Alto",
+            "❄️ 3. Cámara Frigorífica",
+            "❄️ 4. Cámara Frigorífica Pequeña",
+            "📦 5. Almacén Seco",
+            "🧼 6. Limpieza y Otros"
         ]
 
         def orden_zona_key(z):
-            if z in ORDEN_ZONAS_PREFERIDO:
-                return ORDEN_ZONAS_PREFERIDO.index(z)
+            for i, pref in enumerate(ORDEN_ZONAS_PREFERIDO):
+                if pref.lower() in z.lower() or z.lower() in pref.lower() or str(i + 1) in z:
+                    return i
             return 999
 
         zonas_ordenadas = sorted(zonas_dict.keys(), key=orden_zona_key)
