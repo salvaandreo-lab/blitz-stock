@@ -640,30 +640,22 @@ def renderizar_panel_centro(centro_nombre):
         if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
             st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
             st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
-            st.session_state.widget_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.widget_fecha_hasta = datetime.date(2026, 11, 1)
             st.rerun()
     with col_rap2:
         if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
             st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
             st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
-            st.session_state.widget_fecha_desde = datetime.date(2026, 11, 1)
-            st.session_state.widget_fecha_hasta = datetime.date(2026, 11, 30)
             st.rerun()
     with col_rap3:
         if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
             f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
             st.session_state.filtro_fecha_desde = f_d_4s
             st.session_state.filtro_fecha_hasta = hoy
-            st.session_state.widget_fecha_desde = f_d_4s
-            st.session_state.widget_fecha_hasta = hoy
             st.rerun()
     with col_rap4:
         if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
             st.session_state.filtro_fecha_desde = FECHA_MINIMA
             st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
-            st.session_state.widget_fecha_desde = FECHA_MINIMA
-            st.session_state.widget_fecha_hasta = datetime.date(2026, 12, 31)
             st.rerun()
 
     # Inputs "Desde" y "Hasta"
@@ -680,8 +672,7 @@ def renderizar_panel_centro(centro_nombre):
             "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
             value=val_desde,
             min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="widget_fecha_desde"
+            format="DD/MM/YYYY"
         )
 
     with col_f2:
@@ -689,8 +680,7 @@ def renderizar_panel_centro(centro_nombre):
             "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
             value=val_hasta,
             min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="widget_fecha_hasta"
+            format="DD/MM/YYYY"
         )
 
     if f_desde_in < FECHA_MINIMA:
