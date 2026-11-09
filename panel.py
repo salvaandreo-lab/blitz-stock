@@ -1668,6 +1668,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                     st.date_input(
                         "📅 Fecha del albarán (imputación semanal):",
                         value=datetime.date.today(),
+                        min_value=datetime.date(2026, 10, 1),
                         format="DD/MM/YYYY",
                         key=f"fecha_albaran_{archivo_actual}"
                     )
