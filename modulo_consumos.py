@@ -26,8 +26,7 @@ UMBRAL_ALERTA_DEFECTO = 38.0
 CENTROS_LISTA = [
     "🏢 Total Empresa (Global)",
     "📍 Blitz Ronda Sur",
-    "📍 Blitz Juan de Borbón",
-    "🚚 Eventos / Food Truck"
+    "📍 Blitz Juan de Borbón"
 ]
 
 MAPA_CENTROS_NORMALIZADOS = {
@@ -37,13 +36,7 @@ MAPA_CENTROS_NORMALIZADOS = {
     "juan de borbón": "Blitz Juan de Borbón",
     "borbon": "Blitz Juan de Borbón",
     "borbón": "Blitz Juan de Borbón",
-    "blitz juan de borbón": "Blitz Juan de Borbón",
-    "eventos": "Eventos / Food Truck",
-    "food truck": "Eventos / Food Truck",
-    "food truck grande": "Eventos / Food Truck",
-    "food truck pequeña": "Eventos / Food Truck",
-    "foodtruck_1": "Eventos / Food Truck",
-    "foodtruck_2": "Eventos / Food Truck"
+    "blitz juan de borbón": "Blitz Juan de Borbón"
 }
 
 def normalizar_nombre_centro(centro_raw):
@@ -272,25 +265,7 @@ def inicializar_datos_si_no_existen():
                 ("01/11/2026", "Makro", "Blitz Juan de Borbón", 482.85, "2026-M10-Sem5"),
                 ("01/11/2026", "Coca-Cola", "Blitz Juan de Borbón", 124.16, "2026-M10-Sem5"),
                 ("01/11/2026", "Pedro Díaz", "Blitz Juan de Borbón", 89.80, "2026-M10-Sem5"),
-                ("01/11/2026", "Riscales", "Blitz Juan de Borbón", 55.80, "2026-M10-Sem5"),
-                
-                # EVENTOS
-                ("04/10/2026", "Jasa", "Eventos / Food Truck", 327.60, "2026-M10-Sem1"),
-                ("04/10/2026", "Lucas Caballero", "Eventos / Food Truck", 168.60, "2026-M10-Sem1"),
-                ("04/10/2026", "Pedro Díaz", "Eventos / Food Truck", 195.20, "2026-M10-Sem1"),
-                ("04/10/2026", "Morales", "Eventos / Food Truck", 54.00, "2026-M10-Sem1"),
-                
-                ("11/10/2026", "Paco Rosa", "Eventos / Food Truck", 1817.16, "2026-M10-Sem2"),
-                ("11/10/2026", "Jasa", "Eventos / Food Truck", 924.20, "2026-M10-Sem2"),
-                ("11/10/2026", "Lucas Caballero", "Eventos / Food Truck", 654.68, "2026-M10-Sem2"),
-                
-                ("18/10/2026", "Paco Rosa", "Eventos / Food Truck", 437.04, "2026-M10-Sem3"),
-                ("18/10/2026", "Manzano", "Eventos / Food Truck", 79.50, "2026-M10-Sem3"),
-                ("18/10/2026", "Ángel Linares", "Eventos / Food Truck", 62.09, "2026-M10-Sem3"),
-                
-                ("25/10/2026", "Paco Rosa", "Eventos / Food Truck", 338.13, "2026-M10-Sem4"),
-                ("25/10/2026", "Macanao", "Eventos / Food Truck", 312.80, "2026-M10-Sem4"),
-                ("25/10/2026", "Gloria", "Eventos / Food Truck", 79.80, "2026-M10-Sem4")
+                ("01/11/2026", "Riscales", "Blitz Juan de Borbón", 55.80, "2026-M10-Sem5")
             ]
             
             for i, c in enumerate(compras_octubre, 1):
@@ -597,22 +572,13 @@ def render_modulo_consumos():
     </div>
     """, unsafe_allow_html=True)
 
-    # 1. Selector de Centro
-    c_tab1, c_tab2, c_tab3, c_tab4 = st.tabs([
+    # 1. Selector de Centro (3 pestañas limpias: Total, Ronda Sur, Juan de Borbón)
+    c_tab1, c_tab2, c_tab3 = st.tabs([
         "🏢 Total Empresa (Global)",
         "📍 Blitz Ronda Sur",
-        "📍 Blitz Juan de Borbón",
-        "🚚 Eventos / Food Truck"
+        "📍 Blitz Juan de Borbón"
     ])
-    
-    # Manejar tab seleccionado
-    tab_names = ["🏢 Total Empresa (Global)", "📍 Blitz Ronda Sur", "📍 Blitz Juan de Borbón", "🚚 Eventos / Food Truck"]
-    
-    if "centro_consumos_idx" not in st.session_state:
-        st.session_state.centro_consumos_idx = 0
-
-    # 2. ENCABEZADO CON SELECTOR DE FECHAS (DESDE / HASTA CON ESCRITURA Y CALENDARIO)
-    st.markdown("### 📅 Período de Análisis (Filtro Desde / Hasta)")
+    tab_names = ["🏢 Total Empresa (Global)", "📍 Blitz Ronda Sur", "📍 Blitz Juan de Borbón"]
     
     # Fecha mínima obligatoria: 01/10/2026 (según directriz de Salva)
     FECHA_MINIMA = datetime.date(2026, 10, 1)
@@ -625,63 +591,21 @@ def render_modulo_consumos():
     if "filtro_fecha_hasta" not in st.session_state or st.session_state.filtro_fecha_hasta < FECHA_MINIMA:
         st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
 
-    # Botones de acceso rápido
-    col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
-    with col_rap1:
-        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
-            st.rerun()
-    with col_rap2:
-        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
-            st.session_state.filtro_fecha_desde = datetime.date(hoy.year, hoy.month, 1) if datetime.date(hoy.year, hoy.month, 1) >= FECHA_MINIMA else FECHA_MINIMA
-            st.session_state.filtro_fecha_hasta = hoy
-            st.rerun()
-    with col_rap3:
-        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
-            st.session_state.filtro_fecha_desde = max(FECHA_MINIMA, hoy - timedelta(days=28))
-            st.session_state.filtro_fecha_hasta = hoy
-            st.rerun()
-    with col_rap4:
-        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
-            st.session_state.filtro_fecha_desde = FECHA_MINIMA
-            st.session_state.filtro_fecha_hasta = hoy + timedelta(days=30)
-            st.rerun()
-
-    # Inputs "Desde" y "Hasta" con fecha mínima fijada en 01/10/2026
-    col_f1, col_f2 = st.columns(2)
-    with col_f1:
-        f_desde = st.date_input(
-            "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
-            value=st.session_state.filtro_fecha_desde,
-            min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="input_date_desde"
-        )
-        st.session_state.filtro_fecha_desde = f_desde
-
-    with col_f2:
-        f_hasta = st.date_input(
-            "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
-            value=st.session_state.filtro_fecha_hasta,
-            min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="input_date_hasta"
-        )
-        st.session_state.filtro_fecha_hasta = f_hasta
-
-    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
-
     # Renderizar el contenido según el tab activo
-    tabs = [c_tab1, c_tab2, c_tab3, c_tab4]
+    tabs = [c_tab1, c_tab2, c_tab3]
     for idx_tab, tab in enumerate(tabs):
         with tab:
             centro_actual = tab_names[idx_tab]
-            renderizar_panel_centro(centro_actual, f_desde, f_hasta)
+            renderizar_panel_centro(centro_actual)
 
 
-def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
+def renderizar_panel_centro(centro_nombre):
     """Renderiza todas las gráficas circulares, KPIs y tablas para el centro seleccionado."""
+    FECHA_MINIMA = datetime.date(2026, 10, 1)
+    hoy = datetime.date.today()
+    fecha_desde = st.session_state.filtro_fecha_desde
+    fecha_hasta = st.session_state.filtro_fecha_hasta
+
     kpis, semanas_tabla, prov_compras, matriz_prov_sem, semanas_ordenadas = cargar_datos_balance(
         centro_nombre, fecha_desde, fecha_hasta
     )
@@ -735,6 +659,59 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # 2. ENCABEZADO CON SELECTOR DE FECHAS (JUSTO ENCIMA DE LOS DONUTS)
+    st.markdown("#### 📅 Período de Análisis (Filtro Desde / Hasta)")
+    
+    col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
+    with col_rap1:
+        if st.button("📅 Mes Octubre 2026", use_container_width=True, key=f"btn_oct_{centro_nombre}"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
+            st.rerun()
+    with col_rap2:
+        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key=f"btn_mes_act_{centro_nombre}"):
+            st.session_state.filtro_fecha_desde = datetime.date(hoy.year, hoy.month, 1) if datetime.date(hoy.year, hoy.month, 1) >= FECHA_MINIMA else FECHA_MINIMA
+            st.session_state.filtro_fecha_hasta = hoy
+            st.rerun()
+    with col_rap3:
+        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key=f"btn_4sem_{centro_nombre}"):
+            st.session_state.filtro_fecha_desde = max(FECHA_MINIMA, hoy - timedelta(days=28))
+            st.session_state.filtro_fecha_hasta = hoy
+            st.rerun()
+    with col_rap4:
+        if st.button("📅 Todo el Histórico", use_container_width=True, key=f"btn_todo_{centro_nombre}"):
+            st.session_state.filtro_fecha_desde = FECHA_MINIMA
+            st.session_state.filtro_fecha_hasta = hoy + timedelta(days=30)
+            st.rerun()
+
+    # Inputs "Desde" y "Hasta" con fecha mínima fijada en 01/10/2026
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        f_desde_in = st.date_input(
+            "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
+            value=st.session_state.filtro_fecha_desde,
+            min_value=FECHA_MINIMA,
+            format="DD/MM/YYYY",
+            key=f"input_date_desde_{centro_nombre}"
+        )
+        if f_desde_in != st.session_state.filtro_fecha_desde:
+            st.session_state.filtro_fecha_desde = f_desde_in
+            st.rerun()
+
+    with col_f2:
+        f_hasta_in = st.date_input(
+            "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
+            value=st.session_state.filtro_fecha_hasta,
+            min_value=FECHA_MINIMA,
+            format="DD/MM/YYYY",
+            key=f"input_date_hasta_{centro_nombre}"
+        )
+        if f_hasta_in != st.session_state.filtro_fecha_hasta:
+            st.session_state.filtro_fecha_hasta = f_hasta_in
+            st.rerun()
+
+    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
     # 3. GRÁFICAS DE CÍRCULO (DONUT / TARTA)
     st.markdown("#### 🍩 Gráficas Circulares de Ratio y Reparto")
