@@ -1665,10 +1665,12 @@ if seccion_activa == "📡 Radar de Albaranes":
                 
                 col_fa1, col_fa2 = st.columns([1.5, 2])
                 with col_fa1:
+                    f_min_alb = datetime.date(2026, 10, 1)
+                    f_def_alb = datetime.date.today() if datetime.date.today() >= f_min_alb else datetime.date(2026, 11, 10)
                     st.date_input(
                         "📅 Fecha del albarán (imputación semanal):",
-                        value=datetime.date.today(),
-                        min_value=datetime.date(2026, 10, 1),
+                        value=f_def_alb,
+                        min_value=f_min_alb,
                         format="DD/MM/YYYY",
                         key=f"fecha_albaran_{archivo_actual}"
                     )
