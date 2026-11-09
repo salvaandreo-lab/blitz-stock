@@ -478,6 +478,32 @@ def render_interfaz_centro(centro_param):
         if pedido_previo.get("fecha"):
             st.caption(f"🕒 Último pedido enviado: **{pedido_previo['fecha']}** (Se sustituirá al enviar el nuevo)")
 
+        # -------------------------------------------------------------------------
+        # PREGUNTA OBLIGATORIA: RECOGIDA DE ACEITE USADO
+        # -------------------------------------------------------------------------
+        st.markdown("""
+        <div style="background:#fff7ed; border:2px solid #f97316; border-radius:12px; padding:14px 16px; margin:14px 0 10px 0; box-shadow:0 2px 6px rgba(249,115,22,0.1);">
+            <div style="font-size:1.1rem; font-weight:800; color:#9a3412; margin-bottom:4px;">
+                🛢️ ¿ HAY QUE RECOGER EL ACEITE USADO? <span style="color:#dc2626;">*</span>
+            </div>
+            <div style="font-size:0.88rem; color:#7c2d12;">
+                ⚠️ Respuesta obligatoria antes de enviar el pedido.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        key_aceite = f"recogida_aceite_{centro_key}"
+        respuesta_aceite = st.radio(
+            "¿ HAY QUE RECOGER EL ACEITE USADO?",
+            options=["Sí", "No"],
+            index=None,
+            horizontal=True,
+            key=key_aceite,
+            label_visibility="collapsed"
+        )
+
+        st.markdown("<div style='margin-bottom:12px;'></div>", unsafe_allow_html=True)
+
         busqueda = st.text_input("🔍 Filtrar artículos por nombre:", placeholder="Ej: mayonesa, pan, burger, guantes...")
 
         arts_filtrados = articulos
@@ -553,58 +579,65 @@ def render_interfaz_centro(centro_param):
 
         # Botón Guardar y Enviar
         if st.button("🚀 Guardar y Enviar Pedido a Salva", use_container_width=True, type="primary"):
-            # Filtrar solo artículos con cantidad > 0
-            items_pedidos = []
-            # Revisar todas las claves en session_state para no perder los no filtrados en la búsqueda
-            for art in articulos:
-                nom = art["nombre"]
-                uni = art["unidad"]
-                key_k = f"cant_{centro_key}_{nom}"
-                cnt = st.session_state.get(key_k, 0)
-                if cnt > 0:
-                    items_pedidos.append({
-                        "producto": nom,
-                        "unidad": uni,
-                        "cantidad": int(cnt)
-                    })
-
-            if not items_pedidos and not observaciones.strip():
-                st.warning("⚠️ No has seleccionado ninguna unidad ni escrito ninguna observación.")
+            # 1. Validación obligatoria de la pregunta de recogida de aceite usado
+            if not respuesta_aceite:
+                st.error("⚠️ Ojo responde a la pregunta de la recogida de aceite obligatoria")
+                st.toast("Ojo responde a la pregunta de la recogida de aceite obligatoria", icon="⚠️")
             else:
-                ahora_str = datetime.datetime.now().strftime("%d/%m/%Y a las %H:%M")
-                
-                # Guardar sustituyendo el anterior (borrado de la semana anterior)
-                pedidos_data[centro_key] = {
-                    "centro": nombre_centro,
-                    "fecha": ahora_str,
-                    "observaciones": observaciones.strip(),
-                    "items": items_pedidos
-                }
-                
-                guardar_pedidos_archivo(pedidos_data)
+                # Filtrar solo artículos con cantidad > 0
+                items_pedidos = []
+                # Revisar todas las claves en session_state para no perder los no filtrados en la búsqueda
+                for art in articulos:
+                    nom = art["nombre"]
+                    uni = art["unidad"]
+                    key_k = f"cant_{centro_key}_{nom}"
+                    cnt = st.session_state.get(key_k, 0)
+                    if cnt > 0:
+                        items_pedidos.append({
+                            "producto": nom,
+                            "unidad": uni,
+                            "cantidad": int(cnt)
+                        })
 
-                # Notificación Telegram a Salva
-                resumen_telegram = []
-                for it in items_pedidos[:8]:
-                    resumen_telegram.append(f"• *{it['cantidad']} {it['unidad']}* de {it['producto']}")
-                if len(items_pedidos) > 8:
-                    resumen_telegram.append(f"_... y {len(items_pedidos)-8} productos más_")
+                if not items_pedidos and not observaciones.strip():
+                    st.warning("⚠️ No has seleccionado ninguna unidad ni escrito ninguna observación.")
+                else:
+                    ahora_str = datetime.datetime.now().strftime("%d/%m/%Y a las %H:%M")
                     
-                items_txt = "\n".join(resumen_telegram) if resumen_telegram else "_(Sin productos de lista)_"
-                notas_txt = f"\n\n📝 *Notas:* {observaciones.strip()}" if observaciones.strip() else ""
+                    # Guardar sustituyendo el anterior (borrado de la semana anterior)
+                    pedidos_data[centro_key] = {
+                        "centro": nombre_centro,
+                        "fecha": ahora_str,
+                        "recogida_aceite": respuesta_aceite,
+                        "observaciones": observaciones.strip(),
+                        "items": items_pedidos
+                    }
+                    
+                    guardar_pedidos_archivo(pedidos_data)
 
-                msg_tel = (
-                    f"📦 *¡NUEVO PEDIDO SEMANAL RECIBIDO!*\n\n"
-                    f"📍 *Centro:* {nombre_centro}\n"
-                    f"🕒 *Fecha:* {ahora_str}\n\n"
-                    f"📋 *Artículos solicitados ({len(items_pedidos)}):*\n{items_txt}"
-                    f"{notas_txt}\n\n"
-                    f"✅ _Actualizado en tu panel de Blitz Stock._"
-                )
-                enviar_telegram(msg_tel)
+                    # Notificación Telegram a Salva
+                    resumen_telegram = []
+                    for it in items_pedidos[:8]:
+                        resumen_telegram.append(f"• *{it['cantidad']} {it['unidad']}* de {it['producto']}")
+                    if len(items_pedidos) > 8:
+                        resumen_telegram.append(f"_... y {len(items_pedidos)-8} productos más_")
+                        
+                    items_txt = "\n".join(resumen_telegram) if resumen_telegram else "_(Sin productos de lista)_"
+                    notas_txt = f"\n\n📝 *Notas:* {observaciones.strip()}" if observaciones.strip() else ""
 
-                st.success("✅ ¡Pedido semanal enviado y registrado con éxito! Salva ya tiene la notificación en Telegram.")
-                st.balloons()
+                    msg_tel = (
+                        f"📦 *¡NUEVO PEDIDO SEMANAL RECIBIDO!*\n\n"
+                        f"📍 *Centro:* {nombre_centro}\n"
+                        f"🕒 *Fecha:* {ahora_str}\n"
+                        f"🛢️ *¿Recoger aceite usado?:* *{respuesta_aceite.upper()}*\n\n"
+                        f"📋 *Artículos solicitados ({len(items_pedidos)}):*\n{items_txt}"
+                        f"{notas_txt}\n\n"
+                        f"✅ _Actualizado en tu panel de Blitz Stock._"
+                    )
+                    enviar_telegram(msg_tel)
+
+                    st.success("✅ ¡Pedido semanal enviado y registrado con éxito! Salva ya tiene la notificación en Telegram.")
+                    st.balloons()
 
 
 # -------------------------------------------------------------------------
@@ -640,6 +673,13 @@ def render_panel_admin_pedidos():
                         st.success(f"Pedido de {c_nombre} archivado y limpiado.")
                         st.rerun()
 
+                recogida_aceite = info.get("recogida_aceite")
+                if recogida_aceite:
+                    if str(recogida_aceite).strip().lower() in ["sí", "si"]:
+                        st.warning(f"🛢️ **AVISO RECOGIDA DE ACEITE:** ¡{c_nombre} solicita recoger aceite usado! (**SÍ**)")
+                    else:
+                        st.info(f"🛢️ **Recogida de aceite usado:** NO")
+
                 if info.get("observaciones"):
                     st.warning(f"📝 **Observaciones del centro:**\n\n{info['observaciones']}")
 
@@ -657,6 +697,8 @@ def render_panel_admin_pedidos():
 
                     # Botón para copiar texto rápido
                     resumen_texto = f"PEDIDO {c_nombre.upper()} - {info.get('fecha')}\n"
+                    if info.get("recogida_aceite"):
+                        resumen_texto += f"Recogida de aceite usado: {str(info.get('recogida_aceite')).upper()}\n"
                     for it in items:
                         resumen_texto += f"- {it['cantidad']} {it['unidad']} {it['producto']}\n"
                     if info.get("observaciones"):
