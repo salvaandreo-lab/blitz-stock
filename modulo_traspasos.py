@@ -420,13 +420,34 @@ def render_modulo_traspasos():
     # ==========================================
     st.markdown("### 📦 2. Añadir Artículos al Traspaso")
 
+    # Guardar catálogo en session_state para sincronizar widgets
+    st.session_state["_cat_traspasos"] = catalogo
+
+    def _sync_producto_callback():
+        sel = st.session_state.get("sel_art_traspaso")
+        cat = st.session_state.get("_cat_traspasos", {})
+        if sel and sel in cat:
+            item_info = cat[sel]
+            st.session_state["num_precio_traspaso"] = float(item_info.get("precio", 0.0))
+            st.session_state["txt_prov_traspaso"] = str(item_info.get("proveedor", "Varios"))
+            st.session_state["num_cant_traspaso"] = 1.0
+
+    # Inicialización la primera vez que se carga la pantalla
+    if "sel_art_traspaso" not in st.session_state and nombres_articulos:
+        first_p = nombres_articulos[0]
+        first_d = catalogo.get(first_p, {})
+        st.session_state["num_precio_traspaso"] = float(first_d.get("precio", 0.0))
+        st.session_state["txt_prov_traspaso"] = str(first_d.get("proveedor", "Varios"))
+        st.session_state["num_cant_traspaso"] = 1.0
+
     col_a1, col_a2, col_a3, col_a4, col_a5 = st.columns([2.5, 1, 1.1, 1.4, 1.2])
 
     with col_a1:
         art_sel = st.selectbox(
             "Selecciona Producto:",
             nombres_articulos,
-            key="sel_art_traspaso"
+            key="sel_art_traspaso",
+            on_change=_sync_producto_callback
         )
         info_prod = catalogo.get(art_sel, {
             "nombre": art_sel, "proveedor": "Varios", "unidad": "KG", "precio": 0.0, "ref": ""
@@ -436,7 +457,6 @@ def render_modulo_traspasos():
         cant_input = st.number_input(
             f"Cantidad ({info_prod['unidad']}):",
             min_value=0.1,
-            value=1.0,
             step=1.0,
             key="num_cant_traspaso"
         )
@@ -445,7 +465,6 @@ def render_modulo_traspasos():
         precio_input = st.number_input(
             "Precio/Ud (€):",
             min_value=0.0,
-            value=float(info_prod.get("precio", 0.0)),
             step=0.10,
             format="%.2f",
             key="num_precio_traspaso"
@@ -454,7 +473,6 @@ def render_modulo_traspasos():
     with col_a4:
         prov_input = st.text_input(
             "Proveedor:",
-            value=info_prod.get("proveedor", "Varios"),
             key="txt_prov_traspaso"
         )
 
