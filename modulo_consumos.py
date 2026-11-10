@@ -16,6 +16,7 @@ except ImportError:
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_VENTAS = os.path.join(BASE_DIR, "Registro_Ventas_Semanales.csv")
+ARCHIVO_VENTAS_DIARIAS = os.path.join(BASE_DIR, "Registro_Ventas_Diarias.csv")
 ARCHIVO_COMPRAS_ALBARANES = os.path.join(BASE_DIR, "Registro_Albaranes_Compras.csv")
 ARCHIVO_CONFIG_CONSUMOS = os.path.join(BASE_DIR, "Config_Consumos.json")
 
@@ -427,6 +428,56 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
 
     return kpis, semanas_tabla, compras_por_proveedor, matriz_prov_sem, semanas_ordenadas
 
+def obtener_canales_venta(centro_filtro, fecha_desde, fecha_hasta, semanas_activas=None):
+    """
+    Recupera y calcula el reparto de facturación por canal de cobro
+    (Glovo, Tarjeta de crédito, Uber Eats, Efectivo, Just Eat)
+    desde Registro_Ventas_Diarias.csv para el centro y período seleccionado.
+    """
+    if not os.path.exists(ARCHIVO_VENTAS_DIARIAS):
+        return {}
+
+    es_global = "total" in str(centro_filtro).lower() or "global" in str(centro_filtro).lower()
+    c_filtro_norm = normalizar_nombre_centro(centro_filtro)
+    semanas_set = set(semanas_activas) if semanas_activas else None
+
+    canales = {
+        "Glovo": 0.0,
+        "Tarjeta de crédito": 0.0,
+        "Uber Eats": 0.0,
+        "Efectivo": 0.0,
+        "Just Eat": 0.0
+    }
+
+    try:
+        with open(ARCHIVO_VENTAS_DIARIAS, "r", encoding="utf-8-sig") as f:
+            reader = csv.DictReader(f)
+            for r in reader:
+                c_norm = normalizar_nombre_centro(r.get("Centro", ""))
+                if not es_global and c_norm != c_filtro_norm:
+                    continue
+
+                f_obj = parsear_fecha_str(r.get("Fecha", ""))
+                sem_id = calcular_ciclo_operativo(f_obj)["id_semana"]
+
+                coincide = False
+                if semanas_set and sem_id in semanas_set:
+                    coincide = True
+                elif fecha_desde <= f_obj <= fecha_hasta:
+                    coincide = True
+
+                if coincide:
+                    canales["Glovo"] += float(r.get("Glovo", 0.0))
+                    canales["Tarjeta de crédito"] += float(r.get("Tarjeta", 0.0))
+                    canales["Uber Eats"] += float(r.get("Uber_Eats", 0.0))
+                    canales["Efectivo"] += float(r.get("Efectivo", 0.0))
+                    canales["Just Eat"] += float(r.get("Just_Eat", 0.0))
+    except Exception as e:
+        print(f"Error leyendo canales de venta: {e}")
+
+    # Retornar únicamente canales con ventas > 0 ordenados de mayor a menor
+    return dict(sorted({k: round(v, 2) for k, v in canales.items() if v > 0}.items(), key=lambda x: x[1], reverse=True))
+
 # ==========================================
 # INTERFAZ GRÁFICA PRINCIPAL (VERSIÓN 1 ORIGINAL LIMPIA)
 # ==========================================
@@ -690,6 +741,65 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
                 render_html_seguro(f"<div style='background: #1e293b; border-radius: 12px; padding: 14px; border: 1px solid #334155;'>{top_items_html}</div>")
         else:
             st.info("ℹ️ No hay compras registradas de albaranes en el período seleccionado.")
+
+    # GRÁFICA CIRCULAR 3: REPARTO DE VENTAS POR CANAL (EN MEDIO DE LOS DOS EXISTENTES PERO DEBAJO)
+    canales_ventas = obtener_canales_venta(centro_nombre, fecha_desde, fecha_hasta, semanas_ordenadas)
+    
+    st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+    col_d_sp1, col_d_mid, col_d_sp2 = st.columns([1, 2, 1])
+    
+    with col_d_mid:
+        st.markdown("<div style='text-align: center; font-weight: 700; font-size: 0.98rem; margin-bottom: 6px; color: #f8fafc;'>🛵 Reparto de Ventas por Canal</div>", unsafe_allow_html=True)
+        if canales_ventas and sum(canales_ventas.values()) > 0:
+            tot_canales = sum(canales_ventas.values())
+            labels_c = list(canales_ventas.keys())
+            values_c = list(canales_ventas.values())
+            
+            # Colores limpios y consistentes para los canales de cobro
+            color_map_canales = {
+                'Glovo': '#f59e0b',
+                'Tarjeta de crédito': '#3b82f6',
+                'Uber Eats': '#10b981',
+                'Efectivo': '#8b5cf6',
+                'Just Eat': '#ea580c'
+            }
+            colores_c = [color_map_canales.get(l, '#06b6d4') for l in labels_c]
+            
+            if plotly_disponible:
+                fig_canales = go.Figure(data=[go.Pie(
+                    labels=labels_c,
+                    values=values_c,
+                    hole=0.48,
+                    marker=dict(colors=colores_c),
+                    hoverinfo='label+percent+value',
+                    textinfo='percent',
+                    textfont=dict(size=12, color='white', family='Inter, sans-serif'),
+                    hovertemplate='<b>%{label}</b><br>Cobrado: %{value:,.2f} €<br>Cuota: %{percent}<extra></extra>'
+                )])
+                fig_canales.update_layout(
+                    showlegend=True,
+                    legend=dict(orientation="h", yanchor="bottom", y=-0.32, xanchor="center", x=0.5),
+                    margin=dict(t=15, b=40, l=15, r=15),
+                    height=290,
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    annotations=[dict(
+                        text=f"<b>{tot_canales:,.0f} €</b><br><span style='font-size:10px; color:#94a3b8;'>Total Venta</span>",
+                        x=0.5, y=0.5,
+                        font_size=15,
+                        font_color='#f8fafc',
+                        showarrow=False
+                    )]
+                )
+                st.plotly_chart(fig_canales, use_container_width=True, key=f"donut_canales_{centro_nombre}")
+            else:
+                canales_items_html = "".join([
+                    f"<div style='margin-bottom: 6px;'>• <strong style='color:#f8fafc;'>{canal}</strong>: <span style='color:#38bdf8;'>{val:,.2f} €</span> <span style='color:#94a3b8;'>({(val / tot_canales * 100.0) if tot_canales > 0 else 0.0:.1f}%)</span></div>"
+                    for canal, val in canales_ventas.items()
+                ])
+                render_html_seguro(f"<div style='background: #1e293b; border-radius: 12px; padding: 14px; border: 1px solid #334155;'>{canales_items_html}</div>")
+        else:
+            st.info("ℹ️ No hay desglose de canales de venta registrado para este centro en el período seleccionado.")
 
     st.divider()
 
