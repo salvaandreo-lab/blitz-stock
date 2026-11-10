@@ -21,7 +21,6 @@ except ImportError:
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ARCHIVO_STOCK = os.path.join(BASE_DIR, "Stock_Actual.csv")
 ARCHIVO_EQUIVALENCIAS = os.path.join(BASE_DIR, "Equivalencias.csv")
-ARCHIVO_CATALOGO_PEDIDOS = os.path.join(BASE_DIR, "Catalogo_Pedidos.csv")
 ARCHIVO_HISTORICO_PRECIOS = os.path.join(BASE_DIR, "Historico_Precios.csv")
 ARCHIVO_COMPRAS_ALBARANES = os.path.join(BASE_DIR, "Registro_Albaranes_Compras.csv")
 ARCHIVO_TRASPASOS = os.path.join(BASE_DIR, "Registro_Traspasos.csv")
@@ -66,12 +65,13 @@ def render_html_seguro(html_str):
 
 def cargar_catalogo_maestro():
     """
-    Carga todos los productos con su unidad por defecto, proveedor habitual
-    y último precio unitario registrado.
+    Carga exclusivamente los productos maestros de inventario real (desde Equivalencias.csv)
+    y sus últimos precios registrados (desde Historico_Precios.csv).
+    No incluye los formatos empaquetados de pedidos móviles (Catalogo_Pedidos.csv).
     """
     catalogo = {}
 
-    # 1. Base desde Equivalencias.csv (maestro principal)
+    # 1. Base desde Equivalencias.csv (maestro de inventario oficial)
     if os.path.exists(ARCHIVO_EQUIVALENCIAS):
         try:
             with open(ARCHIVO_EQUIVALENCIAS, "r", encoding="utf-8-sig") as f:
@@ -93,29 +93,7 @@ def cargar_catalogo_maestro():
         except Exception as e:
             print(f"Error cargando Equivalencias: {e}")
 
-    # 2. Complementar desde Catalogo_Pedidos.csv
-    if os.path.exists(ARCHIVO_CATALOGO_PEDIDOS):
-        try:
-            with open(ARCHIVO_CATALOGO_PEDIDOS, "r", encoding="utf-8-sig") as f:
-                reader = csv.DictReader(f)
-                for r in reader:
-                    p_nom = r.get("Producto", "").strip().upper()
-                    if p_nom:
-                        if p_nom not in catalogo:
-                            catalogo[p_nom] = {
-                                "nombre": p_nom,
-                                "proveedor": r.get("Proveedor", "Varios").strip(),
-                                "unidad": r.get("Unidad", "UNIDADES").strip().upper(),
-                                "precio": 0.0,
-                                "ref": ""
-                            }
-                        else:
-                            if not catalogo[p_nom]["proveedor"] or catalogo[p_nom]["proveedor"] == "Varios":
-                                catalogo[p_nom]["proveedor"] = r.get("Proveedor", "Varios").strip()
-        except Exception as e:
-            print(f"Error cargando Catalogo_Pedidos: {e}")
-
-    # 3. Precios recientes desde Historico_Precios.csv
+    # 2. Precios más recientes desde Historico_Precios.csv (solo para los productos maestros ya existentes)
     if os.path.exists(ARCHIVO_HISTORICO_PRECIOS):
         try:
             with open(ARCHIVO_HISTORICO_PRECIOS, "r", encoding="utf-8-sig") as f:
