@@ -2059,7 +2059,9 @@ if seccion_activa == "📡 Radar de Albaranes":
                     
                     # Imputar albarán a Control de Consumos y Compras vs Ventas
                     try:
+                        import importlib
                         import modulo_consumos
+                        importlib.reload(modulo_consumos)
                         total_bi_albaran = 0.0
                         for art in st.session_state.articulos_ia:
                             if not art.get("ignorado", False):
@@ -2116,7 +2118,9 @@ elif seccion_activa == "📋 Pedidos Centros":
 
 elif seccion_activa == "📊 Ratio Compras vs Ventas":
     try:
+        import importlib
         import modulo_consumos
+        importlib.reload(modulo_consumos)
         modulo_consumos.render_modulo_consumos()
     except Exception as e_mod_cons:
         import traceback
