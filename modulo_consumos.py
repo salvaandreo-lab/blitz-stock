@@ -690,6 +690,8 @@ def renderizar_panel_centro(centro_nombre):
 
     st.session_state.filtro_fecha_desde = f_desde_in
     st.session_state.filtro_fecha_hasta = f_hasta_in
+    fecha_desde = f_desde_in
+    fecha_hasta = f_hasta_in
 
     st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
