@@ -26,7 +26,8 @@ UMBRAL_ALERTA_DEFECTO = 38.0
 CENTROS_LISTA = [
     "🏢 Total Empresa (Global)",
     "📍 Blitz Ronda Sur",
-    "📍 Blitz Juan de Borbón"
+    "📍 Blitz Juan de Borbón",
+    "🚚 Eventos / Food Truck"
 ]
 
 MAPA_CENTROS_NORMALIZADOS = {
@@ -36,7 +37,18 @@ MAPA_CENTROS_NORMALIZADOS = {
     "juan de borbón": "Blitz Juan de Borbón",
     "borbon": "Blitz Juan de Borbón",
     "borbón": "Blitz Juan de Borbón",
-    "blitz juan de borbón": "Blitz Juan de Borbón"
+    "blitz juan de borbón": "Blitz Juan de Borbón",
+    "evento": "Eventos / Food Truck",
+    "eventos": "Eventos / Food Truck",
+    "food truck": "Eventos / Food Truck",
+    "foodtruck": "Eventos / Food Truck",
+    "food truck grande": "Eventos / Food Truck",
+    "food truck pequeña": "Eventos / Food Truck",
+    "food truck pequena": "Eventos / Food Truck",
+    "truck": "Eventos / Food Truck",
+    "blitz eventos": "Eventos / Food Truck",
+    "eventos / food truck": "Eventos / Food Truck",
+    "eventos/food truck": "Eventos / Food Truck"
 }
 
 def normalizar_nombre_centro(centro_raw):
@@ -47,6 +59,30 @@ def normalizar_nombre_centro(centro_raw):
         if k in c_low or c_low in k:
             return v
     return str(centro_raw).strip()
+
+FECHA_MINIMA_DEFECTO = datetime.date(2026, 10, 1)
+
+def limpiar_fecha(f, fallback=None):
+    """Garantiza que una fecha nunca sea None, ni inválida, ni anterior a 01/10/2026."""
+    if fallback is None:
+        fallback = FECHA_MINIMA_DEFECTO
+    if f is None:
+        return fallback
+    if isinstance(f, (list, tuple)):
+        if len(f) > 0 and f[0] is not None:
+            f = f[0]
+        else:
+            return fallback
+    if isinstance(f, datetime.datetime):
+        f = f.date()
+    if not isinstance(f, datetime.date):
+        try:
+            f = parsear_fecha_str(str(f))
+        except Exception:
+            return fallback
+    if f < FECHA_MINIMA_DEFECTO:
+        return FECHA_MINIMA_DEFECTO
+    return f
 
 def cargar_config_consumos():
     """Carga los umbrales configurables dejando la puerta abierta a cambios."""
@@ -564,6 +600,15 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
 # INTERFAZ GRÁFICA PRINCIPAL
 # ==========================================
 def render_modulo_consumos():
+    """Punto de entrada principal con red de seguridad global para capturar y mostrar cualquier fallo."""
+    try:
+        _render_modulo_consumos_impl()
+    except Exception as e:
+        import traceback
+        st.error(f"⚠️ Incidencia temporal al cargar el módulo de consumos: {e}")
+        st.code(traceback.format_exc(), language="python")
+
+def _render_modulo_consumos_impl():
     header_html = """
     <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 22px 26px; border-radius: 14px; margin-bottom: 22px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.25);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -583,11 +628,11 @@ def render_modulo_consumos():
     """
     render_html_seguro(header_html)
 
-    # 1. Selector de Centro (3 botones táctiles de alta visibilidad)
+    # 1. Selector de Centro (4 botones táctiles de alta visibilidad)
     if "centro_consumos_activo" not in st.session_state:
         st.session_state.centro_consumos_activo = "🏢 Total Empresa (Global)"
 
-    col_c1, col_c2, col_c3 = st.columns(3)
+    col_c1, col_c2, col_c3, col_c4 = st.columns(4)
     with col_c1:
         es_glob = (st.session_state.centro_consumos_activo == "🏢 Total Empresa (Global)")
         if st.button("🏢 Total Empresa (Global)", use_container_width=True, type="primary" if es_glob else "secondary", key="btn_c_glob"):
@@ -603,19 +648,25 @@ def render_modulo_consumos():
         if st.button("📍 Blitz Juan de Borbón", use_container_width=True, type="primary" if es_jb else "secondary", key="btn_c_jb"):
             st.session_state.centro_consumos_activo = "📍 Blitz Juan de Borbón"
             st.rerun()
+    with col_c4:
+        es_ft = (st.session_state.centro_consumos_activo == "🚚 Eventos / Food Truck")
+        if st.button("🚚 Eventos / Food Truck", use_container_width=True, type="primary" if es_ft else "secondary", key="btn_c_ft"):
+            st.session_state.centro_consumos_activo = "🚚 Eventos / Food Truck"
+            st.rerun()
 
-    # Fecha mínima obligatoria: 01/10/2026 (según directriz de Salva)
-    FECHA_MINIMA = datetime.date(2026, 10, 1)
+    FECHA_MINIMA = FECHA_MINIMA_DEFECTO
     real_today = datetime.date.today()
-    # Si el servidor en la nube está en un año anterior a 2026, fijamos la fecha de referencia operativa en Noviembre 2026
     hoy = real_today if real_today >= FECHA_MINIMA else datetime.date(2026, 11, 10)
     primer_dia_defecto = FECHA_MINIMA
     ultimo_dia_defecto = datetime.date(2026, 11, 1)
 
-    if "filtro_fecha_desde" not in st.session_state or st.session_state.filtro_fecha_desde < FECHA_MINIMA:
-        st.session_state.filtro_fecha_desde = primer_dia_defecto
-    if "filtro_fecha_hasta" not in st.session_state or st.session_state.filtro_fecha_hasta < FECHA_MINIMA:
-        st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
+    # Inicialización ultra-segura de fechas en session_state (imposible que sea None ni menor a FECHA_MINIMA)
+    f_d_actual = limpiar_fecha(st.session_state.get("filtro_fecha_desde"), primer_dia_defecto)
+    f_h_actual = limpiar_fecha(st.session_state.get("filtro_fecha_hasta"), ultimo_dia_defecto)
+    if f_h_actual < f_d_actual:
+        f_h_actual = f_d_actual
+    st.session_state.filtro_fecha_desde = f_d_actual
+    st.session_state.filtro_fecha_hasta = f_h_actual
 
     st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
     
@@ -625,7 +676,7 @@ def render_modulo_consumos():
 
 def renderizar_panel_centro(centro_nombre):
     """Renderiza todas las gráficas circulares, KPIs y tablas para el centro seleccionado."""
-    FECHA_MINIMA = datetime.date(2026, 10, 1)
+    FECHA_MINIMA = FECHA_MINIMA_DEFECTO
     real_today = datetime.date.today()
     hoy = real_today if real_today >= FECHA_MINIMA else datetime.date(2026, 11, 10)
     
@@ -635,63 +686,85 @@ def renderizar_panel_centro(centro_nombre):
     # 2. ENCABEZADO CON SELECTOR DE FECHAS (JUSTO ENCIMA DE LOS DONUTS)
     st.markdown("#### 📅 Período de Análisis (Filtro Desde / Hasta)")
     
+    key_d = f"widget_f_desde_{centro_nombre}"
+    key_h = f"widget_f_hasta_{centro_nombre}"
+
     col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
     with col_rap1:
-        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
+        if st.button("📅 Mes Octubre 2026", use_container_width=True, key=f"btn_oct_{centro_nombre}"):
+            f_d_set = datetime.date(2026, 10, 1)
+            f_h_set = datetime.date(2026, 11, 1)
+            st.session_state.filtro_fecha_desde = f_d_set
+            st.session_state.filtro_fecha_hasta = f_h_set
+            st.session_state[key_d] = f_d_set
+            st.session_state[key_h] = f_h_set
             st.rerun()
     with col_rap2:
-        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
+        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key=f"btn_mes_act_{centro_nombre}"):
+            f_d_set = datetime.date(2026, 11, 1)
+            f_h_set = datetime.date(2026, 11, 30)
+            st.session_state.filtro_fecha_desde = f_d_set
+            st.session_state.filtro_fecha_hasta = f_h_set
+            st.session_state[key_d] = f_d_set
+            st.session_state[key_h] = f_h_set
             st.rerun()
     with col_rap3:
-        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
-            f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
-            st.session_state.filtro_fecha_desde = f_d_4s
-            st.session_state.filtro_fecha_hasta = hoy
+        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key=f"btn_4sem_{centro_nombre}"):
+            f_d_set = max(FECHA_MINIMA, hoy - timedelta(days=28))
+            f_h_set = hoy
+            st.session_state.filtro_fecha_desde = f_d_set
+            st.session_state.filtro_fecha_hasta = f_h_set
+            st.session_state[key_d] = f_d_set
+            st.session_state[key_h] = f_h_set
             st.rerun()
     with col_rap4:
-        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
-            st.session_state.filtro_fecha_desde = FECHA_MINIMA
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
+        if st.button("📅 Todo el Histórico", use_container_width=True, key=f"btn_todo_{centro_nombre}"):
+            f_d_set = FECHA_MINIMA
+            f_h_set = datetime.date(2026, 12, 31)
+            st.session_state.filtro_fecha_desde = f_d_set
+            st.session_state.filtro_fecha_hasta = f_h_set
+            st.session_state[key_d] = f_d_set
+            st.session_state[key_h] = f_h_set
             st.rerun()
 
-    # Inputs "Desde" y "Hasta"
-    val_desde = st.session_state.filtro_fecha_desde
-    val_hasta = st.session_state.filtro_fecha_hasta
-    if val_desde < FECHA_MINIMA:
-        val_desde = FECHA_MINIMA
-    if val_hasta < val_desde:
-        val_hasta = val_desde
+    # Sincronización robusta de sesión con los widgets
+    val_desde_actual = limpiar_fecha(st.session_state.get(key_d, st.session_state.filtro_fecha_desde), FECHA_MINIMA)
+    val_hasta_actual = limpiar_fecha(st.session_state.get(key_h, st.session_state.filtro_fecha_hasta), datetime.date(2026, 11, 1))
+    if val_hasta_actual < val_desde_actual:
+        val_hasta_actual = val_desde_actual
+
+    st.session_state[key_d] = val_desde_actual
+    st.session_state[key_h] = val_hasta_actual
 
     col_f1, col_f2 = st.columns(2)
     with col_f1:
         f_desde_in = st.date_input(
             "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
-            value=val_desde,
+            value=val_desde_actual,
             min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY"
+            format="DD/MM/YYYY",
+            key=key_d
         )
 
     with col_f2:
         f_hasta_in = st.date_input(
             "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
-            value=val_hasta,
+            value=val_hasta_actual,
             min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY"
+            format="DD/MM/YYYY",
+            key=key_h
         )
 
-    if f_desde_in < FECHA_MINIMA:
-        f_desde_in = FECHA_MINIMA
-    if f_hasta_in < f_desde_in:
-        f_hasta_in = f_desde_in
+    # Limpieza estricta e instantánea de la selección
+    f_desde_limpia = limpiar_fecha(f_desde_in, FECHA_MINIMA)
+    f_hasta_limpia = limpiar_fecha(f_hasta_in, f_desde_limpia)
+    if f_hasta_limpia < f_desde_limpia:
+        f_hasta_limpia = f_desde_limpia
 
-    st.session_state.filtro_fecha_desde = f_desde_in
-    st.session_state.filtro_fecha_hasta = f_hasta_in
-    fecha_desde = f_desde_in
-    fecha_hasta = f_hasta_in
+    st.session_state.filtro_fecha_desde = f_desde_limpia
+    st.session_state.filtro_fecha_hasta = f_hasta_limpia
+    fecha_desde = f_desde_limpia
+    fecha_hasta = f_hasta_limpia
 
     st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
@@ -919,18 +992,22 @@ def renderizar_panel_centro(centro_nombre):
         st.markdown("Introduce las ventas de tu TPV o cierre semanal para calcular automáticamente el % de consumo:")
         col_v1, col_v2, col_v3 = st.columns([1.5, 1.2, 2])
         
-        # Opciones de semanas calculadas a partir de la fecha seleccionada
+        # Opciones de semanas calculadas a partir de la fecha seleccionada (con límite de seguridad anti-bucles)
         semanas_opciones = []
-        fecha_cursor = fecha_desde
-        while fecha_cursor <= fecha_hasta + timedelta(days=7):
-            c_calc = calcular_ciclo_operativo(fecha_cursor)
-            if c_calc["id_semana"] not in [x["id"] for x in semanas_opciones]:
-                semanas_opciones.append({
-                    "id": c_calc["id_semana"],
-                    "label": f"{c_calc['etiqueta']} - {c_calc['mes']} {c_calc['año']}",
-                    "data": c_calc
-                })
-            fecha_cursor += timedelta(days=7)
+        if fecha_desde and fecha_hasta and fecha_desde <= fecha_hasta:
+            limite_iter = 52
+            fecha_cursor = fecha_desde
+            count = 0
+            while fecha_cursor <= fecha_hasta + timedelta(days=7) and count < limite_iter:
+                count += 1
+                c_calc = calcular_ciclo_operativo(fecha_cursor)
+                if c_calc["id_semana"] not in [x["id"] for x in semanas_opciones]:
+                    semanas_opciones.append({
+                        "id": c_calc["id_semana"],
+                        "label": f"{c_calc['etiqueta']} - {c_calc['mes']} {c_calc['año']}",
+                        "data": c_calc
+                    })
+                fecha_cursor += timedelta(days=7)
             
         with col_v1:
             sem_sel_label = st.selectbox(
@@ -962,7 +1039,7 @@ def renderizar_panel_centro(centro_nombre):
                 # Si está en modo global, permitir elegir a cuál de los dos locales guardarlo
                 centro_destino_guardado = centro_nombre
                 if centro_nombre == "🏢 Total Empresa (Global)":
-                    st.warning("⚠️ Selecciona la pestaña de un centro concreto (Ronda Sur o Juan de Borbón) para imputar las ventas exactas a ese local.")
+                    st.warning("⚠️ Selecciona la pestaña de un centro concreto (Ronda Sur, Juan de Borbón o Eventos / Food Truck) para imputar las ventas exactas a ese local.")
                 else:
                     registrar_ventas_semana(
                         d["id_semana"], d["num_semana"], d["fecha_inicio"], d["fecha_fin"],
