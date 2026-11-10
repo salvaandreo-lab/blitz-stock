@@ -947,6 +947,15 @@ with st.sidebar:
         
     st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
 
+    # 1.1.1 Traspasos entre Centros
+    es_traspasos = (st.session_state.seccion_activa == "🔄 Traspasos entre Centros")
+    if st.button("🔄 Traspasos entre Centros", use_container_width=True, type="primary" if es_traspasos else "secondary", key="btn_nav_traspasos"):
+        st.session_state.seccion_activa = "🔄 Traspasos entre Centros"
+        st.session_state.nav_counter += 1
+        st.rerun()
+        
+    st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+
     # 1.2 Ratio Compras vs Ventas (Food Cost)
     es_consumos = (st.session_state.seccion_activa == "📊 Ratio Compras vs Ventas")
     if st.button("📊 Ratio Compras vs Ventas", use_container_width=True, type="primary" if es_consumos else "secondary", key="btn_nav_consumos"):
@@ -2104,6 +2113,17 @@ elif seccion_activa == "📋 Pedidos Centros":
     import gestion_pedidos_centros
     importlib.reload(gestion_pedidos_centros)
     gestion_pedidos_centros.render_panel_admin_pedidos()
+
+elif seccion_activa == "🔄 Traspasos entre Centros":
+    try:
+        import importlib
+        import modulo_traspasos
+        importlib.reload(modulo_traspasos)
+        modulo_traspasos.render_modulo_traspasos()
+    except Exception as e_traspasos:
+        import traceback
+        st.error(f"⚠️ Incidencia al cargar el módulo de traspasos: {e_traspasos}")
+        st.code(traceback.format_exc(), language="python")
 
 elif seccion_activa == "📊 Ratio Compras vs Ventas":
     try:
