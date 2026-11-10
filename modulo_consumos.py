@@ -675,7 +675,7 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 annotations=[dict(
-                    text=f"<b>{ratio_global:.1f}%</b><br><span style='font-size:10px; color:#94a3b8;'>Food Cost</span>",
+                    text=f"<b>{ratio_global:.1f}%</b><br><span style='font-size:11px; font-weight:600; color:#000000;'>Food Cost</span>",
                     x=0.5, y=0.5,
                     font_size=18,
                     font_color=color_ratio,
@@ -749,7 +749,7 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
     col_d_sp1, col_d_mid, col_d_sp2 = st.columns([1, 2, 1])
     
     with col_d_mid:
-        st.markdown("<div style='text-align: center; font-weight: 700; font-size: 0.98rem; margin-bottom: 6px; color: #f8fafc;'>🛵 Reparto de Ventas por Canal</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align: center; font-weight: 700; font-size: 0.98rem; margin-bottom: 6px; color: #000000;'>🛵 Reparto de Ventas por Canal</div>", unsafe_allow_html=True)
         if canales_ventas and sum(canales_ventas.values()) > 0:
             tot_canales = sum(canales_ventas.values())
             labels_c = list(canales_ventas.keys())
@@ -784,10 +784,10 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
                     annotations=[dict(
-                        text=f"<b>{tot_canales:,.0f} €</b><br><span style='font-size:10px; color:#94a3b8;'>Total Venta</span>",
+                        text=f"<b style='color:#000000;'>{tot_canales:,.0f} €</b><br><span style='font-size:11px; font-weight:600; color:#000000;'>Total Venta</span>",
                         x=0.5, y=0.5,
-                        font_size=15,
-                        font_color='#f8fafc',
+                        font_size=16,
+                        font_color='#000000',
                         showarrow=False
                     )]
                 )
