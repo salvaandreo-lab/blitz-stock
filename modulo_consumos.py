@@ -431,7 +431,7 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
 # INTERFAZ GRÁFICA PRINCIPAL (VERSIÓN 1 ORIGINAL LIMPIA)
 # ==========================================
 def render_modulo_consumos():
-    """Punto de entrada principal - Versión 1 Original con pestañas nativas."""
+    """Punto de entrada principal - Versión 1 Original con fechas arriba y pestañas nativas."""
     header_html = """
     <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 22px 26px; border-radius: 14px; margin-bottom: 22px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.25);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -451,17 +451,7 @@ def render_modulo_consumos():
     """
     render_html_seguro(header_html)
 
-    # 1. PESTAÑAS NATIVAS DE CENTRO (4 PESTAÑAS ORIGINALES)
-    c_tab1, c_tab2, c_tab3, c_tab4 = st.tabs([
-        "🏢 Total Empresa (Global)",
-        "📍 Blitz Ronda Sur",
-        "📍 Blitz Juan de Borbón",
-        "🚚 Eventos / Food Truck"
-    ])
-    
-    tab_names = ["🏢 Total Empresa (Global)", "📍 Blitz Ronda Sur", "📍 Blitz Juan de Borbón", "🚚 Eventos / Food Truck"]
-
-    # 2. ENCABEZADO CON SELECTOR DE FECHAS
+    # 1. ENCABEZADO CON SELECTOR DE FECHAS (ARRIBA DEL TODO PARA MÁXIMA COMODIDAD)
     st.markdown("### 📅 Período de Análisis (Filtro Desde / Hasta)")
     
     primer_dia_defecto = datetime.date(2026, 10, 1)
@@ -528,7 +518,11 @@ def render_modulo_consumos():
     if fecha_hasta_act < fecha_desde_act:
         fecha_hasta_act = fecha_desde_act
 
-    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 16px;'></div>", unsafe_allow_html=True)
+
+    # 2. PESTAÑAS NATIVAS DE CENTRO (4 PESTAÑAS ORIGINALES)
+    tab_names = ["🏢 Total Empresa (Global)", "📍 Blitz Ronda Sur", "📍 Blitz Juan de Borbón", "🚚 Eventos / Food Truck"]
+    c_tab1, c_tab2, c_tab3, c_tab4 = st.tabs(tab_names)
 
     # Renderizar cada pestaña nativa
     tabs = [c_tab1, c_tab2, c_tab3, c_tab4]
