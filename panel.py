@@ -1665,14 +1665,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                 st.divider()
                 st.subheader(f"🏢 Proveedor: **{st.session_state.proveedor_ia}** ➔ 📍 Destino: **{st.session_state.centro_destino}**")
                 
-                col_fa1, col_fa2 = st.columns([1.5, 2])
-                with col_fa1:
-                    st.date_input(
-                        "📅 Fecha del albarán (imputación semanal):",
-                        format="DD/MM/YYYY",
-                        key=f"fecha_albaran_{archivo_actual}"
-                    )
-                
+
                 diccionario_eq, indice_norm = cargar_equivalencias()
                 formatos_unidades = ["KG", "BANDEJAS", "BOLSAS", "BOTELLAS", "ESTUCHE", "BOTE", "GARRAFA", "ROLLOS", "UNIDADES", "CAJAS"]
                 
@@ -2067,10 +2060,10 @@ if seccion_activa == "📡 Radar de Albaranes":
                                 except: p_art = 0.0
                                 total_bi_albaran += round(c_art * p_art, 2)
                         
-                        f_alb = st.session_state.get(f"fecha_albaran_{archivo_actual}", datetime.date.today())
-                        f_alb_str = f_alb.strftime("%d/%m/%Y") if hasattr(f_alb, "strftime") else str(f_alb)
+                        import datetime
+                        fecha_hoy_str = datetime.date.today().strftime("%d/%m/%Y")
                         modulo_consumos.registrar_albaran_archivado(
-                            fecha=f_alb_str,
+                            fecha=fecha_hoy_str,
                             proveedor=st.session_state.proveedor_ia,
                             centro=st.session_state.centro_destino,
                             base_imponible=total_bi_albaran,
