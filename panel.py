@@ -885,6 +885,69 @@ if centro_param and any(k in centro_param for k in ["ronda", "borbon", "juan"]):
 verificar_autenticacion()
 
 # ==========================================
+# DIÁLOGO MODAL Y GESTOR DE ALERTAS DE STOCK MÍNIMO
+# ==========================================
+import modulo_alertas_stock
+
+if hasattr(st, "dialog"):
+    @st.dialog("🚨 Alerta de Inventario: Stock Bajo Mínimos")
+    def modal_alerta_stock_minimo(df_bajo):
+        st.markdown(
+            """
+            <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:12px 16px; margin-bottom:14px;">
+                <span style="color:#b91c1c; font-weight:700; font-size:1rem;">⚠️ Atención: Se han detectado productos en o por debajo de su stock mínimo de seguridad.</span>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        centros_con_alerta = sorted(list(df_bajo["Centro"].dropna().unique()))
+        c_sel = st.selectbox("📍 Filtrar por Centro:", ["(Todos los Centros)"] + centros_con_alerta, key="modal_sel_centro_alert")
+        
+        sub_df = df_bajo if c_sel == "(Todos los Centros)" else df_bajo[df_bajo["Centro"] == c_sel]
+        
+        vista_df = sub_df[["Centro", "Producto_Maestro", "Cantidad_Stock", "Stock_Minimo", "Deficit", "Unidad_Inventario"]].copy()
+        vista_df.columns = ["Centro", "Producto", "Stock Actual", "Mínimo", "Falta Pedir", "Unidad"]
+        
+        st.dataframe(
+            vista_df,
+            use_container_width=True,
+            column_config={
+                "Stock Actual": st.column_config.NumberColumn(format="%.2f"),
+                "Mínimo": st.column_config.NumberColumn(format="%.1f"),
+                "Falta Pedir": st.column_config.NumberColumn(format="%.1f")
+            },
+            hide_index=True,
+            height=280
+        )
+        
+        col_m1, col_m2 = st.columns([1.5, 1])
+        with col_m1:
+            if st.button("🛒 Ir al Asistente de Pedidos", type="primary", use_container_width=True, key="btn_modal_go_pedidos"):
+                st.session_state.seccion_activa = "🛒 Asistente de Compras y Pedidos"
+                st.session_state["alerta_stock_vista"] = True
+                st.rerun()
+        with col_m2:
+            if st.button("Entendido / Cerrar", use_container_width=True, key="btn_modal_cerrar"):
+                st.session_state["alerta_stock_vista"] = True
+                st.rerun()
+else:
+    def modal_alerta_stock_minimo(df_bajo):
+        pass
+
+# Comprobación de alertas globales
+df_bajo_global = modulo_alertas_stock.obtener_articulos_bajo_minimo()
+
+# Pop-up automático al iniciar sesión
+if "alerta_stock_vista" not in st.session_state and not df_bajo_global.empty:
+    st.session_state["alerta_stock_vista"] = True
+    try:
+        modulo_alertas_stock.disparar_alertas_externas_si_corresponde(minutos_cooldown=120)
+    except Exception:
+        pass
+    modal_alerta_stock_minimo(df_bajo_global)
+
+# ==========================================
 # GESTOR DE TEMAS Y ESTILO CORPORATIVO
 # ==========================================
 with st.sidebar:
@@ -927,6 +990,14 @@ with st.sidebar:
         "⚡ Ventas y Cierre (Camarero10)",
         "📦 Control de Inventario"
     ]
+
+    if not df_bajo_global.empty:
+        n_roturas = int(df_bajo_global["Es_Rotura"].sum())
+        n_total = len(df_bajo_global)
+        txt_badge = f"🚨 {n_total} bajo mínimos ({n_roturas} roturas)" if n_roturas > 0 else f"🚨 {n_total} bajo mínimos"
+        if st.button(txt_badge, use_container_width=True, key="btn_ver_modal_alerta_side", type="secondary"):
+            modal_alerta_stock_minimo(df_bajo_global)
+        st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
 
     es_radar = (st.session_state.seccion_activa == "📡 Radar de Albaranes")
     
@@ -2391,6 +2462,13 @@ elif seccion_activa == "⚡ Ventas y Cierre (Camarero10)":
                         }])], ignore_index=True)
                         
                 df_stock_act.to_csv(ARCHIVO_STOCK, index=False, encoding='utf-8-sig')
+                try:
+                    df_alertas_cierre = modulo_alertas_stock.obtener_articulos_bajo_minimo(centro=centro_ventas)
+                    if not df_alertas_cierre.empty:
+                        modulo_alertas_stock.enviar_alerta_windows_stock(df_alertas_cierre)
+                        modulo_alertas_stock.enviar_alerta_telegram_stock(df_alertas_cierre, origen=f"Cierre {centro_ventas}")
+                except Exception:
+                    pass
                 st.success(f"✅ ¡Stock descontado y actualizado con éxito para {centro_ventas}!")
                 import time; time.sleep(1.2); st.rerun()
         else:
