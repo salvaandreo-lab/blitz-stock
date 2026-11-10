@@ -138,6 +138,11 @@ def vigilar_carpetas():
                 verificar_y_ejecutar_semanal()
             except Exception as e:
                 pass
+            try:
+                import modulo_alertas_stock
+                modulo_alertas_stock.disparar_alertas_externas_si_corresponde(minutos_cooldown=120)
+            except Exception as e:
+                print(f"[Alertas Stock Background] Error: {e}")
 
 if __name__ == "__main__":
     vigilar_carpetas()
