@@ -88,3 +88,39 @@ Cuando conectemos con las credenciales de vuestro ERP:
 1. `GET /ventas` o `GET /tickets`: Filtrando por `fecha_inicio`, `fecha_fin` e `id_centro` / `id_terminal`.
 2. `GET /articulos` o `GET /carta`: Para obtener el catálogo de productos con sus códigos `Ref. producto`.
 3. `POST /webhook` (Opcional): Si Camarero 10 permite avisos en tiempo real cada vez que se realiza un cierre de caja diario.
+
+
+---
+
+## 5. Estructura del Informe Contable Oficial de Cierre (Ventas Diarias y Canales)
+
+Además del desglose por plato individual, Camarero 10 emite el **Informe Contable Diario / Mensual** estructurado por fecha contable, canal de cobro y desglose impositivo:
+
+### Campos del informe contable diario:
+| Campo | Descripción |
+| :--- | :--- |
+| `Fecha` | Marca temporal del día contable (`YYYY-MM-DD 00:00:00`) o etiqueta de desglose (`Desglose de pagos`, `Desglose de impuestos`). |
+| `Propinas (en tar.)` | Propinas capturadas electrónicamente. |
+| `Total (con iva)` | Facturación total bruta cobrada en el día. |
+| `Total (sin iva)` | Base imponible neta facturada en el día. |
+| `Tipo Iva` | Tipo impositivo aplicado (`0.10` para hostelería / 10%). |
+| `IVA` | Cuota de IVA soportada. |
+
+### Canales de cobro registrados (`Desglose de pagos`):
+* `Otros pagos Glovo` (Canal Delivery principal)
+* `Otros pagos Uber Eat` (Canal Delivery)
+* `Otros pagos Just Eat` (Canal Delivery)
+* `Tarjeta de crédito` (TPV Sala / Kiosko de pedidos)
+* `Efectivo` (Caja física)
+
+### Datos Reales Verificados (Centro Juan de Borbón - Octubre 2026):
+* **Período:** 30/09/2026 al 01/11/2026 (25 días de apertura, Miércoles a Domingo, Lunes y Martes cerrado).
+* **Total Facturado Con IVA:** **47.358,48 €**
+* **Base Imponible Neta (Sin IVA):** **43.052,60 €**
+* **Cuota IVA (10%):** **4.305,88 €**
+* **Reparto por Canales de Pago:**
+  * **Glovo:** 22.656,33 € *(47,8 %)*
+  * **Tarjeta de crédito:** 10.274,37 € *(21,7 %)*
+  * **Uber Eats:** 7.587,75 € *(16,0 %)*
+  * **Just Eat:** 3.592,32 € *(7,6 %)*
+  * **Efectivo:** 3.247,71 € *(6,9 %)*
