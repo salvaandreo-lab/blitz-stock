@@ -991,14 +991,6 @@ with st.sidebar:
         "📦 Control de Inventario"
     ]
 
-    if not df_bajo_global.empty:
-        n_roturas = int(df_bajo_global["Es_Rotura"].sum())
-        n_total = len(df_bajo_global)
-        txt_badge = f"🚨 {n_total} bajo mínimos ({n_roturas} roturas)" if n_roturas > 0 else f"🚨 {n_total} bajo mínimos"
-        if st.button(txt_badge, use_container_width=True, key="btn_ver_modal_alerta_side", type="secondary"):
-            modal_alerta_stock_minimo(df_bajo_global)
-        st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
-
     es_radar = (st.session_state.seccion_activa == "📡 Radar de Albaranes")
     
     # 1. Radar de Albaranes
@@ -1065,6 +1057,14 @@ with st.sidebar:
         st.session_state.seccion_activa = "🛒 Asistente de Compras y Pedidos"
         st.session_state.nav_counter += 1
         st.rerun()
+        
+    if not df_bajo_global.empty:
+        st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+        n_roturas = int(df_bajo_global["Es_Rotura"].sum())
+        n_total = len(df_bajo_global)
+        txt_badge = f"🚨 {n_total} bajo mínimos ({n_roturas} roturas)" if n_roturas > 0 else f"🚨 {n_total} bajo mínimos"
+        if st.button(txt_badge, use_container_width=True, key="btn_ver_modal_alerta_side", type="secondary"):
+            modal_alerta_stock_minimo(df_bajo_global)
         
     es_graficas = (st.session_state.seccion_activa == "📈 Evolución y Comparativa de Precios")
     if st.button("📈 Evolución y Comparativa de Precios", use_container_width=True, type="primary" if es_graficas else "secondary", key="btn_nav_graficas"):
