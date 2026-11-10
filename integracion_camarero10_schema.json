@@ -1,0 +1,394 @@
+{
+  "sistema": "Camarero 10 (TPV Cloud)",
+  "descripcion": "Esquema de datos y mapeo oficial de Camarero 10 para integracion API y procesamiento de ventas en Blitz Stock.",
+  "columnas_exportacion_ventas": {
+    "Fecha": "YYYY-MM-DD - Fecha contable del ticket",
+    "Hora": "HH:MM:SS - Hora de apertura/cobro",
+    "Número de ticket": "Serie y numero unico del ticket (ej: V001-001-017608)",
+    "Forma de pago": "Tarjeta de credito, Efectivo, Otros pagos (agregadores)",
+    "Unidades vendidas": "Cantidad numerica vendida en la linea",
+    "Producto": "Descripcion del plato, subarticulo o combo tal como esta en Camarero10",
+    "Ref. producto": "ID o codigo interno unico en Camarero10 (ej: PROD 18 o numerico 1745942027860)",
+    "Categoría": "Categoria en la carta (Hamburguesas, Entrantes, COMBOS, Postres, Refrescos, Cervezas, Pollo Burguers)",
+    "Precio unidad(con IVA)": "Precio tarifa con IVA incluido",
+    "Total sin IVA": "Base imponible facturada en la linea",
+    "Total con IVA": "Importe final cobrado con IVA",
+    "Empleado": "Identificador del camarero o Usuario Web (kiosko / pedidos)",
+    "Descuento": "Importe de descuento o promocion aplicada",
+    "Terminal": "Identificador del terminal fisico o TPV",
+    "Recurso": "Canal de venta: Glovo, Kiosko, Uber Eat, Just Eat, Sala",
+    "Mesa": "Numero de mesa o identificador virtual de pedido"
+  },
+  "canales_venta_recursos": [
+    "Glovo",
+    "Kiosko",
+    "Uber Eat",
+    "Just Eat",
+    "Sala"
+  ],
+  "categorias": [
+    "Hamburguesas",
+    "Pollo Burguers",
+    "Entrantes",
+    "COMBOS",
+    "Postres",
+    "Refrescos",
+    "Cervezas"
+  ],
+  "logica_combos_y_modificadores": {
+    "combos": "COMBO BLITZ (Ref 1777374676019) genera una linea cabecera y a continuacion lineas con Categoria=NaN para la hamburguesa elegida, la guarnicion y la bebida.",
+    "modificadores": "Lineas con Categoria=NaN (ej: Guarnicion Boniato Sweet, SIN CON Boniato Sweet) representan suplementos o personalizaciones de pedido."
+  },
+  "catalogo_articulos_mapeo": {
+    "Tequeños": {
+      "producto_camarero10": "Tequeños",
+      "ref_camarero10": "PROD 08",
+      "categoria": "Entrantes",
+      "precio_unitario_con_iva": 7.5,
+      "escandallo_receta_asociado": "TEQUEÑOS DE QUESO"
+    },
+    "Cheeseburger 3 discos 100gr": {
+      "producto_camarero10": "Cheeseburger 3 discos 100gr",
+      "ref_camarero10": "1745942119079",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "CHEESE BURGUER 3 DISCOS"
+    },
+    "Emmy": {
+      "producto_camarero10": "Emmy",
+      "ref_camarero10": "PROD 17",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "EMY"
+    },
+    "Tequeños Nutella": {
+      "producto_camarero10": "Tequeños Nutella",
+      "ref_camarero10": "PROD 23",
+      "categoria": "Postres",
+      "precio_unitario_con_iva": 6.5,
+      "escandallo_receta_asociado": "TEQUEÑOS DE NUTELLA"
+    },
+    "Brutal Bacon": {
+      "producto_camarero10": "Brutal Bacon",
+      "ref_camarero10": "PROD 18",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "BRUTAL BACON"
+    },
+    "Tijuana": {
+      "producto_camarero10": "Tijuana",
+      "ref_camarero10": "PROD 20",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "TIJUANA"
+    },
+    "Paquita": {
+      "producto_camarero10": "Paquita",
+      "ref_camarero10": "PROD 19",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "PAQUITA"
+    },
+    "Traviesa": {
+      "producto_camarero10": "Traviesa",
+      "ref_camarero10": "PROD 21",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "TRAVIESA"
+    },
+    "Patatas Bacon&Cheese": {
+      "producto_camarero10": "Patatas Bacon&Cheese",
+      "ref_camarero10": "PROD 13",
+      "categoria": "Entrantes",
+      "precio_unitario_con_iva": 6.65,
+      "escandallo_receta_asociado": "PATATAS BACON CHEESE"
+    },
+    "\"LA INFILTRADA\"": {
+      "producto_camarero10": "\"LA INFILTRADA\"",
+      "ref_camarero10": "1782918460101",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 14.5,
+      "escandallo_receta_asociado": "INFILTRADA"
+    },
+    "SIN CON Boniato Sweet": {
+      "producto_camarero10": "SIN CON Boniato Sweet",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "Tequeños Chocoblanco": {
+      "producto_camarero10": "Tequeños Chocoblanco",
+      "ref_camarero10": "PROD 25",
+      "categoria": "Postres",
+      "precio_unitario_con_iva": 7.5,
+      "escandallo_receta_asociado": "TEQUEÑOS DE CHOCO BLANCO"
+    },
+    "Cheeseburger 1 disco 100gr": {
+      "producto_camarero10": "Cheeseburger 1 disco 100gr",
+      "ref_camarero10": "1745941808805",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 8.95,
+      "escandallo_receta_asociado": "CHEESE BURGUER 1 DISCO"
+    },
+    "Nuggets de pollo": {
+      "producto_camarero10": "Nuggets de pollo",
+      "ref_camarero10": "1751450527486",
+      "categoria": "Entrantes",
+      "precio_unitario_con_iva": 5.2,
+      "escandallo_receta_asociado": "NUGGETS"
+    },
+    "RUTA 66": {
+      "producto_camarero10": "RUTA 66",
+      "ref_camarero10": "1793102515316",
+      "categoria": "Pollo Burguers",
+      "precio_unitario_con_iva": 13.5,
+      "escandallo_receta_asociado": "RUTA 66"
+    },
+    "BURGUER DEL MES NOVIEMBRE:LA CONDESA": {
+      "producto_camarero10": "BURGUER DEL MES NOVIEMBRE:LA CONDESA",
+      "ref_camarero10": "1793185496406",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 14.5,
+      "escandallo_receta_asociado": "BURGUER DEL MES NOVIEMBRE:LA CONDESA"
+    },
+    "Agua": {
+      "producto_camarero10": "Agua",
+      "ref_camarero10": "PROD 07",
+      "categoria": "Refrescos",
+      "precio_unitario_con_iva": 1.5,
+      "escandallo_receta_asociado": ""
+    },
+    "Cerveza con alcohol": {
+      "producto_camarero10": "Cerveza con alcohol",
+      "ref_camarero10": "PROD 05",
+      "categoria": "Cervezas",
+      "precio_unitario_con_iva": 2.5,
+      "escandallo_receta_asociado": ""
+    },
+    "LA POLLO MODO GOD": {
+      "producto_camarero10": "LA POLLO MODO GOD",
+      "ref_camarero10": "1792574300272",
+      "categoria": "Pollo Burguers",
+      "precio_unitario_con_iva": 10.9,
+      "escandallo_receta_asociado": "LA POLLO MODO GOD"
+    },
+    "CON POLLO CON Boniato": {
+      "producto_camarero10": "CON POLLO CON Boniato",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "SIN CON Bacon lonchas": {
+      "producto_camarero10": "SIN CON Bacon lonchas",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "Coca cola Zero": {
+      "producto_camarero10": "Coca cola Zero",
+      "ref_camarero10": "PROD 02",
+      "categoria": "Refrescos",
+      "precio_unitario_con_iva": 1.99,
+      "escandallo_receta_asociado": ""
+    },
+    "Patatas Blitz": {
+      "producto_camarero10": "Patatas Blitz",
+      "ref_camarero10": "PROD 14",
+      "categoria": "Entrantes",
+      "precio_unitario_con_iva": 7.65,
+      "escandallo_receta_asociado": "PATATAS BLITZ"
+    },
+    "COMBO BLITZ": {
+      "producto_camarero10": "COMBO BLITZ",
+      "ref_camarero10": "1777374676019",
+      "categoria": "COMBOS",
+      "precio_unitario_con_iva": 15.5,
+      "escandallo_receta_asociado": ""
+    },
+    "Hamburguesa Cheese Burguer 3 discos": {
+      "producto_camarero10": "Hamburguesa Cheese Burguer 3 discos",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": "CHEESE BURGUER 3 DISCOS"
+    },
+    "Guarnición Boniato Sweet": {
+      "producto_camarero10": "Guarnición Boniato Sweet",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": "BONIATO"
+    },
+    "Hamburguesa Brutal Bacon": {
+      "producto_camarero10": "Hamburguesa Brutal Bacon",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": "BRUTAL BACON"
+    },
+    "Coca-Cola Grande 500 ml.": {
+      "producto_camarero10": "Coca-Cola Grande 500 ml.",
+      "ref_camarero10": "1764666713807",
+      "categoria": "Refrescos",
+      "precio_unitario_con_iva": 2.5,
+      "escandallo_receta_asociado": ""
+    },
+    "LA \"CRIMINAL\"": {
+      "producto_camarero10": "LA \"CRIMINAL\"",
+      "ref_camarero10": "1754556771546",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "LA CRIMINAL"
+    },
+    "Coca cola Normal": {
+      "producto_camarero10": "Coca cola Normal",
+      "ref_camarero10": "PROD 01",
+      "categoria": "Refrescos",
+      "precio_unitario_con_iva": 1.99,
+      "escandallo_receta_asociado": ""
+    },
+    "Colorá": {
+      "producto_camarero10": "Colorá",
+      "ref_camarero10": "1745232881772",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "COLORÁ"
+    },
+    "Distrufona": {
+      "producto_camarero10": "Distrufona",
+      "ref_camarero10": "PROD 22",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.95,
+      "escandallo_receta_asociado": "DISTRUFONA"
+    },
+    "Croqueta Explosión Jamón": {
+      "producto_camarero10": "Croqueta Explosión Jamón",
+      "ref_camarero10": "1768402364723",
+      "categoria": "Entrantes",
+      "precio_unitario_con_iva": 6.95,
+      "escandallo_receta_asociado": "CROQUETA EXPLOSIÓN JAMÓN"
+    },
+    "TARTA QUESO LOTUS BY ANDRÉS MÁRMOL": {
+      "producto_camarero10": "TARTA QUESO LOTUS BY ANDRÉS MÁRMOL",
+      "ref_camarero10": "1790960159135",
+      "categoria": "Postres",
+      "precio_unitario_con_iva": 6.5,
+      "escandallo_receta_asociado": "TARTA QUESO LOTUS BY ANDRÉS MÁRMOL"
+    },
+    "Cheeseburger 2 discos 100gr": {
+      "producto_camarero10": "Cheeseburger 2 discos 100gr",
+      "ref_camarero10": "1745942027860",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 10.95,
+      "escandallo_receta_asociado": "CHEESE BURGUER 2 DISCOS"
+    },
+    "Fanta naranja": {
+      "producto_camarero10": "Fanta naranja",
+      "ref_camarero10": "PROD 03",
+      "categoria": "Refrescos",
+      "precio_unitario_con_iva": 1.8,
+      "escandallo_receta_asociado": ""
+    },
+    "Classic": {
+      "producto_camarero10": "Classic",
+      "ref_camarero10": "PROD 15",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.45,
+      "escandallo_receta_asociado": "CLASSIC"
+    },
+    "Tequeños Oreo": {
+      "producto_camarero10": "Tequeños Oreo",
+      "ref_camarero10": "PROD 24",
+      "categoria": "Postres",
+      "precio_unitario_con_iva": 7.5,
+      "escandallo_receta_asociado": "TEQUEÑOS DE OREO"
+    },
+    "Refresco Coca-Cola 500 ml": {
+      "producto_camarero10": "Refresco Coca-Cola 500 ml",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "Hamburguesa Colorá": {
+      "producto_camarero10": "Hamburguesa Colorá",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": "COLORÁ"
+    },
+    "Original": {
+      "producto_camarero10": "Original",
+      "ref_camarero10": "PROD 16",
+      "categoria": "Hamburguesas",
+      "precio_unitario_con_iva": 13.45,
+      "escandallo_receta_asociado": "ORIGINAL"
+    },
+    "Hamburguesa Emmy": {
+      "producto_camarero10": "Hamburguesa Emmy",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": "EMY"
+    },
+    "Alitas Tex-Mex": {
+      "producto_camarero10": "Alitas Tex-Mex",
+      "ref_camarero10": "1768401939360",
+      "categoria": "Entrantes",
+      "precio_unitario_con_iva": 6.95,
+      "escandallo_receta_asociado": "ALITAS"
+    },
+    "Fanta limon": {
+      "producto_camarero10": "Fanta limon",
+      "ref_camarero10": "PROD 04",
+      "categoria": "Refrescos",
+      "precio_unitario_con_iva": 1.8,
+      "escandallo_receta_asociado": ""
+    },
+    "SIN CONDESA CON Boniato Sweet": {
+      "producto_camarero10": "SIN CONDESA CON Boniato Sweet",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "Hamburguesa Criminal": {
+      "producto_camarero10": "Hamburguesa Criminal",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": "LA CRIMINAL"
+    },
+    "CRIMINAL CON Boniato Sweet": {
+      "producto_camarero10": "CRIMINAL CON Boniato Sweet",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "\"SIN RUTA 66\" CON Boniato Sweet": {
+      "producto_camarero10": "\"SIN RUTA 66\" CON Boniato Sweet",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "SIN CON Boniato": {
+      "producto_camarero10": "SIN CON Boniato",
+      "ref_camarero10": "",
+      "categoria": "Modificador/Subarticulo",
+      "precio_unitario_con_iva": 0.0,
+      "escandallo_receta_asociado": ""
+    },
+    "TARTA QUESO TRADICIONAL BY ANDRÉS MÁRMOL": {
+      "producto_camarero10": "TARTA QUESO TRADICIONAL BY ANDRÉS MÁRMOL",
+      "ref_camarero10": "1790959944236",
+      "categoria": "Postres",
+      "precio_unitario_con_iva": 6.0,
+      "escandallo_receta_asociado": "TARTA QUESO CLÁSICA BY ANDRÉS MÁRMOL"
+    }
+  }
+}
