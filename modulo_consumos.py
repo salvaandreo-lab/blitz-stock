@@ -628,134 +628,79 @@ def _render_modulo_consumos_impl():
     """
     render_html_seguro(header_html)
 
-    # 1. Selector de Centro (4 botones táctiles de alta visibilidad)
-    if "centro_consumos_activo" not in st.session_state:
-        st.session_state.centro_consumos_activo = "🏢 Total Empresa (Global)"
-
-    col_c1, col_c2, col_c3, col_c4 = st.columns(4)
-    with col_c1:
-        es_glob = (st.session_state.centro_consumos_activo == "🏢 Total Empresa (Global)")
-        if st.button("🏢 Total Empresa (Global)", use_container_width=True, type="primary" if es_glob else "secondary", key="btn_c_glob"):
-            st.session_state.centro_consumos_activo = "🏢 Total Empresa (Global)"
-            st.rerun()
-    with col_c2:
-        es_rs = (st.session_state.centro_consumos_activo == "📍 Blitz Ronda Sur")
-        if st.button("📍 Blitz Ronda Sur", use_container_width=True, type="primary" if es_rs else "secondary", key="btn_c_rs"):
-            st.session_state.centro_consumos_activo = "📍 Blitz Ronda Sur"
-            st.rerun()
-    with col_c3:
-        es_jb = (st.session_state.centro_consumos_activo == "📍 Blitz Juan de Borbón")
-        if st.button("📍 Blitz Juan de Borbón", use_container_width=True, type="primary" if es_jb else "secondary", key="btn_c_jb"):
-            st.session_state.centro_consumos_activo = "📍 Blitz Juan de Borbón"
-            st.rerun()
-    with col_c4:
-        es_ft = (st.session_state.centro_consumos_activo == "🚚 Eventos / Food Truck")
-        if st.button("🚚 Eventos / Food Truck", use_container_width=True, type="primary" if es_ft else "secondary", key="btn_c_ft"):
-            st.session_state.centro_consumos_activo = "🚚 Eventos / Food Truck"
-            st.rerun()
-
-    FECHA_MINIMA = FECHA_MINIMA_DEFECTO
+    # 1. ENCABEZADO CON SELECTOR DE FECHAS (PERÍODO DE ANÁLISIS)
+    FECHA_MINIMA = FECHA_MINIMA_DEFECTO  # 01/10/2026
     real_today = datetime.date.today()
     hoy = real_today if real_today >= FECHA_MINIMA else datetime.date(2026, 11, 10)
     primer_dia_defecto = FECHA_MINIMA
     ultimo_dia_defecto = datetime.date(2026, 11, 1)
 
-    # Inicialización ultra-segura de fechas en session_state (imposible que sea None ni menor a FECHA_MINIMA)
-    f_d_actual = limpiar_fecha(st.session_state.get("filtro_fecha_desde"), primer_dia_defecto)
-    f_h_actual = limpiar_fecha(st.session_state.get("filtro_fecha_hasta"), ultimo_dia_defecto)
-    if f_h_actual < f_d_actual:
-        f_h_actual = f_d_actual
-    st.session_state.filtro_fecha_desde = f_d_actual
-    st.session_state.filtro_fecha_hasta = f_h_actual
+    if "filtro_fecha_desde" not in st.session_state:
+        st.session_state.filtro_fecha_desde = primer_dia_defecto
+    if "filtro_fecha_hasta" not in st.session_state:
+        st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
 
-    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
-    
-    centro_actual = st.session_state.centro_consumos_activo
-    renderizar_panel_centro(centro_actual)
-
-
-def renderizar_panel_centro(centro_nombre):
-    """Renderiza todas las gráficas circulares, KPIs y tablas para el centro seleccionado."""
-    FECHA_MINIMA = FECHA_MINIMA_DEFECTO
-    real_today = datetime.date.today()
-    hoy = real_today if real_today >= FECHA_MINIMA else datetime.date(2026, 11, 10)
-    
-    # 1. Contenedor superior para KPIs (se renderizará visualmente arriba de las fechas)
-    kpis_container = st.container()
-
-    # 2. ENCABEZADO CON SELECTOR DE FECHAS (JUSTO ENCIMA DE LOS DONUTS)
     st.markdown("#### 📅 Período de Análisis (Filtro Desde / Hasta)")
-    
-    key_d = f"widget_f_desde_{centro_nombre}"
-    key_h = f"widget_f_hasta_{centro_nombre}"
 
+    # Botones de acceso rápido que actualizan sesión y recargan inmediatamente
     col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
     with col_rap1:
-        if st.button("📅 Mes Octubre 2026", use_container_width=True, key=f"btn_oct_{centro_nombre}"):
-            f_d_set = datetime.date(2026, 10, 1)
-            f_h_set = datetime.date(2026, 11, 1)
-            st.session_state.filtro_fecha_desde = f_d_set
-            st.session_state.filtro_fecha_hasta = f_h_set
-            st.session_state[key_d] = f_d_set
-            st.session_state[key_h] = f_h_set
+        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct_global"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
+            st.session_state["input_date_desde"] = datetime.date(2026, 10, 1)
+            st.session_state["input_date_hasta"] = datetime.date(2026, 11, 1)
             st.rerun()
     with col_rap2:
-        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key=f"btn_mes_act_{centro_nombre}"):
-            f_d_set = datetime.date(2026, 11, 1)
-            f_h_set = datetime.date(2026, 11, 30)
-            st.session_state.filtro_fecha_desde = f_d_set
-            st.session_state.filtro_fecha_hasta = f_h_set
-            st.session_state[key_d] = f_d_set
-            st.session_state[key_h] = f_h_set
+        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_nov_global"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
+            st.session_state["input_date_desde"] = datetime.date(2026, 11, 1)
+            st.session_state["input_date_hasta"] = datetime.date(2026, 11, 30)
             st.rerun()
     with col_rap3:
-        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key=f"btn_4sem_{centro_nombre}"):
-            f_d_set = max(FECHA_MINIMA, hoy - timedelta(days=28))
-            f_h_set = hoy
-            st.session_state.filtro_fecha_desde = f_d_set
-            st.session_state.filtro_fecha_hasta = f_h_set
-            st.session_state[key_d] = f_d_set
-            st.session_state[key_h] = f_h_set
+        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem_global"):
+            f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
+            st.session_state.filtro_fecha_desde = f_d_4s
+            st.session_state.filtro_fecha_hasta = hoy
+            st.session_state["input_date_desde"] = f_d_4s
+            st.session_state["input_date_hasta"] = hoy
             st.rerun()
     with col_rap4:
-        if st.button("📅 Todo el Histórico", use_container_width=True, key=f"btn_todo_{centro_nombre}"):
-            f_d_set = FECHA_MINIMA
-            f_h_set = datetime.date(2026, 12, 31)
-            st.session_state.filtro_fecha_desde = f_d_set
-            st.session_state.filtro_fecha_hasta = f_h_set
-            st.session_state[key_d] = f_d_set
-            st.session_state[key_h] = f_h_set
+        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo_global"):
+            st.session_state.filtro_fecha_desde = FECHA_MINIMA
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
+            st.session_state["input_date_desde"] = FECHA_MINIMA
+            st.session_state["input_date_hasta"] = datetime.date(2026, 12, 31)
             st.rerun()
 
-    # Sincronización robusta de sesión con los widgets
-    val_desde_actual = limpiar_fecha(st.session_state.get(key_d, st.session_state.filtro_fecha_desde), FECHA_MINIMA)
-    val_hasta_actual = limpiar_fecha(st.session_state.get(key_h, st.session_state.filtro_fecha_hasta), datetime.date(2026, 11, 1))
-    if val_hasta_actual < val_desde_actual:
-        val_hasta_actual = val_desde_actual
+    # Inputs "Desde" y "Hasta"
+    val_desde = limpiar_fecha(st.session_state.get("input_date_desde", st.session_state.filtro_fecha_desde), primer_dia_defecto)
+    val_hasta = limpiar_fecha(st.session_state.get("input_date_hasta", st.session_state.filtro_fecha_hasta), ultimo_dia_defecto)
+    if val_hasta < val_desde:
+        val_hasta = val_desde
 
-    st.session_state[key_d] = val_desde_actual
-    st.session_state[key_h] = val_hasta_actual
+    st.session_state["input_date_desde"] = val_desde
+    st.session_state["input_date_hasta"] = val_hasta
 
     col_f1, col_f2 = st.columns(2)
     with col_f1:
         f_desde_in = st.date_input(
             "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
-            value=val_desde_actual,
+            value=val_desde,
             min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
-            key=key_d
+            key="input_date_desde"
         )
-
     with col_f2:
         f_hasta_in = st.date_input(
             "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
-            value=val_hasta_actual,
+            value=val_hasta,
             min_value=FECHA_MINIMA,
             format="DD/MM/YYYY",
-            key=key_h
+            key="input_date_hasta"
         )
 
-    # Limpieza estricta e instantánea de la selección
     f_desde_limpia = limpiar_fecha(f_desde_in, FECHA_MINIMA)
     f_hasta_limpia = limpiar_fecha(f_hasta_in, f_desde_limpia)
     if f_hasta_limpia < f_desde_limpia:
@@ -766,11 +711,31 @@ def renderizar_panel_centro(centro_nombre):
     fecha_desde = f_desde_limpia
     fecha_hasta = f_hasta_limpia
 
-    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 14px;'></div>", unsafe_allow_html=True)
 
-    # 3. Cargar datos consolidados con las fechas activas
+    # 2. PESTAÑAS NATIVAS DE CENTROS (ST.TABS)
+    c_tab1, c_tab2, c_tab3, c_tab4 = st.tabs([
+        "🏢 Total Empresa (Global)",
+        "📍 Blitz Ronda Sur",
+        "📍 Blitz Juan de Borbón",
+        "🚚 Eventos / Food Truck"
+    ])
+
+    with c_tab1:
+        renderizar_panel_centro("🏢 Total Empresa (Global)", fecha_desde, fecha_hasta)
+    with c_tab2:
+        renderizar_panel_centro("📍 Blitz Ronda Sur", fecha_desde, fecha_hasta)
+    with c_tab3:
+        renderizar_panel_centro("📍 Blitz Juan de Borbón", fecha_desde, fecha_hasta)
+    with c_tab4:
+        renderizar_panel_centro("🚚 Eventos / Food Truck", fecha_desde, fecha_hasta)
+
+
+def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
+    """Renderiza todas las gráficas circulares, KPIs y tablas para el centro seleccionado."""
+    # 1. Cargar datos consolidados con las fechas activas
     kpis, semanas_tabla, prov_compras, matriz_prov_sem, semanas_ordenadas = cargar_datos_balance(
-        centro_nombre, f_desde_in, f_hasta_in
+        centro_nombre, fecha_desde, fecha_hasta
     )
 
     optimo = kpis["umbral_optimo"]
@@ -797,7 +762,7 @@ def renderizar_panel_centro(centro_nombre):
         badge_ratio = f"🔴 ALTO / ALERTA ({ratio_global:.1f}%)"
         color_ratio = "#ef4444"
 
-    # TARJETAS DE MÉTRICAS KPI SUPERIORES (Se inyectan en el contenedor superior)
+    # TARJETAS DE MÉTRICAS KPI SUPERIORES (Se renderizan directamente arriba)
     kpis_html = f"""
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 10px 0 20px 0;">
         <div style="background: #1e293b; border-left: 5px solid #3b82f6; padding: 14px 18px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
@@ -822,8 +787,7 @@ def renderizar_panel_centro(centro_nombre):
         </div>
     </div>
     """
-    with kpis_container:
-        render_html_seguro(kpis_html)
+    render_html_seguro(kpis_html)
 
     # 4. GRÁFICAS DE CÍRCULO (DONUT / TARTA)
     st.markdown("#### 🍩 Gráficas Circulares de Ratio y Reparto")
