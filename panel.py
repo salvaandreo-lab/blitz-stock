@@ -2789,6 +2789,11 @@ elif seccion_activa == "🛒 Asistente de Compras y Pedidos":
                         dict_minimos[(centro_pedido, m)] = float(r["Stock_Minimo"])
                     rows_out = [{"Centro": c, "Producto_Maestro": m, "Stock_Minimo": val} for (c, m), val in dict_minimos.items()]
                     pd.DataFrame(rows_out).to_csv(ARCHIVO_STOCK_MINIMO, index=False, encoding='utf-8-sig')
+                    try:
+                        from sync_repo import sync_file
+                        sync_file("Stock_Minimo.csv", "Update: Guardar niveles de stock minimo desde panel")
+                    except Exception:
+                        pass
                     st.success("✅ ¡Niveles de stock mínimo guardados con éxito!")
                     import time; time.sleep(0.6); st.rerun()
                     
