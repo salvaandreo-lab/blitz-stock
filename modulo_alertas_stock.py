@@ -38,6 +38,8 @@ def obtener_articulos_bajo_minimo(centro=None):
         df_min["Stock_Minimo"] = pd.to_numeric(df_min["Stock_Minimo"], errors='coerce').fillna(0.0)
         
         merged = pd.merge(df_stock, df_min, on=["Centro", "Producto_Maestro"], how="inner")
+        # Excluir Food Trucks (no tienen almacén permanente, solo género para eventos)
+        merged = merged[~merged["Centro"].str.contains("Truck|Evento", na=False, case=False)]
         
         if centro:
             merged = merged[merged["Centro"].str.lower() == str(centro).strip().lower()]
