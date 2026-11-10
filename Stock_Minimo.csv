@@ -1,211 +1,321 @@
-Centro,Producto_Maestro,Stock_Minimo
-Blitz  Juan de Borbón,PAPEL HIGIENICO,4.0
-Blitz  Juan de Borbón,ROLLO PAPEL COCINA,10.0
-Blitz  Juan de Borbón,QUESO CREMA,4.0
-Blitz  Juan de Borbón,QUESO CHEDDAR LONCHAS,20.0
-Blitz  Juan de Borbón,PATATAS FRITAS,20.0
-Blitz  Juan de Borbón,BONIATO,5.0
-Blitz  Juan de Borbón,LECHUGA,5.0
-Blitz  Juan de Borbón,GUACAMOLE,5.0
-Blitz  Juan de Borbón,TOMATE CONFITADO,10.0
-Blitz  Juan de Borbón,CEBOLLA CARAMELIZADA,20.0
-Blitz  Juan de Borbón,GUANTES NITRILO TALLA M,4.0
-Blitz  Juan de Borbón,GUANTES NITRILO TALLA L,4.0
+﻿Centro,Producto_Maestro,Stock_Minimo
 Blitz  Juan de Borbón,ACEITE FREIDORA,20.0
-Blitz  Juan de Borbón,SALSA SMOKE BACON,20.0
-Blitz  Juan de Borbón,MANTEQUILLA BLOQUE 1 KG,4.0
-Blitz  Juan de Borbón,NATA LIQUIDA 1 LITRO,4.0
-Blitz  Juan de Borbón,SOBRASADA IBERICA 250 GRS,5.0
-Blitz  Juan de Borbón,PEPINILLO RODAJA 370GRS,5.0
-Blitz  Juan de Borbón,CEBOLLA MORADA,5.0
-Blitz  Juan de Borbón,CEBOLLINO 125 GRS,4.0
-Blitz  Juan de Borbón,MAYONESA EMY,20.0
-Blitz  Juan de Borbón,MAYONESA TRUFADA,5.0
-Blitz  Juan de Borbón,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,5.0
-Blitz  Juan de Borbón,MIEL 1 KG,5.0
-Blitz  Juan de Borbón,QUESO MONTERREY LONCHAS,5.0
-Blitz  Juan de Borbón,HAMBURGUESA POLLO CRUNCHY,5.0
-Blitz  Juan de Borbón,PULLED PORK 500 GRS,10.0
-Blitz  Juan de Borbón,PAN BURGUER HIGH NEGRO 48 UNIDADES,5.0
-Blitz  Juan de Borbón,PAN POTATO ROLL 80 GRS 18 UNIDADES,20.0
-Blitz  Juan de Borbón,CARNE BURGUER 90 GRS,10.0
-Blitz  Juan de Borbón,MAYONESA HEINZ CUBO 5L,5.0
-Blitz  Juan de Borbón,BACON LONCHAS,20.0
-Blitz  Juan de Borbón,SALCHICHA FRANKFURT,10.0
-Blitz  Juan de Borbón,NUGGETS POLLO,4.0
+Blitz  Juan de Borbón,AGUA 1´5 LITROS,5.0
+Blitz  Juan de Borbón,AGUA 500 ML,20.0
 Blitz  Juan de Borbón,ALITAS POLLO TEX-MEX,4.0
 Blitz  Juan de Borbón,AZUCAR GLASS,5.0
-Blitz  Juan de Borbón,QUESO AHUMADO LONCHAS,20.0
 Blitz  Juan de Borbón,BACON DADOS,10.0
+Blitz  Juan de Borbón,BACON LONCHAS,20.0
+Blitz  Juan de Borbón,BOLIGRAFOS,5.0
+Blitz  Juan de Borbón,BOLSAS BASURA,5.0
+Blitz  Juan de Borbón,BONIATO,5.0
+Blitz  Juan de Borbón,CACAHUETE FRITO CON MIEL Y SAL,5.0
+Blitz  Juan de Borbón,CARGO POR GESTION,5.0
+Blitz  Juan de Borbón,CARNE BURGUER 90 GRS,10.0
+Blitz  Juan de Borbón,CEBOLLA CARAMELIZADA,20.0
 Blitz  Juan de Borbón,CEBOLLA CRISPY,3.0
+Blitz  Juan de Borbón,CEBOLLA MORADA,5.0
+Blitz  Juan de Borbón,CEBOLLINO 125 GRS,4.0
+Blitz  Juan de Borbón,CHIPOTLE,5.0
+Blitz  Juan de Borbón,COCA-COLA 2 LTRS,5.0
+Blitz  Juan de Borbón,COCA-COLA 500 ML,20.0
+Blitz  Juan de Borbón,COCA-COLA ZERO BOTE,5.0
+Blitz  Juan de Borbón,CROQUETAS JAMON,5.0
+Blitz  Juan de Borbón,CUBIERTOS SET,5.0
+Blitz  Juan de Borbón,FANTA NARANJA BOTE,5.0
+Blitz  Juan de Borbón,FREGONA 2 MOCHOS,5.0
+Blitz  Juan de Borbón,GUACAMOLE,5.0
+Blitz  Juan de Borbón,GUANTES NITRILO TALLA L,4.0
+Blitz  Juan de Borbón,GUANTES NITRILO TALLA M,4.0
+Blitz  Juan de Borbón,HAMBURGUESA POLLO CRUNCHY,5.0
+Blitz  Juan de Borbón,JALAPEÑOS EN RODAJAS,5.0
+Blitz  Juan de Borbón,JALAPEÑOS FRESCOS,2.0
+Blitz  Juan de Borbón,KIKOS,4.0
+Blitz  Juan de Borbón,LAVAVAJILLAS MANUAL,5.0
+Blitz  Juan de Borbón,LECHUGA,5.0
+Blitz  Juan de Borbón,LEJIA,5.0
+Blitz  Juan de Borbón,MANTEQUILLA BLOQUE 1 KG,4.0
+Blitz  Juan de Borbón,MAYONESA BIBERON 770 ML,5.0
+Blitz  Juan de Borbón,MAYONESA EMY,20.0
+Blitz  Juan de Borbón,MAYONESA HEINZ CUBO 5L,5.0
+Blitz  Juan de Borbón,MAYONESA TRUFADA,5.0
+Blitz  Juan de Borbón,MERMELADA DE CECINA,4.0
+Blitz  Juan de Borbón,MIEL 1 KG,5.0
+Blitz  Juan de Borbón,NATA LIQUIDA 1 LITRO,4.0
+Blitz  Juan de Borbón,NUGGETS POLLO,4.0
+Blitz  Juan de Borbón,PAN BURGUER BRIOXE BAKER,20.0
+Blitz  Juan de Borbón,PAN BURGUER HIGH NEGRO 48 UNIDADES,5.0
+Blitz  Juan de Borbón,PAN POTATO ROLL 80 GRS 18 UNIDADES,20.0
+Blitz  Juan de Borbón,PANKO,4.0
+Blitz  Juan de Borbón,PAPEL ALUMINIO,5.0
+Blitz  Juan de Borbón,PAPEL HIGIENICO,4.0
+Blitz  Juan de Borbón,PATATAS FRITAS,20.0
+Blitz  Juan de Borbón,PEPINILLO RODAJA 370GRS,5.0
+Blitz  Juan de Borbón,PULLED PORK 500 GRS,10.0
+Blitz  Juan de Borbón,QUESO AHUMADO LONCHAS,20.0
+Blitz  Juan de Borbón,QUESO CHEDDAR LONCHAS,20.0
+Blitz  Juan de Borbón,QUESO CREMA,4.0
+Blitz  Juan de Borbón,QUESO GOUDA LONCHAS,5.0
+Blitz  Juan de Borbón,QUESO MONTERREY LONCHAS,5.0
+Blitz  Juan de Borbón,REPOLLO FRESCO,2.0
+Blitz  Juan de Borbón,ROLLO PAPEL COCINA,10.0
+Blitz  Juan de Borbón,SAL FINA,5.0
+Blitz  Juan de Borbón,SALCHICHA FRANKFURT,10.0
+Blitz  Juan de Borbón,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,5.0
 Blitz  Juan de Borbón,SALSA BURGUER,5.0
 Blitz  Juan de Borbón,SALSA CHEDDAR,5.0
 Blitz  Juan de Borbón,SALSA RANCHERA,10.0
-Blitz  Juan de Borbón,CHIPOTLE,5.0
-Blitz  Juan de Borbón,JALAPEÑOS EN RODAJAS,5.0
-Blitz  Juan de Borbón,KIKOS,4.0
-Blitz  Juan de Borbón,MERMELADA DE CECINA,4.0
-Blitz  Juan de Borbón,PANKO,4.0
-Blitz  Juan de Borbón,TEQUEÑOS DE QUESO,4.0
-Blitz  Juan de Borbón,TEQUEÑOS DE NUTELLA,4.0
-Blitz  Juan de Borbón,SIROPE OREO,4.0
+Blitz  Juan de Borbón,SALSA SMOKE BACON,20.0
+Blitz  Juan de Borbón,SALSA SWEET CHILI,5.0
+Blitz  Juan de Borbón,SERVILLETAS,5.0
 Blitz  Juan de Borbón,SIROPE CHOCOLATE BLANCO,4.0
-Blitz Ronda Sur,PAPEL HIGIENICO,4.0
-Blitz Ronda Sur,ROLLO PAPEL COCINA,4.0
-Blitz Ronda Sur,QUESO CREMA,4.0
-Blitz Ronda Sur,QUESO CHEDDAR LONCHAS,4.0
-Blitz Ronda Sur,PATATAS FRITAS,4.0
-Blitz Ronda Sur,BONIATO,4.0
-Blitz Ronda Sur,LECHUGA,4.0
-Blitz Ronda Sur,GUACAMOLE,4.0
-Blitz Ronda Sur,TOMATE CONFITADO,4.0
-Blitz Ronda Sur,CEBOLLA CARAMELIZADA,4.0
-Blitz Ronda Sur,GUANTES NITRILO TALLA M,4.0
-Blitz Ronda Sur,GUANTES NITRILO TALLA L,4.0
+Blitz  Juan de Borbón,SIROPE OREO,4.0
+Blitz  Juan de Borbón,SOBRASADA IBERICA 250 GRS,5.0
+Blitz  Juan de Borbón,TAJIN ESPECIAS,2.0
+Blitz  Juan de Borbón,TARTA QUESO CLASICA,5.0
+Blitz  Juan de Borbón,TARTA QUESO LOTUS,5.0
+Blitz  Juan de Borbón,TARTA QUESO PISTACHO,5.0
+Blitz  Juan de Borbón,TEQUEÑOS DE NUTELLA,4.0
+Blitz  Juan de Borbón,TEQUEÑOS DE QUESO,4.0
+Blitz  Juan de Borbón,TOMATE CONFITADO,10.0
+Blitz  Juan de Borbón,ZANAHORIA RALLADA,2.0
 Blitz Ronda Sur,ACEITE FREIDORA,4.0
-Blitz Ronda Sur,SALSA SMOKE BACON,4.0
-Blitz Ronda Sur,MANTEQUILLA BLOQUE 1 KG,4.0
-Blitz Ronda Sur,NATA LIQUIDA 1 LITRO,4.0
-Blitz Ronda Sur,SOBRASADA IBERICA 250 GRS,4.0
-Blitz Ronda Sur,PEPINILLO RODAJA 370GRS,4.0
-Blitz Ronda Sur,CEBOLLA MORADA,4.0
-Blitz Ronda Sur,CEBOLLINO 125 GRS,4.0
-Blitz Ronda Sur,MAYONESA EMY,4.0
-Blitz Ronda Sur,MAYONESA TRUFADA,4.0
-Blitz Ronda Sur,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,4.0
-Blitz Ronda Sur,MIEL 1 KG,4.0
-Blitz Ronda Sur,QUESO MONTERREY LONCHAS,4.0
-Blitz Ronda Sur,HAMBURGUESA POLLO CRUNCHY,4.0
-Blitz Ronda Sur,PULLED PORK 500 GRS,4.0
-Blitz Ronda Sur,PAN BURGUER HIGH NEGRO 48 UNIDADES,4.0
-Blitz Ronda Sur,PAN POTATO ROLL 80 GRS 18 UNIDADES,4.0
-Blitz Ronda Sur,CARNE BURGUER 90 GRS,4.0
-Blitz Ronda Sur,MAYONESA HEINZ CUBO 5L,4.0
-Blitz Ronda Sur,BACON LONCHAS,4.0
-Blitz Ronda Sur,SALCHICHA FRANKFURT,4.0
-Blitz Ronda Sur,NUGGETS POLLO,4.0
+Blitz Ronda Sur,AGUA 1´5 LITROS,5.0
+Blitz Ronda Sur,AGUA 500 ML,20.0
 Blitz Ronda Sur,ALITAS POLLO TEX-MEX,4.0
 Blitz Ronda Sur,AZUCAR GLASS,4.0
-Blitz Ronda Sur,QUESO AHUMADO LONCHAS,4.0
 Blitz Ronda Sur,BACON DADOS,4.0
+Blitz Ronda Sur,BACON LONCHAS,4.0
+Blitz Ronda Sur,BOLIGRAFOS,5.0
+Blitz Ronda Sur,BOLSAS BASURA,5.0
+Blitz Ronda Sur,BONIATO,4.0
+Blitz Ronda Sur,CACAHUETE FRITO CON MIEL Y SAL,5.0
+Blitz Ronda Sur,CARGO POR GESTION,5.0
+Blitz Ronda Sur,CARNE BURGUER 90 GRS,4.0
+Blitz Ronda Sur,CEBOLLA CARAMELIZADA,4.0
 Blitz Ronda Sur,CEBOLLA CRISPY,2.0
+Blitz Ronda Sur,CEBOLLA MORADA,4.0
+Blitz Ronda Sur,CEBOLLINO 125 GRS,4.0
+Blitz Ronda Sur,CHIPOTLE,4.0
+Blitz Ronda Sur,COCA-COLA 2 LTRS,5.0
+Blitz Ronda Sur,COCA-COLA 500 ML,20.0
+Blitz Ronda Sur,COCA-COLA ZERO BOTE,5.0
+Blitz Ronda Sur,CROQUETAS JAMON,5.0
+Blitz Ronda Sur,CUBIERTOS SET,5.0
+Blitz Ronda Sur,FANTA NARANJA BOTE,5.0
+Blitz Ronda Sur,FREGONA 2 MOCHOS,5.0
+Blitz Ronda Sur,GUACAMOLE,4.0
+Blitz Ronda Sur,GUANTES NITRILO TALLA L,4.0
+Blitz Ronda Sur,GUANTES NITRILO TALLA M,4.0
+Blitz Ronda Sur,HAMBURGUESA POLLO CRUNCHY,4.0
+Blitz Ronda Sur,JALAPEÑOS EN RODAJAS,4.0
+Blitz Ronda Sur,JALAPEÑOS FRESCOS,2.0
+Blitz Ronda Sur,KIKOS,4.0
+Blitz Ronda Sur,LAVAVAJILLAS MANUAL,5.0
+Blitz Ronda Sur,LECHUGA,4.0
+Blitz Ronda Sur,LEJIA,5.0
+Blitz Ronda Sur,MANTEQUILLA BLOQUE 1 KG,4.0
+Blitz Ronda Sur,MAYONESA BIBERON 770 ML,5.0
+Blitz Ronda Sur,MAYONESA EMY,4.0
+Blitz Ronda Sur,MAYONESA HEINZ CUBO 5L,4.0
+Blitz Ronda Sur,MAYONESA TRUFADA,4.0
+Blitz Ronda Sur,MERMELADA DE CECINA,4.0
+Blitz Ronda Sur,MIEL 1 KG,4.0
+Blitz Ronda Sur,NATA LIQUIDA 1 LITRO,4.0
+Blitz Ronda Sur,NUGGETS POLLO,4.0
+Blitz Ronda Sur,PAN BURGUER BRIOXE BAKER,20.0
+Blitz Ronda Sur,PAN BURGUER HIGH NEGRO 48 UNIDADES,4.0
+Blitz Ronda Sur,PAN POTATO ROLL 80 GRS 18 UNIDADES,4.0
+Blitz Ronda Sur,PANKO,4.0
+Blitz Ronda Sur,PAPEL ALUMINIO,5.0
+Blitz Ronda Sur,PAPEL HIGIENICO,4.0
+Blitz Ronda Sur,PATATAS FRITAS,4.0
+Blitz Ronda Sur,PEPINILLO RODAJA 370GRS,4.0
+Blitz Ronda Sur,PULLED PORK 500 GRS,4.0
+Blitz Ronda Sur,QUESO AHUMADO LONCHAS,4.0
+Blitz Ronda Sur,QUESO CHEDDAR LONCHAS,4.0
+Blitz Ronda Sur,QUESO CREMA,4.0
+Blitz Ronda Sur,QUESO GOUDA LONCHAS,5.0
+Blitz Ronda Sur,QUESO MONTERREY LONCHAS,4.0
+Blitz Ronda Sur,REPOLLO FRESCO,2.0
+Blitz Ronda Sur,ROLLO PAPEL COCINA,4.0
+Blitz Ronda Sur,SAL FINA,5.0
+Blitz Ronda Sur,SALCHICHA FRANKFURT,4.0
+Blitz Ronda Sur,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,4.0
 Blitz Ronda Sur,SALSA BURGUER,4.0
 Blitz Ronda Sur,SALSA CHEDDAR,4.0
 Blitz Ronda Sur,SALSA RANCHERA,4.0
-Blitz Ronda Sur,CHIPOTLE,4.0
-Blitz Ronda Sur,JALAPEÑOS EN RODAJAS,4.0
-Blitz Ronda Sur,KIKOS,4.0
-Blitz Ronda Sur,MERMELADA DE CECINA,4.0
-Blitz Ronda Sur,PANKO,4.0
-Blitz Ronda Sur,TEQUEÑOS DE QUESO,4.0
-Blitz Ronda Sur,TEQUEÑOS DE NUTELLA,4.0
-Blitz Ronda Sur,SIROPE OREO,4.0
+Blitz Ronda Sur,SALSA SMOKE BACON,4.0
+Blitz Ronda Sur,SALSA SWEET CHILI,5.0
+Blitz Ronda Sur,SERVILLETAS,5.0
 Blitz Ronda Sur,SIROPE CHOCOLATE BLANCO,4.0
-Food Truck Grande,PAPEL HIGIENICO,4.0
-Food Truck Grande,ROLLO PAPEL COCINA,4.0
-Food Truck Grande,QUESO CREMA,4.0
-Food Truck Grande,QUESO CHEDDAR LONCHAS,4.0
-Food Truck Grande,PATATAS FRITAS,4.0
-Food Truck Grande,BONIATO,4.0
-Food Truck Grande,LECHUGA,4.0
-Food Truck Grande,GUACAMOLE,4.0
-Food Truck Grande,TOMATE CONFITADO,4.0
-Food Truck Grande,CEBOLLA CARAMELIZADA,4.0
-Food Truck Grande,GUANTES NITRILO TALLA M,4.0
-Food Truck Grande,GUANTES NITRILO TALLA L,4.0
+Blitz Ronda Sur,SIROPE OREO,4.0
+Blitz Ronda Sur,SOBRASADA IBERICA 250 GRS,4.0
+Blitz Ronda Sur,TAJIN ESPECIAS,2.0
+Blitz Ronda Sur,TARTA QUESO CLASICA,5.0
+Blitz Ronda Sur,TARTA QUESO LOTUS,5.0
+Blitz Ronda Sur,TARTA QUESO PISTACHO,5.0
+Blitz Ronda Sur,TEQUEÑOS DE NUTELLA,4.0
+Blitz Ronda Sur,TEQUEÑOS DE QUESO,4.0
+Blitz Ronda Sur,TOMATE CONFITADO,4.0
+Blitz Ronda Sur,ZANAHORIA RALLADA,2.0
 Food Truck Grande,ACEITE FREIDORA,4.0
-Food Truck Grande,SALSA SMOKE BACON,4.0
-Food Truck Grande,MANTEQUILLA BLOQUE 1 KG,4.0
-Food Truck Grande,NATA LIQUIDA 1 LITRO,4.0
-Food Truck Grande,SOBRASADA IBERICA 250 GRS,4.0
-Food Truck Grande,PEPINILLO RODAJA 370GRS,4.0
-Food Truck Grande,CEBOLLA MORADA,4.0
-Food Truck Grande,CEBOLLINO 125 GRS,4.0
-Food Truck Grande,MAYONESA EMY,4.0
-Food Truck Grande,MAYONESA TRUFADA,4.0
-Food Truck Grande,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,4.0
-Food Truck Grande,MIEL 1 KG,4.0
-Food Truck Grande,QUESO MONTERREY LONCHAS,4.0
-Food Truck Grande,HAMBURGUESA POLLO CRUNCHY,4.0
-Food Truck Grande,PULLED PORK 500 GRS,4.0
-Food Truck Grande,PAN BURGUER HIGH NEGRO 48 UNIDADES,4.0
-Food Truck Grande,PAN POTATO ROLL 80 GRS 18 UNIDADES,4.0
-Food Truck Grande,CARNE BURGUER 90 GRS,4.0
-Food Truck Grande,MAYONESA HEINZ CUBO 5L,4.0
-Food Truck Grande,BACON LONCHAS,4.0
-Food Truck Grande,SALCHICHA FRANKFURT,4.0
-Food Truck Grande,NUGGETS POLLO,4.0
+Food Truck Grande,AGUA 1´5 LITROS,2.0
+Food Truck Grande,AGUA 500 ML,2.0
 Food Truck Grande,ALITAS POLLO TEX-MEX,4.0
 Food Truck Grande,AZUCAR GLASS,4.0
-Food Truck Grande,QUESO AHUMADO LONCHAS,4.0
 Food Truck Grande,BACON DADOS,4.0
+Food Truck Grande,BACON LONCHAS,4.0
+Food Truck Grande,BOLIGRAFOS,2.0
+Food Truck Grande,BOLSAS BASURA,2.0
+Food Truck Grande,BONIATO,4.0
+Food Truck Grande,CACAHUETE FRITO CON MIEL Y SAL,2.0
+Food Truck Grande,CARGO POR GESTION,2.0
+Food Truck Grande,CARNE BURGUER 90 GRS,4.0
+Food Truck Grande,CEBOLLA CARAMELIZADA,4.0
 Food Truck Grande,CEBOLLA CRISPY,2.0
+Food Truck Grande,CEBOLLA MORADA,4.0
+Food Truck Grande,CEBOLLINO 125 GRS,4.0
+Food Truck Grande,CHIPOTLE,4.0
+Food Truck Grande,COCA-COLA 2 LTRS,2.0
+Food Truck Grande,COCA-COLA 500 ML,2.0
+Food Truck Grande,COCA-COLA ZERO BOTE,2.0
+Food Truck Grande,CROQUETAS JAMON,2.0
+Food Truck Grande,CUBIERTOS SET,2.0
+Food Truck Grande,FANTA NARANJA BOTE,2.0
+Food Truck Grande,FREGONA 2 MOCHOS,2.0
+Food Truck Grande,GUACAMOLE,4.0
+Food Truck Grande,GUANTES NITRILO TALLA L,4.0
+Food Truck Grande,GUANTES NITRILO TALLA M,4.0
+Food Truck Grande,HAMBURGUESA POLLO CRUNCHY,4.0
+Food Truck Grande,JALAPEÑOS EN RODAJAS,4.0
+Food Truck Grande,JALAPEÑOS FRESCOS,2.0
+Food Truck Grande,KIKOS,4.0
+Food Truck Grande,LAVAVAJILLAS MANUAL,2.0
+Food Truck Grande,LECHUGA,4.0
+Food Truck Grande,LEJIA,2.0
+Food Truck Grande,MANTEQUILLA BLOQUE 1 KG,4.0
+Food Truck Grande,MAYONESA BIBERON 770 ML,2.0
+Food Truck Grande,MAYONESA EMY,4.0
+Food Truck Grande,MAYONESA HEINZ CUBO 5L,4.0
+Food Truck Grande,MAYONESA TRUFADA,4.0
+Food Truck Grande,MERMELADA DE CECINA,4.0
+Food Truck Grande,MIEL 1 KG,4.0
+Food Truck Grande,NATA LIQUIDA 1 LITRO,4.0
+Food Truck Grande,NUGGETS POLLO,4.0
+Food Truck Grande,PAN BURGUER BRIOXE BAKER,2.0
+Food Truck Grande,PAN BURGUER HIGH NEGRO 48 UNIDADES,4.0
+Food Truck Grande,PAN POTATO ROLL 80 GRS 18 UNIDADES,4.0
+Food Truck Grande,PANKO,4.0
+Food Truck Grande,PAPEL ALUMINIO,2.0
+Food Truck Grande,PAPEL HIGIENICO,4.0
+Food Truck Grande,PATATAS FRITAS,4.0
+Food Truck Grande,PEPINILLO RODAJA 370GRS,4.0
+Food Truck Grande,PULLED PORK 500 GRS,4.0
+Food Truck Grande,QUESO AHUMADO LONCHAS,4.0
+Food Truck Grande,QUESO CHEDDAR LONCHAS,4.0
+Food Truck Grande,QUESO CREMA,4.0
+Food Truck Grande,QUESO GOUDA LONCHAS,2.0
+Food Truck Grande,QUESO MONTERREY LONCHAS,4.0
+Food Truck Grande,REPOLLO FRESCO,2.0
+Food Truck Grande,ROLLO PAPEL COCINA,4.0
+Food Truck Grande,SAL FINA,2.0
+Food Truck Grande,SALCHICHA FRANKFURT,4.0
+Food Truck Grande,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,4.0
 Food Truck Grande,SALSA BURGUER,4.0
 Food Truck Grande,SALSA CHEDDAR,4.0
 Food Truck Grande,SALSA RANCHERA,4.0
-Food Truck Grande,CHIPOTLE,4.0
-Food Truck Grande,JALAPEÑOS EN RODAJAS,4.0
-Food Truck Grande,KIKOS,4.0
-Food Truck Grande,MERMELADA DE CECINA,4.0
-Food Truck Grande,PANKO,4.0
-Food Truck Grande,TEQUEÑOS DE QUESO,4.0
-Food Truck Grande,TEQUEÑOS DE NUTELLA,4.0
-Food Truck Grande,SIROPE OREO,4.0
+Food Truck Grande,SALSA SMOKE BACON,4.0
+Food Truck Grande,SALSA SWEET CHILI,2.0
+Food Truck Grande,SERVILLETAS,2.0
 Food Truck Grande,SIROPE CHOCOLATE BLANCO,4.0
-Food Truck Pequeña,PAPEL HIGIENICO,4.0
-Food Truck Pequeña,ROLLO PAPEL COCINA,4.0
-Food Truck Pequeña,QUESO CREMA,4.0
-Food Truck Pequeña,QUESO CHEDDAR LONCHAS,4.0
-Food Truck Pequeña,PATATAS FRITAS,4.0
-Food Truck Pequeña,BONIATO,4.0
-Food Truck Pequeña,LECHUGA,4.0
-Food Truck Pequeña,GUACAMOLE,4.0
-Food Truck Pequeña,TOMATE CONFITADO,4.0
-Food Truck Pequeña,CEBOLLA CARAMELIZADA,4.0
-Food Truck Pequeña,GUANTES NITRILO TALLA M,4.0
-Food Truck Pequeña,GUANTES NITRILO TALLA L,4.0
+Food Truck Grande,SIROPE OREO,4.0
+Food Truck Grande,SOBRASADA IBERICA 250 GRS,4.0
+Food Truck Grande,TAJIN ESPECIAS,2.0
+Food Truck Grande,TARTA QUESO CLASICA,2.0
+Food Truck Grande,TARTA QUESO LOTUS,2.0
+Food Truck Grande,TARTA QUESO PISTACHO,2.0
+Food Truck Grande,TEQUEÑOS DE NUTELLA,4.0
+Food Truck Grande,TEQUEÑOS DE QUESO,4.0
+Food Truck Grande,TOMATE CONFITADO,4.0
+Food Truck Grande,ZANAHORIA RALLADA,2.0
 Food Truck Pequeña,ACEITE FREIDORA,4.0
-Food Truck Pequeña,SALSA SMOKE BACON,4.0
-Food Truck Pequeña,MANTEQUILLA BLOQUE 1 KG,4.0
-Food Truck Pequeña,NATA LIQUIDA 1 LITRO,4.0
-Food Truck Pequeña,SOBRASADA IBERICA 250 GRS,4.0
-Food Truck Pequeña,PEPINILLO RODAJA 370GRS,4.0
-Food Truck Pequeña,CEBOLLA MORADA,4.0
-Food Truck Pequeña,CEBOLLINO 125 GRS,4.0
-Food Truck Pequeña,MAYONESA EMY,4.0
-Food Truck Pequeña,MAYONESA TRUFADA,4.0
-Food Truck Pequeña,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,4.0
-Food Truck Pequeña,MIEL 1 KG,4.0
-Food Truck Pequeña,QUESO MONTERREY LONCHAS,4.0
-Food Truck Pequeña,HAMBURGUESA POLLO CRUNCHY,4.0
-Food Truck Pequeña,PULLED PORK 500 GRS,4.0
-Food Truck Pequeña,PAN BURGUER HIGH NEGRO 48 UNIDADES,4.0
-Food Truck Pequeña,PAN POTATO ROLL 80 GRS 18 UNIDADES,4.0
-Food Truck Pequeña,CARNE BURGUER 90 GRS,4.0
-Food Truck Pequeña,MAYONESA HEINZ CUBO 5L,4.0
-Food Truck Pequeña,BACON LONCHAS,4.0
-Food Truck Pequeña,SALCHICHA FRANKFURT,4.0
-Food Truck Pequeña,NUGGETS POLLO,4.0
+Food Truck Pequeña,AGUA 1´5 LITROS,2.0
+Food Truck Pequeña,AGUA 500 ML,2.0
 Food Truck Pequeña,ALITAS POLLO TEX-MEX,4.0
 Food Truck Pequeña,AZUCAR GLASS,4.0
-Food Truck Pequeña,QUESO AHUMADO LONCHAS,4.0
 Food Truck Pequeña,BACON DADOS,4.0
+Food Truck Pequeña,BACON LONCHAS,4.0
+Food Truck Pequeña,BOLIGRAFOS,2.0
+Food Truck Pequeña,BOLSAS BASURA,2.0
+Food Truck Pequeña,BONIATO,4.0
+Food Truck Pequeña,CACAHUETE FRITO CON MIEL Y SAL,2.0
+Food Truck Pequeña,CARGO POR GESTION,2.0
+Food Truck Pequeña,CARNE BURGUER 90 GRS,4.0
+Food Truck Pequeña,CEBOLLA CARAMELIZADA,4.0
 Food Truck Pequeña,CEBOLLA CRISPY,2.0
+Food Truck Pequeña,CEBOLLA MORADA,4.0
+Food Truck Pequeña,CEBOLLINO 125 GRS,4.0
+Food Truck Pequeña,CHIPOTLE,4.0
+Food Truck Pequeña,COCA-COLA 2 LTRS,2.0
+Food Truck Pequeña,COCA-COLA 500 ML,2.0
+Food Truck Pequeña,COCA-COLA ZERO BOTE,2.0
+Food Truck Pequeña,CROQUETAS JAMON,2.0
+Food Truck Pequeña,CUBIERTOS SET,2.0
+Food Truck Pequeña,FANTA NARANJA BOTE,2.0
+Food Truck Pequeña,FREGONA 2 MOCHOS,2.0
+Food Truck Pequeña,GUACAMOLE,4.0
+Food Truck Pequeña,GUANTES NITRILO TALLA L,4.0
+Food Truck Pequeña,GUANTES NITRILO TALLA M,4.0
+Food Truck Pequeña,HAMBURGUESA POLLO CRUNCHY,4.0
+Food Truck Pequeña,JALAPEÑOS EN RODAJAS,4.0
+Food Truck Pequeña,JALAPEÑOS FRESCOS,2.0
+Food Truck Pequeña,KIKOS,4.0
+Food Truck Pequeña,LAVAVAJILLAS MANUAL,2.0
+Food Truck Pequeña,LECHUGA,4.0
+Food Truck Pequeña,LEJIA,2.0
+Food Truck Pequeña,MANTEQUILLA BLOQUE 1 KG,4.0
+Food Truck Pequeña,MAYONESA BIBERON 770 ML,2.0
+Food Truck Pequeña,MAYONESA EMY,4.0
+Food Truck Pequeña,MAYONESA HEINZ CUBO 5L,4.0
+Food Truck Pequeña,MAYONESA TRUFADA,4.0
+Food Truck Pequeña,MERMELADA DE CECINA,4.0
+Food Truck Pequeña,MIEL 1 KG,4.0
+Food Truck Pequeña,NATA LIQUIDA 1 LITRO,4.0
+Food Truck Pequeña,NUGGETS POLLO,4.0
+Food Truck Pequeña,PAN BURGUER BRIOXE BAKER,2.0
+Food Truck Pequeña,PAN BURGUER HIGH NEGRO 48 UNIDADES,4.0
+Food Truck Pequeña,PAN POTATO ROLL 80 GRS 18 UNIDADES,4.0
+Food Truck Pequeña,PANKO,4.0
+Food Truck Pequeña,PAPEL ALUMINIO,2.0
+Food Truck Pequeña,PAPEL HIGIENICO,4.0
+Food Truck Pequeña,PATATAS FRITAS,4.0
+Food Truck Pequeña,PEPINILLO RODAJA 370GRS,4.0
+Food Truck Pequeña,PULLED PORK 500 GRS,4.0
+Food Truck Pequeña,QUESO AHUMADO LONCHAS,4.0
+Food Truck Pequeña,QUESO CHEDDAR LONCHAS,4.0
+Food Truck Pequeña,QUESO CREMA,4.0
+Food Truck Pequeña,QUESO GOUDA LONCHAS,2.0
+Food Truck Pequeña,QUESO MONTERREY LONCHAS,4.0
+Food Truck Pequeña,REPOLLO FRESCO,2.0
+Food Truck Pequeña,ROLLO PAPEL COCINA,4.0
+Food Truck Pequeña,SAL FINA,2.0
+Food Truck Pequeña,SALCHICHA FRANKFURT,4.0
+Food Truck Pequeña,SALSA BARBACOA BULL´S ORIGINAL 2 LITROS,4.0
 Food Truck Pequeña,SALSA BURGUER,4.0
 Food Truck Pequeña,SALSA CHEDDAR,4.0
 Food Truck Pequeña,SALSA RANCHERA,4.0
-Food Truck Pequeña,CHIPOTLE,4.0
-Food Truck Pequeña,JALAPEÑOS EN RODAJAS,4.0
-Food Truck Pequeña,KIKOS,4.0
-Food Truck Pequeña,MERMELADA DE CECINA,4.0
-Food Truck Pequeña,PANKO,4.0
-Food Truck Pequeña,TEQUEÑOS DE QUESO,4.0
-Food Truck Pequeña,TEQUEÑOS DE NUTELLA,4.0
-Food Truck Pequeña,SIROPE OREO,4.0
+Food Truck Pequeña,SALSA SMOKE BACON,4.0
+Food Truck Pequeña,SALSA SWEET CHILI,2.0
+Food Truck Pequeña,SERVILLETAS,2.0
 Food Truck Pequeña,SIROPE CHOCOLATE BLANCO,4.0
-Blitz  Juan de Borbón,COCA-COLA 500 ML,20.0
-Blitz  Juan de Borbón,AGUA 500 ML,20.0
-Blitz  Juan de Borbón,AGUA 1´5 LITROS,5.0
-Blitz  Juan de Borbón,COCA-COLA 2 LTRS,5.0
-Blitz  Juan de Borbón,PAN BURGUER BRIOXE BAKER,20.0
-Blitz  Juan de Borbón,JALAPEÑO RODAJA,5.0
+Food Truck Pequeña,SIROPE OREO,4.0
+Food Truck Pequeña,SOBRASADA IBERICA 250 GRS,4.0
+Food Truck Pequeña,TAJIN ESPECIAS,2.0
+Food Truck Pequeña,TARTA QUESO CLASICA,2.0
+Food Truck Pequeña,TARTA QUESO LOTUS,2.0
+Food Truck Pequeña,TARTA QUESO PISTACHO,2.0
+Food Truck Pequeña,TEQUEÑOS DE NUTELLA,4.0
+Food Truck Pequeña,TEQUEÑOS DE QUESO,4.0
+Food Truck Pequeña,TOMATE CONFITADO,4.0
+Food Truck Pequeña,ZANAHORIA RALLADA,2.0
