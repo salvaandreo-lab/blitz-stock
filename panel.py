@@ -2767,9 +2767,10 @@ elif seccion_activa == "🛒 Asistente de Compras y Pedidos":
                     "precio": p_act
                 }
                 
-        # FILTROS
+        # FILTROS (solo centros fijos con almacén)
+        centros_con_almacen = [c for c in centros_blitz if "truck" not in c.lower() and "evento" not in c.lower()]
         f_col1, f_col2, f_col3 = st.columns([1.5, 1.5, 2])
-        centro_pedido = f_col1.selectbox("📍 Centro para realizar el pedido:", centros_blitz, key="sel_centro_asistente_pedidos")
+        centro_pedido = f_col1.selectbox("📍 Centro para realizar el pedido:", centros_con_almacen, key="sel_centro_asistente_pedidos")
         
         todos_provs = sorted(list(set(df_eq["Proveedor"].dropna().unique())))
         filtro_prov = f_col2.selectbox("🏢 Filtrar por Proveedor:", ["(Todos los Proveedores)"] + todos_provs, key="filtro_prov_pedido")
@@ -2865,7 +2866,7 @@ elif seccion_activa == "🛒 Asistente de Compras y Pedidos":
                     for _, r in editor_pedido.iterrows():
                         m = r["Producto"]
                         dict_minimos[(centro_pedido, m)] = float(r["Stock_Minimo"])
-                    rows_out = [{"Centro": c, "Producto_Maestro": m, "Stock_Minimo": val} for (c, m), val in dict_minimos.items()]
+                    rows_out = [{"Centro": c, "Producto_Maestro": m, "Stock_Minimo": val} for (c, m), val in dict_minimos.items() if "truck" not in str(c).lower() and "evento" not in str(c).lower()]
                     pd.DataFrame(rows_out).to_csv(ARCHIVO_STOCK_MINIMO, index=False, encoding='utf-8-sig')
                     try:
                         from sync_repo import sync_file
