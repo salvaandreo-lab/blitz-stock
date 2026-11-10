@@ -2115,8 +2115,13 @@ elif seccion_activa == "📋 Pedidos Centros":
     gestion_pedidos_centros.render_panel_admin_pedidos()
 
 elif seccion_activa == "📊 Ratio Compras vs Ventas":
-    import modulo_consumos
-    modulo_consumos.render_modulo_consumos()
+    try:
+        import modulo_consumos
+        modulo_consumos.render_modulo_consumos()
+    except Exception as e_mod_cons:
+        import traceback
+        st.error(f"⚠️ Incidencia temporal al cargar el panel de Ratio Compras vs Ventas: {e_mod_cons}")
+        st.code(traceback.format_exc(), language="python")
 
 elif seccion_activa == "📚 Gestor de Diccionario":
     st.subheader("🛠️ Panel de Control y Auditoría del Diccionario")
