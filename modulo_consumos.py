@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 MÓDULO: Control de Consumos y Ratio Compras vs Ventas (Food Cost)
-Blitz Burger / Blitz Food S.L.
+Blitz Burger / Blitz Food S.L. - Versión 1 Original Restaurada
 """
 
 import os
@@ -41,12 +41,13 @@ MAPA_CENTROS_NORMALIZADOS = {
     "evento": "Eventos / Food Truck",
     "eventos": "Eventos / Food Truck",
     "food truck": "Eventos / Food Truck",
-    "foodtruck": "Eventos / Food Truck",
     "food truck grande": "Eventos / Food Truck",
     "food truck pequeña": "Eventos / Food Truck",
     "food truck pequena": "Eventos / Food Truck",
+    "foodtruck": "Eventos / Food Truck",
+    "foodtruck_1": "Eventos / Food Truck",
+    "foodtruck_2": "Eventos / Food Truck",
     "truck": "Eventos / Food Truck",
-    "blitz eventos": "Eventos / Food Truck",
     "eventos / food truck": "Eventos / Food Truck",
     "eventos/food truck": "Eventos / Food Truck"
 }
@@ -59,30 +60,6 @@ def normalizar_nombre_centro(centro_raw):
         if k in c_low or c_low in k:
             return v
     return str(centro_raw).strip()
-
-FECHA_MINIMA_DEFECTO = datetime.date(2026, 10, 1)
-
-def limpiar_fecha(f, fallback=None):
-    """Garantiza que una fecha nunca sea None, ni inválida, ni anterior a 01/10/2026."""
-    if fallback is None:
-        fallback = FECHA_MINIMA_DEFECTO
-    if f is None:
-        return fallback
-    if isinstance(f, (list, tuple)):
-        if len(f) > 0 and f[0] is not None:
-            f = f[0]
-        else:
-            return fallback
-    if isinstance(f, datetime.datetime):
-        f = f.date()
-    if not isinstance(f, datetime.date):
-        try:
-            f = parsear_fecha_str(str(f))
-        except Exception:
-            return fallback
-    if f < FECHA_MINIMA_DEFECTO:
-        return FECHA_MINIMA_DEFECTO
-    return f
 
 def cargar_config_consumos():
     """Carga los umbrales configurables dejando la puerta abierta a cambios."""
@@ -111,8 +88,8 @@ def guardar_config_consumos(optimo, alerta):
         return False
 
 def render_html_seguro(html_str):
-    """Renderiza HTML eliminando cualquier sangría accidental para que Markdown nunca lo confunda con un bloque de código."""
-    if not html_str:
+    """Renderiza HTML eliminando cualquier sangría para evitar que Markdown lo confunda con código."""
+    if not html_str or st is None:
         return
     html_limpio = "".join(l.strip() for l in html_str.splitlines() if l.strip())
     if hasattr(st, "html"):
@@ -131,7 +108,6 @@ def calcular_ciclo_operativo(fecha_obj):
     """
     if isinstance(fecha_obj, str):
         try:
-            # Formatos soportados: DD/MM/YYYY o YYYY-MM-DD
             if "/" in fecha_obj:
                 partes = fecha_obj.split("/")
                 if len(partes[0]) == 4:
@@ -142,21 +118,17 @@ def calcular_ciclo_operativo(fecha_obj):
                 partes = fecha_obj.split("-")
                 fecha_obj = datetime.date(int(partes[0]), int(partes[1]), int(partes[2]))
         except Exception:
-            fecha_obj = datetime.date.today()
+            fecha_obj = datetime.date(2026, 10, 1)
 
-    # weekday(): Lunes=0, Martes=1, Miércoles=2, Jueves=3, Viernes=4, Sábado=5, Domingo=6
     offset = (fecha_obj.weekday() - 2) % 7
     miercoles = fecha_obj - timedelta(days=offset)
     domingo = miercoles + timedelta(days=4)
-    fin_ciclo = miercoles + timedelta(days=6) # hasta el martes siguiente
 
-    # El mes operativo se ancla al fin de semana (sábado)
     sabado = miercoles + timedelta(days=3)
     meses_es = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
     mes_nombre = meses_es[sabado.month - 1]
     año = sabado.year
 
-    # Número de semana del mes: semana 1, 2, 3, 4, 5
     primer_dia_mes = datetime.date(año, sabado.month, 1)
     offset_mes = (primer_dia_mes.weekday() - 2) % 7
     primer_miercoles = primer_dia_mes - timedelta(days=offset_mes)
@@ -182,7 +154,7 @@ def calcular_ciclo_operativo(fecha_obj):
 # INICIALIZACIÓN Y PERSISTENCIA DE DATOS
 # ==========================================
 def inicializar_datos_si_no_existen():
-    """Si no existen los CSV, crea la estructura e inserta el histórico de Octubre."""
+    """Si no existen los CSV, crea la estructura e inserta el histórico de Octubre 2026."""
     os.makedirs(BASE_DIR, exist_ok=True)
     
     # 1. Registro de Ventas Semanales
@@ -191,7 +163,6 @@ def inicializar_datos_si_no_existen():
             writer = csv.writer(f)
             writer.writerow(["Id_Semana", "Num_Semana", "Fecha_Inicio", "Fecha_Fin", "Mes", "Año", "Centro", "Ventas", "Observaciones"])
             
-            # Datos reales de Octubre (Excel Salva)
             # Ronda Sur
             writer.writerow(["2026-M10-Sem1", "1", "02/10/2026", "06/10/2026", "Octubre", "2026", "Blitz Ronda Sur", "7048.40", ""])
             writer.writerow(["2026-M10-Sem2", "2", "09/10/2026", "13/10/2026", "Octubre", "2026", "Blitz Ronda Sur", "5825.09", ""])
@@ -211,156 +182,35 @@ def inicializar_datos_si_no_existen():
         with open(ARCHIVO_COMPRAS_ALBARANES, "w", newline="", encoding="utf-8-sig") as f:
             writer = csv.writer(f)
             writer.writerow(["Id_Albaran", "Fecha", "Proveedor", "Centro", "Base_Imponible", "Semana_Operativa", "Archivo", "Notas"])
-            
-            # Datos reales de compras desglosadas por proveedor de Octubre (Excel Salva)
-            compras_octubre = [
-                # RONDA SUR
-                ("04/10/2026", "Paco Rosa", "Blitz Ronda Sur", 658.98, "2026-M10-Sem1"),
-                ("04/10/2026", "Jasa", "Blitz Ronda Sur", 206.94, "2026-M10-Sem1"),
-                ("04/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem1"),
-                ("04/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 192.80, "2026-M10-Sem1"),
-                ("04/10/2026", "Makro", "Blitz Ronda Sur", 323.14, "2026-M10-Sem1"),
-                ("04/10/2026", "Macanao", "Blitz Ronda Sur", 341.70, "2026-M10-Sem1"),
-                ("04/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 93.80, "2026-M10-Sem1"),
-                
-                ("11/10/2026", "Paco Rosa", "Blitz Ronda Sur", 1255.22, "2026-M10-Sem2"),
-                ("11/10/2026", "Jasa", "Blitz Ronda Sur", 491.31, "2026-M10-Sem2"),
-                ("11/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem2"),
-                ("11/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 125.00, "2026-M10-Sem2"),
-                ("11/10/2026", "Makro", "Blitz Ronda Sur", 379.81, "2026-M10-Sem2"),
-                ("11/10/2026", "Coca-Cola", "Blitz Ronda Sur", 101.58, "2026-M10-Sem2"),
-                ("11/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 226.90, "2026-M10-Sem2"),
-                ("11/10/2026", "Morales", "Blitz Ronda Sur", 109.25, "2026-M10-Sem2"),
-                
-                ("18/10/2026", "Paco Rosa", "Blitz Ronda Sur", 796.12, "2026-M10-Sem3"),
-                ("18/10/2026", "Jasa", "Blitz Ronda Sur", 174.83, "2026-M10-Sem3"),
-                ("18/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem3"),
-                ("18/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 150.40, "2026-M10-Sem3"),
-                ("18/10/2026", "Makro", "Blitz Ronda Sur", 362.65, "2026-M10-Sem3"),
-                ("18/10/2026", "Coca-Cola", "Blitz Ronda Sur", 51.00, "2026-M10-Sem3"),
-                ("18/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 71.30, "2026-M10-Sem3"),
-                ("18/10/2026", "Manzano", "Blitz Ronda Sur", 119.25, "2026-M10-Sem3"),
-                ("18/10/2026", "Morales", "Blitz Ronda Sur", 105.00, "2026-M10-Sem3"),
-                ("18/10/2026", "Riscales", "Blitz Ronda Sur", 55.80, "2026-M10-Sem3"),
-                
-                ("25/10/2026", "Paco Rosa", "Blitz Ronda Sur", 1109.80, "2026-M10-Sem4"),
-                ("25/10/2026", "Jasa", "Blitz Ronda Sur", 193.48, "2026-M10-Sem4"),
-                ("25/10/2026", "Cielo de Boca", "Blitz Ronda Sur", 227.00, "2026-M10-Sem4"),
-                ("25/10/2026", "Lucas Caballero", "Blitz Ronda Sur", 119.01, "2026-M10-Sem4"),
-                ("25/10/2026", "Makro", "Blitz Ronda Sur", 343.03, "2026-M10-Sem4"),
-                ("25/10/2026", "Macanao", "Blitz Ronda Sur", 306.00, "2026-M10-Sem4"),
-                ("25/10/2026", "Pedro Díaz", "Blitz Ronda Sur", 168.90, "2026-M10-Sem4"),
-                ("25/10/2026", "Manzano", "Blitz Ronda Sur", 79.50, "2026-M10-Sem4"),
-                ("25/10/2026", "Morales", "Blitz Ronda Sur", 81.00, "2026-M10-Sem4"),
-                
-                ("01/11/2026", "Paco Rosa", "Blitz Ronda Sur", 785.62, "2026-M10-Sem5"),
-                ("01/11/2026", "Jasa", "Blitz Ronda Sur", 302.71, "2026-M10-Sem5"),
-                ("01/11/2026", "Cielo de Boca", "Blitz Ronda Sur", 340.50, "2026-M10-Sem5"),
-                ("01/11/2026", "Lucas Caballero", "Blitz Ronda Sur", 221.40, "2026-M10-Sem5"),
-                ("01/11/2026", "Coca-Cola", "Blitz Ronda Sur", 117.76, "2026-M10-Sem5"),
-                ("01/11/2026", "Pedro Díaz", "Blitz Ronda Sur", 138.60, "2026-M10-Sem5"),
-                ("01/11/2026", "Morales", "Blitz Ronda Sur", 123.85, "2026-M10-Sem5"),
-                ("01/11/2026", "Riscales", "Blitz Ronda Sur", 75.44, "2026-M10-Sem5"),
-                
-                # JUAN DE BORBÓN
-                ("04/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 1213.36, "2026-M10-Sem1"),
-                ("04/10/2026", "Jasa", "Blitz Juan de Borbón", 158.40, "2026-M10-Sem1"),
-                ("04/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem1"),
-                ("04/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 308.80, "2026-M10-Sem1"),
-                ("04/10/2026", "Makro", "Blitz Juan de Borbón", 364.00, "2026-M10-Sem1"),
-                ("04/10/2026", "Macanao", "Blitz Juan de Borbón", 231.20, "2026-M10-Sem1"),
-                ("04/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 168.90, "2026-M10-Sem1"),
-                ("04/10/2026", "Zambú", "Blitz Juan de Borbón", 101.67, "2026-M10-Sem1"),
-                ("04/10/2026", "Andrés Mármol", "Blitz Juan de Borbón", 109.10, "2026-M10-Sem1"),
-                ("04/10/2026", "Morales", "Blitz Juan de Borbón", 162.00, "2026-M10-Sem1"),
-                
-                ("11/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 1437.63, "2026-M10-Sem2"),
-                ("11/10/2026", "Jasa", "Blitz Juan de Borbón", 491.46, "2026-M10-Sem2"),
-                ("11/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem2"),
-                ("11/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 150.40, "2026-M10-Sem2"),
-                ("11/10/2026", "Makro", "Blitz Juan de Borbón", 428.76, "2026-M10-Sem2"),
-                ("11/10/2026", "Coca-Cola", "Blitz Juan de Borbón", 122.53, "2026-M10-Sem2"),
-                ("11/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 191.40, "2026-M10-Sem2"),
-                ("11/10/2026", "Morales", "Blitz Juan de Borbón", 225.05, "2026-M10-Sem2"),
-                
-                ("18/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 1226.01, "2026-M10-Sem3"),
-                ("18/10/2026", "Jasa", "Blitz Juan de Borbón", 108.43, "2026-M10-Sem3"),
-                ("18/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem3"),
-                ("18/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 96.60, "2026-M10-Sem3"),
-                ("18/10/2026", "Makro", "Blitz Juan de Borbón", 262.22, "2026-M10-Sem3"),
-                ("18/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 146.40, "2026-M10-Sem3"),
-                ("18/10/2026", "Manzano", "Blitz Juan de Borbón", 119.25, "2026-M10-Sem3"),
-                ("18/10/2026", "Morales", "Blitz Juan de Borbón", 257.00, "2026-M10-Sem3"),
-                ("18/10/2026", "Riscales", "Blitz Juan de Borbón", 55.80, "2026-M10-Sem3"),
-                
-                ("25/10/2026", "Paco Rosa", "Blitz Juan de Borbón", 333.53, "2026-M10-Sem4"),
-                ("25/10/2026", "Jasa", "Blitz Juan de Borbón", 219.83, "2026-M10-Sem4"),
-                ("25/10/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem4"),
-                ("25/10/2026", "Lucas Caballero", "Blitz Juan de Borbón", 221.40, "2026-M10-Sem4"),
-                ("25/10/2026", "Makro", "Blitz Juan de Borbón", 443.57, "2026-M10-Sem4"),
-                ("25/10/2026", "Macanao", "Blitz Juan de Borbón", 231.20, "2026-M10-Sem4"),
-                ("25/10/2026", "Pedro Díaz", "Blitz Juan de Borbón", 168.90, "2026-M10-Sem4"),
-                ("25/10/2026", "Manzano", "Blitz Juan de Borbón", 79.50, "2026-M10-Sem4"),
-                ("25/10/2026", "Nicolás Valero", "Blitz Juan de Borbón", 120.40, "2026-M10-Sem4"),
-                ("25/10/2026", "Morales", "Blitz Juan de Borbón", 54.00, "2026-M10-Sem4"),
-                
-                ("01/11/2026", "Paco Rosa", "Blitz Juan de Borbón", 333.53, "2026-M10-Sem5"),
-                ("01/11/2026", "Jasa", "Blitz Juan de Borbón", 282.56, "2026-M10-Sem5"),
-                ("01/11/2026", "Cielo de Boca", "Blitz Juan de Borbón", 340.50, "2026-M10-Sem5"),
-                ("01/11/2026", "Lucas Caballero", "Blitz Juan de Borbón", 75.52, "2026-M10-Sem5"),
-                ("01/11/2026", "Makro", "Blitz Juan de Borbón", 482.85, "2026-M10-Sem5"),
-                ("01/11/2026", "Coca-Cola", "Blitz Juan de Borbón", 124.16, "2026-M10-Sem5"),
-                ("01/11/2026", "Pedro Díaz", "Blitz Juan de Borbón", 89.80, "2026-M10-Sem5"),
-                ("01/11/2026", "Riscales", "Blitz Juan de Borbón", 55.80, "2026-M10-Sem5")
-            ]
-            
-            for i, c in enumerate(compras_octubre, 1):
-                writer.writerow([f"OCT-BAL-{i:03d}", c[0], c[1], c[2], f"{c[3]:.2f}", c[4], "", "Carga Balance Octubre"])
 
-# Inicializar automáticamente al importar
 inicializar_datos_si_no_existen()
 
 # ==========================================
 # REGISTRO DE ALBARANES ARCHIVADOS (AUTOMÁTICO)
 # ==========================================
 def registrar_albaran_archivado(fecha, proveedor, centro, base_imponible, archivo="", notas=""):
-    """
-    Hook llamado automáticamente desde 'Archivar Albarán' en el Radar de Albaranes.
-    Imputa el gasto a la semana operativa correspondiente (Miércoles a Domingo).
-    """
+    """Hook llamado automáticamente al archivar un albarán."""
     try:
         centro_norm = normalizar_nombre_centro(centro)
         ciclo = calcular_ciclo_operativo(fecha)
         id_semana = ciclo["id_semana"]
         
-        # Generar ID
-        ahora = datetime.datetime.now()
-        id_alb = f"ALB-{ahora.strftime('%y%m%d%H%M%S')}"
+        nuevo_id = f"ALB-{datetime.datetime.now().strftime('%y%m%d%H%M%S')}"
+        fila = [nuevo_id, fecha, proveedor.strip(), centro_norm, f"{float(base_imponible):.2f}", id_semana, archivo, notas]
         
-        # Formato fecha DD/MM/YYYY
-        fecha_str = fecha if isinstance(fecha, str) else fecha.strftime("%d/%m/%Y")
-        if "-" in fecha_str and len(fecha_str.split("-")[0]) == 4:
-            p = fecha_str.split("-")
-            fecha_str = f"{p[2]}/{p[1]}/{p[0]}"
-            
-        fila = [id_alb, fecha_str, str(proveedor).strip(), centro_norm, f"{float(base_imponible):.2f}", id_semana, archivo, notas]
-        
-        archivo_nuevo = not os.path.exists(ARCHIVO_COMPRAS_ALBARANES) or os.path.getsize(ARCHIVO_COMPRAS_ALBARANES) == 0
         with open(ARCHIVO_COMPRAS_ALBARANES, "a", newline="", encoding="utf-8-sig") as f:
             writer = csv.writer(f)
-            if archivo_nuevo:
-                writer.writerow(["Id_Albaran", "Fecha", "Proveedor", "Centro", "Base_Imponible", "Semana_Operativa", "Archivo", "Notas"])
             writer.writerow(fila)
         return True
     except Exception as e:
-        print(f"Error al registrar albarán en compras: {e}")
+        print(f"Error registrando compra archivada: {e}")
         return False
 
-def registrar_ventas_semana(id_semana, num_semana, f_ini, f_fin, mes, año, centro, ventas, observaciones=""):
-    """Registra o actualiza las ventas ingresadas por el usuario para una semana operativa."""
-    centro_norm = normalizar_nombre_centro(centro)
+def registrar_ventas_semana(id_semana, num_semana, fecha_inicio, fecha_fin, mes, año, centro, ventas, observaciones=""):
+    """Guarda o actualiza las ventas de una semana operativa para un centro."""
     filas = []
     encontrado = False
+    centro_norm = normalizar_nombre_centro(centro)
     
     if os.path.exists(ARCHIVO_VENTAS):
         with open(ARCHIVO_VENTAS, "r", encoding="utf-8-sig") as f:
@@ -376,8 +226,8 @@ def registrar_ventas_semana(id_semana, num_semana, f_ini, f_fin, mes, año, cent
         filas.append({
             "Id_Semana": id_semana,
             "Num_Semana": str(num_semana),
-            "Fecha_Inicio": f_ini,
-            "Fecha_Fin": f_fin,
+            "Fecha_Inicio": fecha_inicio,
+            "Fecha_Fin": fecha_fin,
             "Mes": mes,
             "Año": str(año),
             "Centro": centro_norm,
@@ -412,14 +262,7 @@ def parsear_fecha_str(f_str):
     return datetime.date(2026, 10, 1)
 
 def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
-    """
-    Recupera y cruza compras y ventas en el rango de fechas seleccionado.
-    Devuelve:
-    - kpis: totales de ventas, compras, % consumo, margen
-    - semanas_tabla: lista de semanas ordenadas con ventas, compras y %
-    - compras_por_proveedor: diccionario proveedor -> total €
-    - matriz_proveedores_semanas: desglose semanal idéntico al Excel de Salva
-    """
+    """Recupera y cruza compras y ventas en el rango de fechas seleccionado."""
     inicializar_datos_si_no_existen()
     config = cargar_config_consumos()
     optimo = config.get("umbral_optimo", UMBRAL_OPTIMO_DEFECTO)
@@ -452,15 +295,14 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
                         })
 
     # 2. Leer Ventas Semanales
-    ventas_filtradas = {} # (Id_Semana, Centro) -> float
-    ventas_info = {} # Id_Semana -> {Num_Semana, Fecha_Inicio, Fecha_Fin, Mes, Observaciones}
+    ventas_filtradas = {}
+    ventas_info = {}
     if os.path.exists(ARCHIVO_VENTAS):
         with open(ARCHIVO_VENTAS, "r", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f)
             for r in reader:
                 f_ini = parsear_fecha_str(r.get("Fecha_Inicio", ""))
                 f_fin = parsear_fecha_str(r.get("Fecha_Fin", ""))
-                # Se incluye si solapa con el rango
                 if (f_ini <= fecha_hasta and f_fin >= fecha_desde) or (fecha_desde <= f_ini <= fecha_hasta):
                     c_norm = normalizar_nombre_centro(r.get("Centro", ""))
                     if es_global or c_norm == c_filtro_norm:
@@ -482,9 +324,9 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
 
     # 3. Agrupar Compras por Semana y por Proveedor
     semanas_keys = set()
-    compras_por_semana = {} # id_semana -> float
-    compras_por_proveedor = {} # prov -> float
-    matriz_prov_sem = {} # prov -> {id_semana -> float}
+    compras_por_semana = {}
+    compras_por_proveedor = {}
+    matriz_prov_sem = {}
     
     for c in compras_filtradas:
         sem_id = c["Semana_Operativa"]
@@ -513,7 +355,6 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
     for (sem_id, _) in ventas_filtradas.keys():
         semanas_keys.add(sem_id)
 
-    # Ordenar semanas cronológicamente
     semanas_ordenadas = sorted(list(semanas_keys))
     
     # 4. Construir tabla de semanas
@@ -531,37 +372,27 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
             v_total_sem = ventas_filtradas.get((sem_id, c_filtro_norm), 0.0)
             
         c_total_sem = compras_por_semana.get(sem_id, 0.0)
-        
         ratio = (c_total_sem / v_total_sem * 100.0) if v_total_sem > 0 else 0.0
         
-        # Semáforo
         if v_total_sem == 0 and c_total_sem == 0:
             color = "gray"
-            estado = "Sin datos"
             badge = "⚪ Sin datos"
         elif v_total_sem == 0:
             color = "#ef4444"
-            estado = "Sin ventas"
             badge = "🔴 Sin ventas"
         elif ratio <= optimo:
             color = "#10b981"
-            estado = "Óptimo"
             badge = f"🟢 Óptimo ({ratio:.1f}%)"
         elif ratio <= alerta:
             color = "#f59e0b"
-            estado = "Aceptable"
             badge = f"🟡 Aceptable ({ratio:.1f}%)"
         else:
             color = "#ef4444"
-            estado = "Alto / Alerta"
             badge = f"🔴 Alerta ({ratio:.1f}%)"
             
         info = ventas_info.get(sem_id, {"Num_Semana": sem_id, "Fecha_Inicio": "", "Fecha_Fin": "", "Mes": "", "Observaciones": ""})
         num_s_raw = str(info.get('Num_Semana', ''))
-        if "Sem" in num_s_raw:
-            num_s_final = num_s_raw.split("Sem")[-1].replace("-", "").strip()
-        else:
-            num_s_final = num_s_raw
+        num_s_final = num_s_raw.split("Sem")[-1].replace("-", "").strip() if "Sem" in num_s_raw else num_s_raw
         etiqueta_semana = f"Semana {num_s_final}"
         fechas_rango = f"{info['Fecha_Inicio']} - {info['Fecha_Fin']}" if info['Fecha_Inicio'] else ""
         
@@ -597,18 +428,10 @@ def cargar_datos_balance(centro_filtro, fecha_desde, fecha_hasta):
     return kpis, semanas_tabla, compras_por_proveedor, matriz_prov_sem, semanas_ordenadas
 
 # ==========================================
-# INTERFAZ GRÁFICA PRINCIPAL
+# INTERFAZ GRÁFICA PRINCIPAL (VERSIÓN 1 ORIGINAL LIMPIA)
 # ==========================================
 def render_modulo_consumos():
-    """Punto de entrada principal con red de seguridad global para capturar y mostrar cualquier fallo."""
-    try:
-        _render_modulo_consumos_impl()
-    except Exception as e:
-        import traceback
-        st.error(f"⚠️ Incidencia temporal al cargar el módulo de consumos: {e}")
-        st.code(traceback.format_exc(), language="python")
-
-def _render_modulo_consumos_impl():
+    """Punto de entrada principal - Versión 1 Original con pestañas nativas."""
     header_html = """
     <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 22px 26px; border-radius: 14px; margin-bottom: 22px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.25);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -628,112 +451,95 @@ def _render_modulo_consumos_impl():
     """
     render_html_seguro(header_html)
 
-    # 1. ENCABEZADO CON SELECTOR DE FECHAS (PERÍODO DE ANÁLISIS)
-    FECHA_MINIMA = FECHA_MINIMA_DEFECTO  # 01/10/2026
-    real_today = datetime.date.today()
-    hoy = real_today if real_today >= FECHA_MINIMA else datetime.date(2026, 11, 10)
-    primer_dia_defecto = FECHA_MINIMA
-    ultimo_dia_defecto = datetime.date(2026, 11, 1)
-
-    if "filtro_fecha_desde" not in st.session_state:
-        st.session_state.filtro_fecha_desde = primer_dia_defecto
-    if "filtro_fecha_hasta" not in st.session_state:
-        st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
-
-    st.markdown("#### 📅 Período de Análisis (Filtro Desde / Hasta)")
-
-    # Botones de acceso rápido que actualizan sesión y recargan inmediatamente
-    col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
-    with col_rap1:
-        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct_global"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
-            st.session_state["input_date_desde"] = datetime.date(2026, 10, 1)
-            st.session_state["input_date_hasta"] = datetime.date(2026, 11, 1)
-            st.rerun()
-    with col_rap2:
-        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_nov_global"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
-            st.session_state["input_date_desde"] = datetime.date(2026, 11, 1)
-            st.session_state["input_date_hasta"] = datetime.date(2026, 11, 30)
-            st.rerun()
-    with col_rap3:
-        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem_global"):
-            f_d_4s = max(FECHA_MINIMA, hoy - timedelta(days=28))
-            st.session_state.filtro_fecha_desde = f_d_4s
-            st.session_state.filtro_fecha_hasta = hoy
-            st.session_state["input_date_desde"] = f_d_4s
-            st.session_state["input_date_hasta"] = hoy
-            st.rerun()
-    with col_rap4:
-        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo_global"):
-            st.session_state.filtro_fecha_desde = FECHA_MINIMA
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
-            st.session_state["input_date_desde"] = FECHA_MINIMA
-            st.session_state["input_date_hasta"] = datetime.date(2026, 12, 31)
-            st.rerun()
-
-    # Inputs "Desde" y "Hasta"
-    val_desde = limpiar_fecha(st.session_state.get("input_date_desde", st.session_state.filtro_fecha_desde), primer_dia_defecto)
-    val_hasta = limpiar_fecha(st.session_state.get("input_date_hasta", st.session_state.filtro_fecha_hasta), ultimo_dia_defecto)
-    if val_hasta < val_desde:
-        val_hasta = val_desde
-
-    st.session_state["input_date_desde"] = val_desde
-    st.session_state["input_date_hasta"] = val_hasta
-
-    col_f1, col_f2 = st.columns(2)
-    with col_f1:
-        f_desde_in = st.date_input(
-            "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
-            value=val_desde,
-            min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="input_date_desde"
-        )
-    with col_f2:
-        f_hasta_in = st.date_input(
-            "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
-            value=val_hasta,
-            min_value=FECHA_MINIMA,
-            format="DD/MM/YYYY",
-            key="input_date_hasta"
-        )
-
-    f_desde_limpia = limpiar_fecha(f_desde_in, FECHA_MINIMA)
-    f_hasta_limpia = limpiar_fecha(f_hasta_in, f_desde_limpia)
-    if f_hasta_limpia < f_desde_limpia:
-        f_hasta_limpia = f_desde_limpia
-
-    st.session_state.filtro_fecha_desde = f_desde_limpia
-    st.session_state.filtro_fecha_hasta = f_hasta_limpia
-    fecha_desde = f_desde_limpia
-    fecha_hasta = f_hasta_limpia
-
-    st.markdown("<div style='margin-bottom: 14px;'></div>", unsafe_allow_html=True)
-
-    # 2. PESTAÑAS NATIVAS DE CENTROS (ST.TABS)
+    # 1. PESTAÑAS NATIVAS DE CENTRO (4 PESTAÑAS ORIGINALES)
     c_tab1, c_tab2, c_tab3, c_tab4 = st.tabs([
         "🏢 Total Empresa (Global)",
         "📍 Blitz Ronda Sur",
         "📍 Blitz Juan de Borbón",
         "🚚 Eventos / Food Truck"
     ])
+    
+    tab_names = ["🏢 Total Empresa (Global)", "📍 Blitz Ronda Sur", "📍 Blitz Juan de Borbón", "🚚 Eventos / Food Truck"]
 
-    with c_tab1:
-        renderizar_panel_centro("🏢 Total Empresa (Global)", fecha_desde, fecha_hasta)
-    with c_tab2:
-        renderizar_panel_centro("📍 Blitz Ronda Sur", fecha_desde, fecha_hasta)
-    with c_tab3:
-        renderizar_panel_centro("📍 Blitz Juan de Borbón", fecha_desde, fecha_hasta)
-    with c_tab4:
-        renderizar_panel_centro("🚚 Eventos / Food Truck", fecha_desde, fecha_hasta)
+    # 2. ENCABEZADO CON SELECTOR DE FECHAS
+    st.markdown("### 📅 Período de Análisis (Filtro Desde / Hasta)")
+    
+    primer_dia_defecto = datetime.date(2026, 10, 1)
+    ultimo_dia_defecto = datetime.date(2026, 11, 1)
+
+    if "filtro_fecha_desde" not in st.session_state or not isinstance(st.session_state.filtro_fecha_desde, datetime.date):
+        st.session_state.filtro_fecha_desde = primer_dia_defecto
+    if "filtro_fecha_hasta" not in st.session_state or not isinstance(st.session_state.filtro_fecha_hasta, datetime.date):
+        st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
+
+    col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
+    with col_rap1:
+        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
+            st.session_state.input_date_desde = datetime.date(2026, 10, 1)
+            st.session_state.input_date_hasta = datetime.date(2026, 11, 1)
+            st.rerun()
+    with col_rap2:
+        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
+            st.session_state.input_date_desde = datetime.date(2026, 11, 1)
+            st.session_state.input_date_hasta = datetime.date(2026, 11, 30)
+            st.rerun()
+    with col_rap3:
+        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 10)
+            st.session_state.input_date_desde = datetime.date(2026, 10, 1)
+            st.session_state.input_date_hasta = datetime.date(2026, 11, 10)
+            st.rerun()
+    with col_rap4:
+        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
+            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
+            st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
+            st.session_state.input_date_desde = datetime.date(2026, 10, 1)
+            st.session_state.input_date_hasta = datetime.date(2026, 12, 31)
+            st.rerun()
+
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        f_desde = st.date_input(
+            "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
+            value=st.session_state.filtro_fecha_desde,
+            format="DD/MM/YYYY",
+            key="input_date_desde"
+        )
+        if isinstance(f_desde, datetime.date):
+            st.session_state.filtro_fecha_desde = f_desde
+
+    with col_f2:
+        f_hasta = st.date_input(
+            "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
+            value=st.session_state.filtro_fecha_hasta,
+            format="DD/MM/YYYY",
+            key="input_date_hasta"
+        )
+        if isinstance(f_hasta, datetime.date):
+            st.session_state.filtro_fecha_hasta = f_hasta
+
+    fecha_desde_act = st.session_state.filtro_fecha_desde if isinstance(st.session_state.filtro_fecha_desde, datetime.date) else primer_dia_defecto
+    fecha_hasta_act = st.session_state.filtro_fecha_hasta if isinstance(st.session_state.filtro_fecha_hasta, datetime.date) else ultimo_dia_defecto
+    if fecha_hasta_act < fecha_desde_act:
+        fecha_hasta_act = fecha_desde_act
+
+    st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
+
+    # Renderizar cada pestaña nativa
+    tabs = [c_tab1, c_tab2, c_tab3, c_tab4]
+    for idx_tab, tab in enumerate(tabs):
+        with tab:
+            centro_actual = tab_names[idx_tab]
+            renderizar_panel_centro(centro_actual, fecha_desde_act, fecha_hasta_act)
 
 
 def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
     """Renderiza todas las gráficas circulares, KPIs y tablas para el centro seleccionado."""
-    # 1. Cargar datos consolidados con las fechas activas
     kpis, semanas_tabla, prov_compras, matriz_prov_sem, semanas_ordenadas = cargar_datos_balance(
         centro_nombre, fecha_desde, fecha_hasta
     )
@@ -762,7 +568,7 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
         badge_ratio = f"🔴 ALTO / ALERTA ({ratio_global:.1f}%)"
         color_ratio = "#ef4444"
 
-    # TARJETAS DE MÉTRICAS KPI SUPERIORES (Se renderizan directamente arriba)
+    # TARJETAS DE MÉTRICAS KPI SUPERIORES
     kpis_html = f"""
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 10px 0 20px 0;">
         <div style="background: #1e293b; border-left: 5px solid #3b82f6; padding: 14px 18px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
@@ -793,7 +599,6 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
     st.markdown("#### 🍩 Gráficas Circulares de Ratio y Reparto")
     col_g1, col_g2 = st.columns(2)
 
-    # Intentar cargar Plotly si está disponible
     plotly_disponible = False
     try:
         import plotly.graph_objects as go
@@ -834,7 +639,6 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
             )
             st.plotly_chart(fig_ratio, use_container_width=True, key=f"donut_ratio_{centro_nombre}")
         else:
-            # Versión visual nativa en HTML5 si Plotly no estuviera disponible
             fallback_ratio_html = f"""
             <div style="background: #1e293b; border-radius: 12px; padding: 22px; text-align: center; border: 1px solid #334155;">
                 <div style="font-size: 2.4rem; font-weight: 900; color: {color_ratio};">{ratio_global:.1f} %</div>
@@ -855,7 +659,6 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
     with col_g2:
         st.markdown("**Reparto de Compras por Proveedor**")
         if prov_compras and total_compras > 0:
-            # Top proveedores y agrupar pequeños en 'Otros'
             prov_ordenados = sorted(prov_compras.items(), key=lambda x: x[1], reverse=True)
             top_provs = prov_ordenados[:6]
             otros_total = sum(v for k, v in prov_ordenados[6:])
@@ -896,7 +699,7 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
 
     st.divider()
 
-    # 4. TABLA RESUMEN POR SEMANAS (IDÉNTICA AL EXCEL DE SALVA)
+    # 4. TABLA RESUMEN POR SEMANAS
     st.markdown(f"#### 📋 Resumen Semanal de Ventas, Compras y % Consumo ({centro_nombre})")
     
     if semanas_tabla:
@@ -955,23 +758,17 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
     with st.expander(f"➕ Introducir o Modificar Ventas Semanales ({centro_nombre})", expanded=False):
         st.markdown("Introduce las ventas de tu TPV o cierre semanal para calcular automáticamente el % de consumo:")
         col_v1, col_v2, col_v3 = st.columns([1.5, 1.2, 2])
-        
-        # Opciones de semanas calculadas a partir de la fecha seleccionada (con límite de seguridad anti-bucles)
         semanas_opciones = []
-        if fecha_desde and fecha_hasta and fecha_desde <= fecha_hasta:
-            limite_iter = 52
-            fecha_cursor = fecha_desde
-            count = 0
-            while fecha_cursor <= fecha_hasta + timedelta(days=7) and count < limite_iter:
-                count += 1
-                c_calc = calcular_ciclo_operativo(fecha_cursor)
-                if c_calc["id_semana"] not in [x["id"] for x in semanas_opciones]:
-                    semanas_opciones.append({
-                        "id": c_calc["id_semana"],
-                        "label": f"{c_calc['etiqueta']} - {c_calc['mes']} {c_calc['año']}",
-                        "data": c_calc
-                    })
-                fecha_cursor += timedelta(days=7)
+        fecha_cursor = fecha_desde
+        while fecha_cursor <= fecha_hasta + timedelta(days=7):
+            c_calc = calcular_ciclo_operativo(fecha_cursor)
+            if c_calc["id_semana"] not in [x["id"] for x in semanas_opciones]:
+                semanas_opciones.append({
+                    "id": c_calc["id_semana"],
+                    "label": f"{c_calc['etiqueta']} - {c_calc['mes']} {c_calc['año']}",
+                    "data": c_calc
+                })
+            fecha_cursor += timedelta(days=7)
             
         with col_v1:
             sem_sel_label = st.selectbox(
@@ -1000,7 +797,6 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
         if st.button("💾 Guardar Ventas de la Semana", type="primary", key=f"btn_save_v_{centro_nombre}"):
             if sem_sel_obj and ventas_input > 0:
                 d = sem_sel_obj["data"]
-                # Si está en modo global, permitir elegir a cuál de los dos locales guardarlo
                 centro_destino_guardado = centro_nombre
                 if centro_nombre == "🏢 Total Empresa (Global)":
                     st.warning("⚠️ Selecciona la pestaña de un centro concreto (Ronda Sur, Juan de Borbón o Eventos / Food Truck) para imputar las ventas exactas a ese local.")
@@ -1017,14 +813,12 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
     st.markdown("#### 🛒 Desglose de Compras por Proveedor Semana a Semana")
     
     if matriz_prov_sem and semanas_ordenadas:
-        # Encabezados de semanas
         th_semanas = "".join(f"<th style='padding: 10px 8px; text-align: right;'>{ventas_info_nombre(s)}</th>" for s in semanas_ordenadas)
         
         filas_prov_html = ""
         totales_columna = {s: 0.0 for s in semanas_ordenadas}
         total_absoluto = 0.0
         
-        # Ordenar proveedores alfabéticamente o por volumen de gasto
         prov_lista = sorted(matriz_prov_sem.keys(), key=lambda p: sum(matriz_prov_sem[p].values()), reverse=True)
         
         for prov in prov_lista:
@@ -1047,7 +841,6 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
             </tr>
             """
             
-        # Fila de totales
         td_totales_col = "".join(f"<td style='padding: 12px 10px; text-align: right; color: #fb923c;'>{totales_columna[s]:,.2f} €</td>" for s in semanas_ordenadas)
         
         tabla_prov_html = f"""
@@ -1075,7 +868,7 @@ def renderizar_panel_centro(centro_nombre, fecha_desde, fecha_hasta):
     else:
         st.info("ℹ️ No hay facturación desglosada por proveedor en este período.")
 
-    # 7. EXPANDER DE CONFIGURACIÓN DE UMBRALES (DEJAR PUERTA ABIERTA A MODIFICACIONES)
+    # 7. EXPANDER DE CONFIGURACIÓN DE UMBRALES
     with st.expander("⚙️ Ajustes de Objetivos de Food Cost (Dejar la puerta abierta a cambios)", expanded=False):
         st.markdown("""
         Personaliza los límites porcentuales para el semáforo de tu hamburguesería:
