@@ -124,3 +124,26 @@ Además del desglose por plato individual, Camarero 10 emite el **Informe Contab
   * **Uber Eats:** 7.587,75 € *(16,0 %)*
   * **Just Eat:** 3.592,32 € *(7,6 %)*
   * **Efectivo:** 3.247,71 € *(6,9 %)*
+
+### Datos Reales Verificados (Centro Ronda Sur - Octubre 2026):
+* **Período:** 30/09/2026 al 01/11/2026 (25 días de apertura, Miércoles a Domingo, Lunes y Martes cerrado).
+* **Total Facturado Con IVA:** **34.541,99 €**
+* **Base Imponible Neta (Sin IVA):** **31.401,47 €**
+* **Cuota IVA (10%):** **3.140,52 €**
+* **Reparto por Canales de Pago:**
+  * **Glovo:** 18.547,51 € *(53,7 %)*
+  * **Tarjeta de crédito:** 9.208,71 € *(26,7 %)*
+  * **Uber Eats:** 3.766,24 € *(10,9 %)*
+  * **Efectivo:** 3.019,53 € *(8,7 %)*
+  * **Just Eat:** 0,00 € *(0,0 % - no opera en este centro)*
+
+### Resumen Global Consolidado (Ambos Centros - Octubre 2026):
+* **Facturación Total Red Blitz Con IVA:** **81.900,47 €**
+* **Base Imponible Neta Total (Sin IVA):** **74.454,07 €**
+* **Cuota Total de IVA (10%):** **7.446,40 €**
+* **Volumen Global por Canales de Venta:**
+  * **Glovo:** 41.203,84 € *(50,3 % de las ventas globales)*
+  * **Tarjeta de crédito:** 19.483,08 € *(23,8 % de las ventas globales)*
+  * **Uber Eats:** 11.353,99 € *(13,9 % de las ventas globales)*
+  * **Efectivo:** 6.267,24 € *(7,7 % de las ventas globales)*
+  * **Just Eat:** 3.592,32 € *(4,4 % de las ventas globales)*
