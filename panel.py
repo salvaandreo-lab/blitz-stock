@@ -2334,22 +2334,17 @@ if seccion_activa == "📡 Radar de Albaranes":
                     except Exception as e_cons:
                         print(f"Error registrando compra en consumos: {e_cons}")
 
-                    # Eliminar de la cola de GitHub y sincronizar CSVs en background
-                    try:
-                        import threading
-                        from sync_repo import delete_file_from_github, sync_file
-                        rel_origen = os.path.relpath(ruta_origen, BASE_DIR)
-                        def _bg_sync():
-                            try:
-                                delete_file_from_github(rel_origen)
-                                sync_file("Stock_Actual.csv")
-                                sync_file("Historico_Precios.csv")
-                                sync_file("Registro_Albaranes_Compras.csv")
-                            except Exception:
-                                pass
-                        threading.Thread(target=_bg_sync, daemon=True).start()
-                    except Exception:
-                        pass
+                    # Eliminar de la cola de GitHub y sincronizar CSVs de forma síncrona y segura
+                    with st.spinner("Archivando y sincronizando datos con la nube..."):
+                        try:
+                            from sync_repo import delete_file_from_github, sync_file
+                            rel_origen = os.path.relpath(ruta_origen, BASE_DIR)
+                            delete_file_from_github(rel_origen)
+                            sync_file("Stock_Actual.csv")
+                            sync_file("Historico_Precios.csv")
+                            sync_file("Registro_Albaranes_Compras.csv")
+                        except Exception as e_sync:
+                            print(f"Error sincronizando archivo a GitHub: {e_sync}")
                     
                     # Notificación instantánea en tiempo real por Telegram
                     enviar_notificacion_telegram(st.session_state.proveedor_ia, st.session_state.centro_destino, st.session_state.articulos_ia)
