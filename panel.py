@@ -2066,38 +2066,34 @@ if seccion_activa == "📡 Radar de Albaranes":
                                 if factor > 1.0:
                                     cand_directo = precio_detectado
                                     cand_envase = precio_detectado / factor
-                                    cand_total = precio_detectado / (cant_float * factor) if cant_float > 0 else cand_envase
                                     
-                                    if precio_guardado > 0.0:
-                                        diff_directo = abs(cand_directo - precio_guardado)
-                                        diff_envase = abs(cand_envase - precio_guardado)
-                                        diff_total = abs(cand_total - precio_guardado) if cant_float > 1.0 else 999999.0
-                                        
-                                        min_diff = min(diff_directo, diff_envase, diff_total)
-                                        if min_diff == diff_envase:
-                                            precio_unitario_real = round(cand_envase, 2)
-                                        elif min_diff == diff_directo:
-                                            precio_unitario_real = round(cand_directo, 2)
-                                        else:
-                                            precio_unitario_real = round(cand_total, 2)
+                                    p_unit_dict = p_kilo_guardado or p_envase_guardado
+                                    if not p_unit_dict and precio_guardado > 0.0:
+                                        p_unit_dict = precio_guardado / factor if precio_guardado > (cand_directo / 2.0) else precio_guardado
+                                    p_caja_dict = p_unit_dict * factor if p_unit_dict else precio_guardado
+                                    
+                                    diff_caja = abs(cand_directo - p_caja_dict) if p_caja_dict else 999999.0
+                                    diff_unit = abs(cand_directo - p_unit_dict) if p_unit_dict else 999999.0
+                                    
+                                    if diff_caja < diff_unit or ud_leida in ["CAJA", "CAJAS", "BULTO", "BULTOS", "GARRAFA", "PACK", "ESTUCHE"]:
+                                        precio_unitario_real = round(cand_envase, 2)
                                     else:
-                                        if ud_leida in ["CAJA", "CAJAS", "BULTOS", "GARRAFA", "PACK", "ESTUCHE"]:
-                                            precio_unitario_real = round(cand_envase, 2)
-                                        else:
-                                            precio_unitario_real = round(cand_directo, 2)
+                                        precio_unitario_real = round(cand_directo, 2)
+                                    precio_guardado_comparar = p_unit_dict if p_unit_dict else round(precio_guardado / factor, 2)
                                 else:
                                     precio_unitario_real = round(precio_detectado, 2)
+                                    precio_guardado_comparar = precio_guardado
                                         
                                 articulo["val_calc_final"] = val_calc
                                 articulo["precio_unitario_final"] = precio_unitario_real
                                     
                                 st.success(f"✅ Mapeado a **{ref_str}{eq_info['producto_maestro']}** ({val_calc} {eq_info['unidad_inv']}) • Precio: **{precio_unitario_real:.2f} €/{eq_info['unidad_inv']}**")
                                 
-                                if precio_unitario_real > 0.0 and abs(precio_unitario_real - precio_guardado) > 0.01:
-                                    if precio_guardado > 0.0:
+                                if precio_unitario_real > 0.0 and abs(precio_unitario_real - precio_guardado_comparar) > 0.02:
+                                    if precio_guardado_comparar > 0.0:
                                         st.warning(
                                             f"⚠️ **PRECIO DISTINTO AL DEL DICCIONARIO**\n\n"
-                                            f"• **Precio en Diccionario:** {precio_guardado:.2f} €/{eq_info['unidad_inv']}\n\n"
+                                            f"• **Precio en Diccionario:** {precio_guardado_comparar:.2f} €/{eq_info['unidad_inv']}\n\n"
                                             f"• **Precio en este Albarán:** {precio_unitario_real:.2f} €/{eq_info['unidad_inv']}"
                                         )
                                         col_p1, col_p2 = st.columns([1, 1])
