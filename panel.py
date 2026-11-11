@@ -1124,6 +1124,15 @@ with st.sidebar:
         st.rerun()
         
     st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+
+    # 1.3 Food Truck / Eventos
+    es_eventos = (st.session_state.seccion_activa == "🚚 Food Truck Eventos")
+    if st.button("🚚 Food Truck Eventos", use_container_width=True, type="primary" if es_eventos else "secondary", key="btn_nav_eventos"):
+        st.session_state.seccion_activa = "🚚 Food Truck Eventos"
+        st.session_state.nav_counter += 1
+        st.rerun()
+        
+    st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
     
     # 2. Desplegable "Opciones de Stock"
     idx_stock = opciones_stock.index(st.session_state.seccion_activa) if st.session_state.seccion_activa in opciones_stock else None
@@ -2355,6 +2364,17 @@ elif seccion_activa == "📊 Ratio Compras vs Ventas":
     except Exception as e_mod_cons:
         import traceback
         st.error(f"⚠️ Incidencia temporal al cargar el panel de Ratio Compras vs Ventas: {e_mod_cons}")
+        st.code(traceback.format_exc(), language="python")
+
+elif seccion_activa == "🚚 Food Truck Eventos":
+    try:
+        import importlib
+        import modulo_eventos
+        importlib.reload(modulo_eventos)
+        modulo_eventos.render_modulo_eventos()
+    except Exception as e_eventos:
+        import traceback
+        st.error(f"⚠️ Incidencia al cargar el módulo de Food Truck y Eventos: {e_eventos}")
         st.code(traceback.format_exc(), language="python")
 
 elif seccion_activa == "📚 Gestor de Diccionario":
