@@ -243,7 +243,13 @@ def parsear_archivo_evento(ruta_archivo):
             if margen_pct == 0.0 and ventas_total > 0:
                 margen_pct = (beneficio / ventas_total) * 100.0
 
-            regaladas_q = int(get_campo(["REGALADAS Y PERSONAL (Q)", "REGALADAS"], default="0") or 0)
+            raw_reg = get_campo(["REGALADAS Y PERSONAL (Q)", "REGALADAS", "HAMBURGUESAS REGALADAS"], default="0")
+            try:
+                regaladas_q = int(float(limpiar_numero(raw_reg)))
+            except Exception:
+                m_dig = re.search(r'\d+', str(raw_reg))
+                regaladas_q = int(m_dig.group(0)) if m_dig else 0
+
             if coste_regaladas == 0.0 and regaladas_q > 0 and coste_burger > 0:
                 coste_regaladas = round(regaladas_q * coste_burger, 2)
 
@@ -262,8 +268,8 @@ def parsear_archivo_evento(ruta_archivo):
                 "Coste_Personal": round(coste_personal, 2),
                 "Regaladas_Q": regaladas_q,
                 "Coste_Regaladas": round(coste_regaladas, 2),
-                "Entradas_Aforo": int(entradas_aforo),
-                "Ventas_Q": int(ventas_q),
+                "Entradas_Aforo": int(entradas_aforo) if entradas_aforo else 0,
+                "Ventas_Q": int(ventas_q) if ventas_q else 0,
                 "Ventas_Total": round(ventas_total, 2),
                 "Gastos_Extras": 0.0,
                 "Comision_Pct": round(comision_pct, 1),
