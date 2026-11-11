@@ -110,15 +110,23 @@ def calcular_ciclo_operativo(fecha_obj):
     """
     if isinstance(fecha_obj, str):
         try:
-            if "/" in fecha_obj:
-                partes = fecha_obj.split("/")
+            f_clean = str(fecha_obj).strip()
+            if "/" in f_clean:
+                partes = f_clean.split("/")
                 if len(partes[0]) == 4:
-                    fecha_obj = datetime.date(int(partes[0]), int(partes[1]), int(partes[2]))
+                    y, m, d = int(partes[0]), int(partes[1]), int(partes[2])
                 else:
-                    fecha_obj = datetime.date(int(partes[2]), int(partes[1]), int(partes[0]))
-            elif "-" in fecha_obj:
-                partes = fecha_obj.split("-")
-                fecha_obj = datetime.date(int(partes[0]), int(partes[1]), int(partes[2]))
+                    d, m, y = int(partes[0]), int(partes[1]), int(partes[2])
+                    if y < 100: y += 2000
+                fecha_obj = datetime.date(y, m, d)
+            elif "-" in f_clean:
+                partes = f_clean.split("-")
+                if len(partes[0]) == 4:
+                    y, m, d = int(partes[0]), int(partes[1]), int(partes[2])
+                else:
+                    d, m, y = int(partes[0]), int(partes[1]), int(partes[2])
+                    if y < 100: y += 2000
+                fecha_obj = datetime.date(y, m, d)
         except Exception:
             fecha_obj = datetime.date(2026, 10, 1)
 
@@ -266,14 +274,23 @@ def parsear_fecha_str(f_str):
     if not f_str:
         return datetime.date(2026, 10, 1)
     try:
-        if "/" in f_str:
-            p = f_str.split("/")
+        f_clean = str(f_str).strip()
+        if "/" in f_clean:
+            p = f_clean.split("/")
             if len(p[0]) == 4:
-                return datetime.date(int(p[0]), int(p[1]), int(p[2]))
-            return datetime.date(int(p[2]), int(p[1]), int(p[0]))
-        elif "-" in f_str:
-            p = f_str.split("-")
-            return datetime.date(int(p[0]), int(p[1]), int(p[2]))
+                y, m, d = int(p[0]), int(p[1]), int(p[2])
+            else:
+                d, m, y = int(p[0]), int(p[1]), int(p[2])
+                if y < 100: y += 2000
+            return datetime.date(y, m, d)
+        elif "-" in f_clean:
+            p = f_clean.split("-")
+            if len(p[0]) == 4:
+                y, m, d = int(p[0]), int(p[1]), int(p[2])
+            else:
+                d, m, y = int(p[0]), int(p[1]), int(p[2])
+                if y < 100: y += 2000
+            return datetime.date(y, m, d)
     except Exception:
         pass
     return datetime.date(2026, 10, 1)
@@ -522,66 +539,27 @@ def render_modulo_consumos():
     st.markdown("### 📅 Período de Análisis (Filtro Desde / Hasta)")
     
     primer_dia_defecto = datetime.date(2026, 10, 1)
-    ultimo_dia_defecto = datetime.date(2026, 11, 1)
-
-    if "filtro_fecha_desde" not in st.session_state or not isinstance(st.session_state.filtro_fecha_desde, datetime.date):
-        st.session_state.filtro_fecha_desde = primer_dia_defecto
-    if "filtro_fecha_hasta" not in st.session_state or not isinstance(st.session_state.filtro_fecha_hasta, datetime.date):
-        st.session_state.filtro_fecha_hasta = ultimo_dia_defecto
-
-    col_rap1, col_rap2, col_rap3, col_rap4 = st.columns([1, 1, 1, 1.2])
-    with col_rap1:
-        if st.button("📅 Mes Octubre 2026", use_container_width=True, key="btn_oct"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 1)
-            st.session_state.input_date_desde = datetime.date(2026, 10, 1)
-            st.session_state.input_date_hasta = datetime.date(2026, 11, 1)
-            st.rerun()
-    with col_rap2:
-        if st.button("📅 Este Mes (Noviembre)", use_container_width=True, key="btn_mes_act"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 11, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 30)
-            st.session_state.input_date_desde = datetime.date(2026, 11, 1)
-            st.session_state.input_date_hasta = datetime.date(2026, 11, 30)
-            st.rerun()
-    with col_rap3:
-        if st.button("📅 Últimas 4 Semanas", use_container_width=True, key="btn_4sem"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 11, 10)
-            st.session_state.input_date_desde = datetime.date(2026, 10, 1)
-            st.session_state.input_date_hasta = datetime.date(2026, 11, 10)
-            st.rerun()
-    with col_rap4:
-        if st.button("📅 Todo el Histórico", use_container_width=True, key="btn_todo"):
-            st.session_state.filtro_fecha_desde = datetime.date(2026, 10, 1)
-            st.session_state.filtro_fecha_hasta = datetime.date(2026, 12, 31)
-            st.session_state.input_date_desde = datetime.date(2026, 10, 1)
-            st.session_state.input_date_hasta = datetime.date(2026, 12, 31)
-            st.rerun()
+    ultimo_dia_defecto = datetime.date(2026, 11, 30)
 
     col_f1, col_f2 = st.columns(2)
     with col_f1:
         f_desde = st.date_input(
             "📅 Fecha DESDE (Escribe o pulsa el icono de calendario):",
-            value=st.session_state.filtro_fecha_desde,
+            value=st.session_state.get("filtro_fecha_desde", primer_dia_defecto),
             format="DD/MM/YYYY",
-            key="input_date_desde"
+            key="filtro_fecha_desde"
         )
-        if isinstance(f_desde, datetime.date):
-            st.session_state.filtro_fecha_desde = f_desde
 
     with col_f2:
         f_hasta = st.date_input(
             "📅 Fecha HASTA (Escribe o pulsa el icono de calendario):",
-            value=st.session_state.filtro_fecha_hasta,
+            value=st.session_state.get("filtro_fecha_hasta", ultimo_dia_defecto),
             format="DD/MM/YYYY",
-            key="input_date_hasta"
+            key="filtro_fecha_hasta"
         )
-        if isinstance(f_hasta, datetime.date):
-            st.session_state.filtro_fecha_hasta = f_hasta
 
-    fecha_desde_act = st.session_state.filtro_fecha_desde if isinstance(st.session_state.filtro_fecha_desde, datetime.date) else primer_dia_defecto
-    fecha_hasta_act = st.session_state.filtro_fecha_hasta if isinstance(st.session_state.filtro_fecha_hasta, datetime.date) else ultimo_dia_defecto
+    fecha_desde_act = f_desde if isinstance(f_desde, datetime.date) else primer_dia_defecto
+    fecha_hasta_act = f_hasta if isinstance(f_hasta, datetime.date) else ultimo_dia_defecto
     if fecha_hasta_act < fecha_desde_act:
         fecha_hasta_act = fecha_desde_act
 
