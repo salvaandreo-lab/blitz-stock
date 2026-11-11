@@ -425,7 +425,7 @@ def seleccionar_variante_optima(eq_info, ud_leida=None, precio_detectado=None):
             p_v = float(v.get("precio_actual", 0.0))
             if p_v > 0.0:
                 diff = abs(p_det - p_v)
-                if diff < min_p_diff:
+                if diff < min_p_diff or (abs(diff - min_p_diff) < 0.001 and float(v.get("factor", 1.0)) == 1.0):
                     min_p_diff = diff
                     mejor_v = v
         if mejor_v is not None and (min_p_diff <= 0.25 or (p_det > 0 and min_p_diff / p_det < 0.05)):
