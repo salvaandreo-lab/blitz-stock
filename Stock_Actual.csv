@@ -2,7 +2,7 @@
 Blitz  Juan de Borbón,PAPEL HIGIENICO,0003,0.0,ROLLOS
 Blitz  Juan de Borbón,ROLLO PAPEL COCINA,0004,18.0,ROLLOS
 Blitz  Juan de Borbón,QUESO CREMA,0005,0.0,BOTE
-Blitz  Juan de Borbón,QUESO CHEDDAR LONCHAS,0001,112.0,BANDEJAS
+Blitz  Juan de Borbón,QUESO CHEDDAR LONCHAS,0001,136.0,BANDEJAS
 Blitz  Juan de Borbón,PATATAS FRITAS,0002,307.0,BOLSAS
 Blitz  Juan de Borbón,BONIATO,0006,4.0,BOLSAS
 Blitz  Juan de Borbón,LECHUGA,0007,6.0,BOLSAS
@@ -40,7 +40,7 @@ Blitz  Juan de Borbón,BACON DADOS,0041,75.0,BOLSAS
 Blitz  Juan de Borbón,CEBOLLA CRISPY,0042,5.0,BOLSAS
 Blitz  Juan de Borbón,SALSA BURGUER,0043,9.0,BOTELLAS
 Blitz  Juan de Borbón,SALSA CHEDDAR,0044,8.5,BOTE
-Blitz  Juan de Borbón,SALSA RANCHERA,0045,38.0,BOTE
+Blitz  Juan de Borbón,SALSA RANCHERA,0045,44.0,BOTE
 Blitz  Juan de Borbón,CHIPOTLE,0046,4.0,BOTE
 Blitz  Juan de Borbón,JALAPEÑOS EN RODAJAS,0047,2.0,LATA
 Blitz  Juan de Borbón,KIKOS,0048,0.0,BOLSAS
@@ -262,3 +262,4 @@ Food Truck Grande,ZANAHORIA RALLADA,86,0.0,BOTE
 Food Truck Pequeña,ZANAHORIA RALLADA,86,0.0,BOTE
 Blitz  Juan de Borbón,MERMELADA,,1.0,
 Blitz  Juan de Borbón,CHORIZO CRIOLLO,,2.0,
+Blitz  Juan de Borbón,QUESO GOUDA LONCHAS,,8.0,
