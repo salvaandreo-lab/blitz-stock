@@ -132,7 +132,14 @@ def calcular_ciclo_operativo(fecha_obj):
 
     primer_dia_mes = datetime.date(año, sabado.month, 1)
     offset_mes = (primer_dia_mes.weekday() - 2) % 7
-    primer_miercoles = primer_dia_mes - timedelta(days=offset_mes)
+    candidato_miercoles = primer_dia_mes - timedelta(days=offset_mes)
+    candidato_sabado = candidato_miercoles + timedelta(days=3)
+    
+    if candidato_sabado.month != sabado.month:
+        primer_miercoles = candidato_miercoles + timedelta(days=7)
+    else:
+        primer_miercoles = candidato_miercoles
+
     num_semana = max(1, int((miercoles - primer_miercoles).days // 7) + 1)
 
     id_semana = f"{año}-M{sabado.month:02d}-Sem{num_semana}"
