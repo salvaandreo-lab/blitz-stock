@@ -1803,50 +1803,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                         # CÁLCULO INTELIGENTE DE PROMOCIONES CIELO DE BOCA (OK)
                         articulos_crudos = datos_ia.get("articulos", [])
                         prov_nombre = str(prov_canonico).upper()
-                        
                         articulos_procesados = procesar_articulos_albaran_ia(articulos_crudos, prov_nombre)
-                        articulos_vistos = {}
-                        
-                        if False:  # Sustituido por procesar_articulos_albaran_ia
-                            nombre_norm = normalizar_texto(art.get("nombre", ""))
-                            try: cant_val = float(art.get("cantidad", 0.0))
-                            except: cant_val = 0.0
-                            try: p_val = float(art.get("precio_final", 0.0))
-                            except: p_val = 0.0
-                            ud_val = art.get("unidad", "CAJA")
-                            
-                            es_cielo_pan = ("CIELO" in prov_nombre or "BOCA" in prov_nombre) and ("POTATO" in nombre_norm or "PAN" in nombre_norm)
-                            
-                            if nombre_norm in articulos_vistos:
-                                # Fusionar líneas repetidas (ej. 30 cajas pagadas + 3 de regalo a 0€)
-                                prev = articulos_vistos[nombre_norm]
-                                cant_total = prev["cantidad"] + cant_val
-                                dinero_total = (prev["cantidad"] * prev["precio_final"]) + (cant_val * p_val)
-                                p_medio = round(dinero_total / cant_total, 2) if cant_total > 0 else 0.0
-                                
-                                prev["cantidad"] = cant_total
-                                prev["precio_final"] = p_medio
-                            else:
-                                if es_cielo_pan and cant_val >= 10 and p_val > 0:
-                                    cajas_regalo = int(cant_val // 10)
-                                    cant_total = cant_val + cajas_regalo
-                                    p_efectivo = round((cant_val * p_val) / cant_total, 2)
-                                    art_dict = {
-                                        "nombre": art.get("nombre", ""),
-                                        "cantidad": cant_total,
-                                        "unidad": ud_val,
-                                        "precio_final": p_efectivo
-                                    }
-                                else:
-                                    art_dict = {
-                                        "nombre": art.get("nombre", ""),
-                                        "cantidad": cant_val,
-                                        "unidad": ud_val,
-                                        "precio_final": p_val
-                                    }
-                                articulos_vistos[nombre_norm] = art_dict
-                                articulos_procesados.append(art_dict)
-                                
                         st.session_state.articulos_ia = articulos_procesados
                         st.session_state.ia_procesada = True
                         
