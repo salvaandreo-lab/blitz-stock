@@ -8,6 +8,8 @@ import unicodedata
 import difflib
 import datetime
 from datetime import timedelta
+import time
+import hashlib
 import streamlit as st
 from PIL import Image
 import pandas as pd
@@ -145,6 +147,8 @@ CARPETAS_ENTRADA = [
     os.path.join(BASE_DIR, "Entrada_FoodTruck_2")
 ]
 CARPETA_PROCESADOS = os.path.join(BASE_DIR, "Albaranes_Procesados")
+CARPETA_DESCARTADOS = os.path.join(BASE_DIR, "Albaranes_Descartados")
+ARCHIVO_COMPRAS_ALBARANES = os.path.join(BASE_DIR, "Registro_Albaranes_Compras.csv")
 
 CENTROS_BLITZ = [
     "Blitz  Juan de Borbón", 
@@ -154,15 +158,87 @@ CENTROS_BLITZ = [
 ]
 centros_blitz = CENTROS_BLITZ
 
-for carpeta in CARPETAS_ENTRADA:
+for carpeta in CARPETAS_ENTRADA + [CARPETA_PROCESADOS, CARPETA_DESCARTADOS]:
     try:
         os.makedirs(carpeta, exist_ok=True)
     except OSError:
         pass
-try:
-    os.makedirs(CARPETA_PROCESADOS, exist_ok=True)
-except OSError:
-    pass
+
+# ==========================================
+# 🛡️ MOTOR ANTI-DUPLICADOS DE ALBARANES
+# ==========================================
+def calcular_hash_archivo(ruta):
+    """Calcula el hash MD5 de un archivo para detectar imágenes idénticas."""
+    if not os.path.isfile(ruta):
+        return ""
+    hasher = hashlib.md5()
+    try:
+        with open(ruta, 'rb') as f:
+            for chunk in iter(lambda: f.read(65536), b""):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+    except Exception:
+        return ""
+
+def verificar_albaran_duplicado(ruta_origen, proveedor, num_albaran, centro, total_bi, fecha_doc=""):
+    """
+    Comprueba si el albarán actual ya fue procesado o descartado mediante 3 niveles de defensa:
+    1. Huella exacta del archivo de imagen (Hash MD5 en procesados o descartados).
+    2. Coincidencia de Nº de Albarán y Proveedor en Registro_Albaranes_Compras.csv.
+    3. Coincidencia de importe exacto + proveedor + centro en compras recientes.
+    Retorna: (es_duplicado: bool, motivo: str, tipo_alerta: str)
+    """
+    # 1. Comprobar huella digital de la imagen (Hash MD5)
+    if ruta_origen and os.path.isfile(ruta_origen):
+        hash_actual = calcular_hash_archivo(ruta_origen)
+        if hash_actual:
+            for carp in [CARPETA_PROCESADOS, CARPETA_DESCARTADOS]:
+                if os.path.isdir(carp):
+                    for f in os.listdir(carp):
+                        p_f = os.path.join(carp, f)
+                        if os.path.isfile(p_f) and f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                            try:
+                                if os.path.getsize(p_f) == os.path.getsize(ruta_origen):
+                                    if calcular_hash_archivo(p_f) == hash_actual:
+                                        estado = "ya archivado anteriormente" if carp == CARPETA_PROCESADOS else "descartado previamente"
+                                        return True, f"Esta imagen es exactamente idéntica a '{f}' ({estado}).", "HUELLA_IMAGEN"
+                            except Exception:
+                                pass
+
+    prov_norm = normalizar_texto(proveedor)
+    num_norm = str(num_albaran).strip().lower()
+    centro_norm = normalizar_texto(centro)
+
+    # 2. Comprobar por Nº de Albarán + Proveedor en Registro_Albaranes_Compras.csv
+    if os.path.isfile(ARCHIVO_COMPRAS_ALBARANES):
+        try:
+            with open(ARCHIVO_COMPRAS_ALBARANES, mode='r', encoding='utf-8-sig') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    r_prov = normalizar_texto(row.get('Proveedor', ''))
+                    r_num = str(row.get('Num_Albaran', '')).strip().lower()
+                    r_notas = str(row.get('Notas', '')).lower()
+                    r_fecha = str(row.get('Fecha', '')).strip()
+                    r_bi = str(row.get('Base_Imponible', '0')).strip()
+                    r_centro = str(row.get('Centro', '')).strip()
+
+                    # Coincidencia de Nº de Albarán y Proveedor
+                    if num_norm and len(num_norm) >= 2 and (prov_norm in r_prov or r_prov in prov_norm):
+                        if (r_num and r_num == num_norm) or (f"nº {num_norm}" in r_notas) or (f"nº: {num_norm}" in r_notas):
+                            return True, f"Ya existe un albarán registrado de **{row.get('Proveedor')}** con el **Nº {num_albaran}** (archivado el {r_fecha} en {r_centro} por {r_bi} €).", "NUMERO_ALBARAN"
+
+                    # 3. Coincidencia por Importe exacto + Proveedor + Centro
+                    try:
+                        bi_float = float(r_bi)
+                        if abs(bi_float - total_bi) < 0.05 and total_bi > 5.0:
+                            if (prov_norm in r_prov or r_prov in prov_norm) and (centro_norm in normalizar_texto(r_centro) or normalizar_texto(r_centro) in centro_norm):
+                                return True, f"Coincidencia de importe idéntico (**{total_bi:.2f} €**), proveedor (**{row.get('Proveedor')}**) y centro (**{r_centro}**) con un albarán archivado el {r_fecha}.", "IMPORTE_EXACTO"
+                    except Exception:
+                        pass
+        except Exception as e:
+            print(f"Error verificando duplicados en compras: {e}")
+
+    return False, "", "OK"
 
 def cargar_rendimientos_maestros():
     rendimientos = {}
@@ -1528,11 +1604,35 @@ if seccion_activa == "📡 Radar de Albaranes":
             st.session_state.articulos_ia = []
             st.session_state.proveedor_ia = ""
             st.session_state.centro_destino = ""
+            st.session_state.num_albaran_ia = ""
+            st.session_state.fecha_albaran_ia = ""
             st.session_state.archivo_actual = ruta_origen
 
         col_foto, col_datos = st.columns([1, 2])
         with col_foto:
             st.image(ruta_origen, caption=f"En cola: {archivo_actual}", use_container_width=True)
+            
+            # 🛡️ Comprobación previa de imagen idéntica (Hash MD5)
+            es_dup_img, motivo_dup_img, _ = verificar_albaran_duplicado(ruta_origen, "", "", "", 0.0)
+            if es_dup_img:
+                st.error(f"🚨 **FOTO DUPLICADA DETECTADA:**\n\n{motivo_dup_img}")
+                if st.button("🗑️ Descartar Foto Duplicada", type="secondary", key=f"btn_desc_foto_{archivo_actual}", use_container_width=True):
+                    ruta_desc = os.path.join(CARPETA_DESCARTADOS, archivo_actual)
+                    if os.path.exists(ruta_desc):
+                        base_n, ext_n = os.path.splitext(archivo_actual)
+                        ruta_desc = os.path.join(CARPETA_DESCARTADOS, f"{base_n}_{int(time.time())}{ext_n}")
+                    shutil.move(ruta_origen, ruta_desc)
+                    try:
+                        from sync_repo import delete_file_from_github
+                        rel_origen = os.path.relpath(ruta_origen, BASE_DIR)
+                        delete_file_from_github(rel_origen)
+                    except Exception:
+                        pass
+                    st.warning(f"🗑️ Foto descartada y movida a descartes ({archivo_actual}).")
+                    st.session_state.archivo_actual = ""
+                    st.session_state.ia_procesada = False
+                    time.sleep(0.6)
+                    st.rerun()
             
         with col_datos:
             centros_blitz = [
@@ -1626,6 +1726,8 @@ if seccion_activa == "📡 Radar de Albaranes":
                         Devuelve ÚNICAMENTE un bloque JSON. Prohibido texto explicativo. Formato:
                         {
                             "proveedor": "Nombre del proveedor",
+                            "numero_albaran": "Número o serie del albarán (ej. '48291', 'ALB-1092', '00342', etc.) o cadena vacía si no aparece",
+                            "fecha_albaran": "Fecha que figura en el albarán en formato DD/MM/AAAA o cadena vacía",
                             "articulos": [
                                 {"nombre": "Producto Ejemplo", "cantidad": 1.0, "unidad": "CAJA", "precio_final": 4.75}
                             ]
@@ -1674,6 +1776,8 @@ if seccion_activa == "📡 Radar de Albaranes":
                         prov_crudo = datos_ia.get("proveedor", "Desconocido")
                         prov_canonico = normalizar_proveedor(prov_crudo)
                         st.session_state.proveedor_ia = prov_canonico
+                        st.session_state.num_albaran_ia = str(datos_ia.get("numero_albaran", "") or "").strip()
+                        st.session_state.fecha_albaran_ia = str(datos_ia.get("fecha_albaran", "") or "").strip()
                         
                         # CÁLCULO INTELIGENTE DE PROMOCIONES CIELO DE BOCA (OK)
                         articulos_crudos = datos_ia.get("articulos", [])
@@ -1743,7 +1847,50 @@ if seccion_activa == "📡 Radar de Albaranes":
             # ==========================================
             if st.session_state.ia_procesada:
                 st.divider()
+                
+                # Cabecera con metadatos del albarán (Nº de Albarán y Fecha)
+                col_enc1, col_enc2 = st.columns([1, 1])
+                with col_enc1:
+                    num_alb_val = st.text_input(
+                        "📄 Nº de Albarán / Documento:", 
+                        value=st.session_state.get("num_albaran_ia", ""), 
+                        key=f"input_num_alb_{archivo_actual}",
+                        placeholder="Ej: 48291 o A-2026/894"
+                    )
+                    st.session_state.num_albaran_ia = num_alb_val.strip()
+                with col_enc2:
+                    fec_alb_val = st.text_input(
+                        "📅 Fecha del Documento:", 
+                        value=st.session_state.get("fecha_albaran_ia", "") or datetime.date.today().strftime("%d/%m/%Y"), 
+                        key=f"input_fec_alb_{archivo_actual}"
+                    )
+                    st.session_state.fecha_albaran_ia = fec_alb_val.strip()
+
                 st.subheader(f"🏢 Proveedor: **{st.session_state.proveedor_ia}** ➔ 📍 Destino: **{st.session_state.centro_destino}**")
+
+                # Calcular Base Imponible estimada para comprobación de duplicados
+                total_bi_preview = 0.0
+                for art in st.session_state.articulos_ia:
+                    if not art.get("ignorado", False):
+                        try: c_art = float(art.get("cantidad", 0.0))
+                        except: c_art = 0.0
+                        try: p_art = float(art.get("precio_final", art.get("precio_unitario_final", 0.0)))
+                        except: p_art = 0.0
+                        total_bi_preview += round(c_art * p_art, 2)
+
+                # 🛡️ COMPROBACIÓN INTELIGENTE DE DUPLICADOS
+                es_dup, motivo_dup, tipo_dup = verificar_albaran_duplicado(
+                    ruta_origen=ruta_origen,
+                    proveedor=st.session_state.proveedor_ia,
+                    num_albaran=st.session_state.get("num_albaran_ia", ""),
+                    centro=st.session_state.centro_destino,
+                    total_bi=total_bi_preview,
+                    fecha_doc=st.session_state.get("fecha_albaran_ia", "")
+                )
+
+                if es_dup:
+                    st.error(f"🚨 **ALERTA DE ALBARÁN DUPLICADO:**\n\n{motivo_dup}")
+                    st.warning("⚠️ **Atención:** Para evitar duplicar stock e importe de compras, utiliza el botón de descartar al final.")
                 
 
                 diccionario_eq, indice_norm = cargar_equivalencias()
@@ -2076,7 +2223,34 @@ if seccion_activa == "📡 Radar de Albaranes":
                                 st.error("Debes indicar un nombre o seleccionarlo.")
                 
                 st.divider()
-                if st.button("✅ Archivar Albarán"):
+                accion_archivar = False
+                
+                if es_dup:
+                    col_b1, col_b2 = st.columns([1, 1])
+                    with col_b1:
+                        if st.button("🗑️ Descartar Albarán (Es un duplicado)", type="secondary", key=f"btn_desc_bot_{archivo_actual}", use_container_width=True):
+                            ruta_desc = os.path.join(CARPETA_DESCARTADOS, archivo_actual)
+                            if os.path.exists(ruta_desc):
+                                base_n, ext_n = os.path.splitext(archivo_actual)
+                                ruta_desc = os.path.join(CARPETA_DESCARTADOS, f"{base_n}_{int(time.time())}{ext_n}")
+                            shutil.move(ruta_origen, ruta_desc)
+                            try:
+                                from sync_repo import delete_file_from_github
+                                rel_origen = os.path.relpath(ruta_origen, BASE_DIR)
+                                delete_file_from_github(rel_origen)
+                            except Exception:
+                                pass
+                            st.warning(f"🗑️ Albarán duplicado descartado y movido a descartes ({archivo_actual}). No se sumó stock ni compras.")
+                            st.session_state.ia_procesada = False
+                            st.session_state.archivo_actual = ""
+                            time.sleep(0.7)
+                            st.rerun()
+                    with col_b2:
+                        accion_archivar = st.button("⚠️ Forzar Archivo (No es duplicado)", type="primary", key=f"btn_forzar_{archivo_actual}", use_container_width=True)
+                else:
+                    accion_archivar = st.button("✅ Archivar Albarán", type="primary", key=f"btn_arch_normal_{archivo_actual}", use_container_width=True)
+
+                if accion_archivar:
                     articulos_sumar = {}
                     diccionario_eq, indice_norm = cargar_equivalencias()
                     for art in st.session_state.articulos_ia:
@@ -2124,6 +2298,9 @@ if seccion_activa == "📡 Radar de Albaranes":
                             registrar_en_historico_precios(st.session_state.proveedor_ia, art.get("nombre", ""), m_nom, ref_nom, p_final, u_final, st.session_state.centro_destino)
                             
                     ruta_destino = os.path.join(CARPETA_PROCESADOS, archivo_actual)
+                    if os.path.exists(ruta_destino):
+                        base_n, ext_n = os.path.splitext(archivo_actual)
+                        ruta_destino = os.path.join(CARPETA_PROCESADOS, f"{base_n}_{int(time.time())}{ext_n}")
                     shutil.move(ruta_origen, ruta_destino)
                     
                     # Imputar albarán a Control de Consumos y Compras vs Ventas
@@ -2140,15 +2317,19 @@ if seccion_activa == "📡 Radar de Albaranes":
                                 except: p_art = 0.0
                                 total_bi_albaran += round(c_art * p_art, 2)
                         
-                        import datetime
-                        fecha_hoy_str = datetime.date.today().strftime("%d/%m/%Y")
+                        f_doc = str(st.session_state.get("fecha_albaran_ia", "")).strip()
+                        fecha_registro = f_doc if f_doc else datetime.date.today().strftime("%d/%m/%Y")
+                        num_alb = str(st.session_state.get("num_albaran_ia", "")).strip()
+                        notas_alb = f"Albarán escaneado de {st.session_state.proveedor_ia}" + (f" (Nº {num_alb})" if num_alb else "")
+                        
                         modulo_consumos.registrar_albaran_archivado(
-                            fecha=fecha_hoy_str,
+                            fecha=fecha_registro,
                             proveedor=st.session_state.proveedor_ia,
                             centro=st.session_state.centro_destino,
                             base_imponible=total_bi_albaran,
                             archivo=archivo_actual,
-                            notas=f"Albarán escaneado de {st.session_state.proveedor_ia}"
+                            notas=notas_alb,
+                            num_albaran=num_alb
                         )
                     except Exception as e_cons:
                         print(f"Error registrando compra en consumos: {e_cons}")
