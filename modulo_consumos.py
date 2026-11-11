@@ -104,8 +104,9 @@ def render_html_seguro(html_str):
 def calcular_ciclo_operativo(fecha_obj):
     """
     Hostelería Blitz: Apertura de Miércoles a Domingo.
-    Calcula el inicio (miércoles) y fin (domingo/martes) de la semana operativa.
-    El mes se atribuye al mes del fin de semana (viernes/sábado/domingo).
+    Calcula el inicio (miércoles) y fin (domingo) de la semana operativa.
+    REGLA CLAVE DE PROVEEDORES: Los albaranes emitidos/preparados en Lunes o Martes
+    corresponden a las compras del ciclo de servicio que abre ese mismo Miércoles.
     """
     if isinstance(fecha_obj, str):
         try:
@@ -121,8 +122,16 @@ def calcular_ciclo_operativo(fecha_obj):
         except Exception:
             fecha_obj = datetime.date(2026, 10, 1)
 
-    offset = (fecha_obj.weekday() - 2) % 7
-    miercoles = fecha_obj - timedelta(days=offset)
+    # Lunes=0, Martes=1, Miércoles=2 ... Domingo=6
+    # Si es Lunes o Martes, el albarán se preparó para la semana operativa que abre este Miércoles:
+    w = fecha_obj.weekday()
+    if w == 0:
+        miercoles = fecha_obj + timedelta(days=2)
+    elif w == 1:
+        miercoles = fecha_obj + timedelta(days=1)
+    else:
+        miercoles = fecha_obj - timedelta(days=w - 2)
+
     domingo = miercoles + timedelta(days=4)
 
     sabado = miercoles + timedelta(days=3)
@@ -189,14 +198,14 @@ def inicializar_datos_si_no_existen():
     if not os.path.exists(ARCHIVO_COMPRAS_ALBARANES) or os.path.getsize(ARCHIVO_COMPRAS_ALBARANES) == 0:
         with open(ARCHIVO_COMPRAS_ALBARANES, "w", newline="", encoding="utf-8-sig") as f:
             writer = csv.writer(f)
-            writer.writerow(["Id_Albaran", "Fecha", "Proveedor", "Centro", "Base_Imponible", "Semana_Operativa", "Archivo", "Notas"])
+            writer.writerow(["Id_Albaran", "Fecha", "Proveedor", "Centro", "Base_Imponible", "Semana_Operativa", "Archivo", "Num_Albaran", "Notas"])
 
 inicializar_datos_si_no_existen()
 
 # ==========================================
 # REGISTRO DE ALBARANES ARCHIVADOS (AUTOMÁTICO)
 # ==========================================
-def registrar_albaran_archivado(fecha, proveedor, centro, base_imponible, archivo="", notas=""):
+def registrar_albaran_archivado(fecha, proveedor, centro, base_imponible, archivo="", notas="", num_albaran=""):
     """Hook llamado automáticamente al archivar un albarán."""
     try:
         centro_norm = normalizar_nombre_centro(centro)
@@ -204,7 +213,7 @@ def registrar_albaran_archivado(fecha, proveedor, centro, base_imponible, archiv
         id_semana = ciclo["id_semana"]
         
         nuevo_id = f"ALB-{datetime.datetime.now().strftime('%y%m%d%H%M%S')}"
-        fila = [nuevo_id, fecha, proveedor.strip(), centro_norm, f"{float(base_imponible):.2f}", id_semana, archivo, notas]
+        fila = [nuevo_id, fecha, proveedor.strip(), centro_norm, f"{float(base_imponible):.2f}", id_semana, archivo, str(num_albaran).strip(), notas]
         
         with open(ARCHIVO_COMPRAS_ALBARANES, "a", newline="", encoding="utf-8-sig") as f:
             writer = csv.writer(f)
