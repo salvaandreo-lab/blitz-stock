@@ -505,6 +505,27 @@ def buscar_equivalencia(diccionario_eq, indice_norm, prov_key, prod_key, ud_leid
         if sn == prod_norm:
             return seleccionar_variante_optima(diccionario_eq[clave_original], ud_leida, precio_detectado), True
 
+    # 2d) Match por subcadena dentro del mismo proveedor (resuelve prefijos de departamento como "PATATAS CONGELADAS...", "VERDURAS...", etc.)
+    mejor_len_sub = 0
+    mejor_clave_sub = None
+    palabras_criticas = ["cheddar", "gouda", "bacon", "pollo", "mayonesa", "barbacoa", "cerdo", "ternera", "trufa", "cebolla", "guacamole"]
+    for (pn, sn), clave_original in indice_norm.items():
+        if proveedores_compatibles(pn, prov_norm):
+            conflicto = False
+            for w in palabras_criticas:
+                if (w in prod_norm and w not in sn) or (w in sn and w not in prod_norm):
+                    conflicto = True
+                    break
+            if conflicto:
+                continue
+            if len(sn) >= 8 and (sn in prod_norm or prod_norm in sn):
+                if len(sn) > mejor_len_sub:
+                    mejor_len_sub = len(sn)
+                    mejor_clave_sub = clave_original
+
+    if mejor_clave_sub is not None:
+        return seleccionar_variante_optima(diccionario_eq[mejor_clave_sub], ud_leida, precio_detectado), True
+
     # 3) Match dentro del mismo proveedor por similitud difusa (>= 82%), con protección de palabras críticas
     mejor_ratio = 0.0
     mejor_clave = None
