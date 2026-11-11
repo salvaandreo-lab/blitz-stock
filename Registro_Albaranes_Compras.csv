@@ -1,4 +1,4 @@
-﻿Id_Albaran,Fecha,Proveedor,Centro,Base_Imponible,Semana_Operativa,Archivo,Num_Albaran,Notas
+Id_Albaran,Fecha,Proveedor,Centro,Base_Imponible,Semana_Operativa,Archivo,Num_Albaran,Notas
 OCT-BAL-001,04/10/2026,Paco Rosa,Blitz Ronda Sur,658.98,2026-M10-Sem1,,,Carga Balance Octubre
 OCT-BAL-002,04/10/2026,Jasa,Blitz Ronda Sur,206.94,2026-M10-Sem1,,,Carga Balance Octubre
 OCT-BAL-003,04/10/2026,Cielo de Boca,Blitz Ronda Sur,227.00,2026-M10-Sem1,,,Carga Balance Octubre
@@ -99,13 +99,36 @@ OCT-BAL-097,18/10/2026,Ángel Linares,Eventos / Food Truck,62.09,2026-M10-Sem3,,
 OCT-BAL-098,25/10/2026,Paco Rosa,Eventos / Food Truck,338.13,2026-M10-Sem4,,,Carga Balance Octubre
 OCT-BAL-099,25/10/2026,Macanao,Eventos / Food Truck,312.80,2026-M10-Sem4,,,Carga Balance Octubre
 OCT-BAL-100,25/10/2026,Gloria,Eventos / Food Truck,79.80,2026-M10-Sem4,,,Carga Balance Octubre
-ALB-261105001,04/11/2026,Pedro Díaz,Blitz Juan de Borbón,48.80,2026-M11-Sem1,Escaneado_ 20261105-1405 (1).jpg,A26/48078,Albarán escaneado de Pedro Díaz
-ALB-261105002,04/11/2026,Aceites Manzano,Blitz Juan de Borbón,119.25,2026-M11-Sem1,Escaneado_ 20261105-1405.jpg,14.832,Albarán escaneado de Aceites Manzano
-ALB-261105003,05/11/2026,Aceites Manzano,Blitz Ronda Sur,119.25,2026-M11-Sem1,Escaneado_20261105-1250.jpg,14.831,Albarán escaneado de Aceites Manzano
-ALB-261105004,05/11/2026,Makro,Blitz Juan de Borbón,238.43,2026-M11-Sem1,Escaneado_20261105-1435.jpg,9-253575860,Albarán escaneado de Makro
-ALB-261106001,05/11/2026,Makro,Blitz Ronda Sur,273.74,2026-M11-Sem1,Escaneado_20261106-1336.jpg,9-253575860,Albarán escaneado de Makro
-ALB-261106002,06/11/2026,La Vaca Rosa,Blitz Juan de Borbón,676.26,2026-M11-Sem1,Escaneado_ 20261106-1344.jpg,007219,Albarán escaneado de La Vaca Rosa
-ALB-261106003,06/11/2026,La Vaca Rosa,Blitz Ronda Sur,563.55,2026-M11-Sem1,Escaneado_20261106-1235.jpg,007222,Albarán escaneado de La Vaca Rosa
-ALB-261106004,06/11/2026,Aceites Manzano,Blitz Ronda Sur,119.25,2026-M11-Sem1,Escaneado_20261106-1337.jpg,14.831,Albarán escaneado de Aceites Manzano
-ALB-261106005,06/11/2026,Coca-Cola,Blitz Ronda Sur,114.10,2026-M11-Sem1,Escaneado_20261106-1424.jpg,4538642480,Albarán escaneado de Coca-Cola
-ALB-261106006,06/11/2026,Joaquín Ayora,Blitz Juan de Borbón,184.33,2026-M11-Sem1,Escaneado_20261106-1819.jpg,ALV261100449,Albarán escaneado de Joaquín Ayora
+NOV-BAL-001,08/11/2026,Paco Rosa,Blitz Ronda Sur,774.13,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-002,08/11/2026,Jasa,Blitz Ronda Sur,184.33,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-003,08/11/2026,Cielo de Boca,Blitz Ronda Sur,354.00,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-004,08/11/2026,Lucas Caballero,Blitz Ronda Sur,65.85,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-005,08/11/2026,Makro,Blitz Ronda Sur,311.13,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-006,08/11/2026,Coca-Cola,Blitz Ronda Sur,113.11,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-007,08/11/2026,Pedro Díaz,Blitz Ronda Sur,120.10,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-008,08/11/2026,Manzano,Blitz Ronda Sur,119.25,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-009,08/11/2026,Nicolás Valero,Blitz Ronda Sur,120.40,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-010,08/11/2026,Riscales,Blitz Ronda Sur,37.59,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-011,08/11/2026,Morales,Blitz Ronda Sur,123.85,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-012,08/11/2026,Paco Rosa,Blitz Juan de Borbón,1127.10,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-013,08/11/2026,Jasa,Blitz Juan de Borbón,144.39,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-014,08/11/2026,Cielo de Boca,Blitz Juan de Borbón,340.50,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-015,08/11/2026,Makro,Blitz Juan de Borbón,272.56,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-016,08/11/2026,Pedro Díaz,Blitz Juan de Borbón,48.80,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-017,08/11/2026,Manzano,Blitz Juan de Borbón,119.25,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-018,08/11/2026,Nicolás Valero,Blitz Juan de Borbón,120.40,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-019,08/11/2026,Morales,Blitz Juan de Borbón,163.68,2026-M11-Sem1,,,Carga Balance Noviembre
+NOV-BAL-020,15/11/2026,Paco Rosa,Blitz Ronda Sur,333.53,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-021,15/11/2026,Jasa,Blitz Ronda Sur,200.97,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-022,15/11/2026,Cielo de Boca,Blitz Ronda Sur,240.00,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-023,15/11/2026,Lucas Caballero,Blitz Ronda Sur,119.01,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-024,15/11/2026,Macanao,Blitz Ronda Sur,224.40,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-025,15/11/2026,Andrés Mármol,Blitz Ronda Sur,52.00,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-026,15/11/2026,Riscales,Blitz Ronda Sur,98.23,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-027,15/11/2026,Morales,Blitz Ronda Sur,128.50,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-028,15/11/2026,Paco Rosa,Blitz Juan de Borbón,448.54,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-029,15/11/2026,Jasa,Blitz Juan de Borbón,279.39,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-030,15/11/2026,Cielo de Boca,Blitz Juan de Borbón,340.50,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-031,15/11/2026,Lucas Caballero,Blitz Juan de Borbón,54.00,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-032,15/11/2026,Macanao,Blitz Juan de Borbón,380.80,2026-M11-Sem2,,,Carga Balance Noviembre
+NOV-BAL-033,15/11/2026,Pedro Díaz,Blitz Juan de Borbón,213.70,2026-M11-Sem2,,,Carga Balance Noviembre
