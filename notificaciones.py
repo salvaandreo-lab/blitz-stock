@@ -1,6 +1,8 @@
 import os
 import time
 import json
+import csv
+import shutil
 import urllib.request
 import urllib.parse
 from win11toast import toast
@@ -86,6 +88,37 @@ def procesar_nuevo_albaran(ruta_completa):
     except Exception as e:
         print(f"[GitHub Sync] Error: {e}")
 
+def limpiar_albaranes_archivados_local():
+    """Mueve a Albaranes_Procesados cualquier archivo local que ya haya sido registrado en compras."""
+    archivos_procesados = set()
+    compras_csv = os.path.join(BASE_DIR, "Registro_Albaranes_Compras.csv")
+    if os.path.exists(compras_csv):
+        try:
+            with open(compras_csv, mode='r', encoding='utf-8-sig') as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    arch = r.get("Archivo", "").strip()
+                    if arch:
+                        archivos_procesados.add(arch)
+        except Exception:
+            pass
+            
+    carpeta_procesados = os.path.join(BASE_DIR, "Albaranes_Procesados")
+    for carpeta in CARPETAS_ENTRADA:
+        if os.path.exists(carpeta):
+            for f in os.listdir(carpeta):
+                if f in archivos_procesados:
+                    ruta_src = os.path.join(carpeta, f)
+                    ruta_dst = os.path.join(carpeta_procesados, f)
+                    if os.path.exists(ruta_dst):
+                        base_n, ext_n = os.path.splitext(f)
+                        ruta_dst = os.path.join(carpeta_procesados, f"{base_n}_{int(time.time())}{ext_n}")
+                    try:
+                        shutil.move(ruta_src, ruta_dst)
+                        print(f"[Vigilante] Movido albarán ya archivado a Procesados: {f}")
+                    except Exception:
+                        pass
+
 def vigilar_carpetas():
     print("==================================================")
     print("   VIGILANTE BLITZ STOCK ACTIVO (AVISOS TELEGRAM)")
@@ -129,6 +162,13 @@ def vigilar_carpetas():
                     print(f"Error procesando {ruta_nueva}: {e}")
                     
         archivos_conocidos = archivos_actuales
+        
+        # Limpiar albaranes que ya hayan sido archivados en compras
+        if ciclo_backup % 5 == 0:
+            try:
+                limpiar_albaranes_archivados_local()
+            except Exception:
+                pass
         
         ciclo_backup += 1
         if ciclo_backup >= 1200: # ~1 hora
