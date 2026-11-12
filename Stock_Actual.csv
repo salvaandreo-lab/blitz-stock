@@ -9,8 +9,8 @@ Blitz  Juan de Borbón,LECHUGA,0007,8.0,BOLSAS
 Blitz  Juan de Borbón,GUACAMOLE,0008,3.0,BOTE
 Blitz  Juan de Borbón,TOMATE CONFITADO,0009,42.0,BOTE
 Blitz  Juan de Borbón,CEBOLLA CARAMELIZADA,0010,190.0,BOTE
-Blitz  Juan de Borbón,GUANTES NITRILO TALLA M,0011,2.0,UNIDADES
-Blitz  Juan de Borbón,GUANTES NITRILO TALLA L,0012,9.0,UNIDADES
+Blitz  Juan de Borbón,GUANTES NITRILO TALLA M,0011,4.0,UNIDADES
+Blitz  Juan de Borbón,GUANTES NITRILO TALLA L,0012,12.0,UNIDADES
 Blitz  Juan de Borbón,ACEITE FREIDORA,0013,304.0,L
 Blitz  Juan de Borbón,SALSA SMOKE BACON,0014,59.0,BOTE
 Blitz  Juan de Borbón,MANTEQUILLA BLOQUE 1 KG,0015,0.0,KG
@@ -37,7 +37,7 @@ Blitz  Juan de Borbón,ALITAS POLLO TEX-MEX,0037,10.0,KG
 Blitz  Juan de Borbón,AZUCAR GLASS,0039,9.0,BOTE
 Blitz  Juan de Borbón,QUESO AHUMADO LONCHAS,0040,158.0,BANDEJAS
 Blitz  Juan de Borbón,BACON DADOS,0041,75.0,BOLSAS
-Blitz  Juan de Borbón,CEBOLLA CRISPY,0042,7.0,BOLSAS
+Blitz  Juan de Borbón,CEBOLLA CRISPY,0042,8.0,BOLSAS
 Blitz  Juan de Borbón,SALSA BURGUER,0043,9.0,BOTELLAS
 Blitz  Juan de Borbón,SALSA CHEDDAR,0044,8.5,BOTE
 Blitz  Juan de Borbón,SALSA RANCHERA,0045,44.0,BOTE
@@ -267,9 +267,9 @@ Blitz Ronda Sur,PANCETA IBERICA BELLOTA,,8.0,
 Blitz Ronda Sur,MAYONESA MONODOSIS,,1.0,
 Blitz Ronda Sur,MOSTAZA MONODOSIS,,1.0,
 Blitz Ronda Sur,0,,1.0,
-Blitz  Juan de Borbón,BOLSAS BASURA,,8.0,
-Blitz  Juan de Borbón,BAYETAS,,20.0,
-Blitz  Juan de Borbón,DESENGRASANTE PLANCHA,,2.0,
-Blitz  Juan de Borbón,ETIQUETAS PARA FECHAS,,4.0,
-Blitz  Juan de Borbón,FREGONA 2 MOCHOS,,4.0,
-Blitz  Juan de Borbón,BAYETA PUNTO ROLLO,,2.0,
+Blitz  Juan de Borbón,BOLSAS BASURA,,12.0,
+Blitz  Juan de Borbón,BAYETAS,,30.0,
+Blitz  Juan de Borbón,DESENGRASANTE PLANCHA,,3.0,
+Blitz  Juan de Borbón,ETIQUETAS PARA FECHAS,,6.0,
+Blitz  Juan de Borbón,FREGONA 2 MOCHOS,,6.0,
+Blitz  Juan de Borbón,BAYETA PUNTO ROLLO,,3.0,
