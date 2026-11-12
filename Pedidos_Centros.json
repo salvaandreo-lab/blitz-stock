@@ -1,0 +1,22 @@
+{
+  "ronda_sur": {
+    "centro": "Blitz Ronda Sur",
+    "fecha": "12/11/2026 a las 15:19",
+    "recogida_aceite": "No",
+    "observaciones": "",
+    "items": [
+      {
+        "producto": "PATATAS FRITAS",
+        "unidad": "CAJAS",
+        "cantidad": 2,
+        "proveedor": "MORALES"
+      },
+      {
+        "producto": "ALITAS POLLO TEX-MEX 2 BOLSAS",
+        "unidad": "CAJAS",
+        "cantidad": 2,
+        "proveedor": "JASA"
+      }
+    ]
+  }
+}
