@@ -147,3 +147,33 @@ Además del desglose por plato individual, Camarero 10 emite el **Informe Contab
   * **Uber Eats:** 11.353,99 € *(13,9 % de las ventas globales)*
   * **Efectivo:** 6.267,24 € *(7,7 % de las ventas globales)*
   * **Just Eat:** 3.592,32 € *(4,4 % de las ventas globales)*
+
+---
+
+### Datos Reales Verificados (Semana 1 Noviembre 2026: 04/11 al 08/11):
+Archivos oficiales integrados:
+* `Informe_Ventas_Camarero10_Juan_de_Borbon_Sem1_Nov2026.xls` (324 facturas simplificadas)
+* `Informe_Ventas_Camarero10_Ronda_Sur_Sem1_Nov2026.xls` (263 facturas simplificadas)
+
+* **Blitz Juan de Borbón:**
+  * Ventas Con IVA: **8.843,76 €**
+  * Ventas Sin IVA: **8.040,99 €**
+  * Cuota IVA: **802,77 €**
+  * Compras asociadas: **2.336,68 €** *(Food Cost: **29,06 %** - 🟢 Óptimo)*
+  * Margen Bruto: **5.704,31 €**
+
+* **Blitz Ronda Sur:**
+  * Ventas Con IVA: **6.931,05 €**
+  * Ventas Sin IVA: **6.300,80 €**
+  * Cuota IVA: **630,25 €**
+  * Compras asociadas: **2.323,74 €** *(Food Cost: **36,88 %** - 🟡 Aceptable)*
+  * Margen Bruto: **3.977,06 €**
+
+* **Consolidado Red Blitz (Semana 1 Noviembre):**
+  * Facturación Total Con IVA: **15.774,81 €**
+  * Base Imponible Neta (Sin IVA): **14.341,79 €**
+  * Cuota Total de IVA: **1.433,02 €**
+  * Compras Totales: **4.660,42 €**
+  * Ratio Food Cost Global: **32,50 %** *(🟢 Nivel Óptimo ≤ 33%)*
+  * Margen Bruto Global: **9.681,37 €**
+
