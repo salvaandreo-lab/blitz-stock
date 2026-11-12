@@ -1,15 +1,15 @@
-Id_Semana,Num_Semana,Fecha_Inicio,Fecha_Fin,Mes,Año,Centro,Ventas,Observaciones
+﻿Id_Semana,Num_Semana,Fecha_Inicio,Fecha_Fin,Mes,Año,Centro,Ventas,Observaciones
 2026-M10-Sem1,1,30/09/2026,04/10/2026,Octubre,2026,Blitz Ronda Sur,7048.32,5 días (Mié-Dom). Camarero10 oficial
-2026-M10-Sem2,2,07/10/2026,11/10/2026,Octubre,2026,Blitz Ronda Sur,5825.00,5 días (Mié-Dom). Camarero10 oficial
-2026-M10-Sem3,3,14/10/2026,18/10/2026,Octubre,2026,Blitz Ronda Sur,5471.30,5 días (Mié-Dom). Camarero10 oficial
+2026-M10-Sem2,2,07/10/2026,11/10/2026,Octubre,2026,Blitz Ronda Sur,5825.0,5 días (Mié-Dom). Camarero10 oficial
+2026-M10-Sem3,3,14/10/2026,18/10/2026,Octubre,2026,Blitz Ronda Sur,5471.3,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem4,4,21/10/2026,25/10/2026,Octubre,2026,Blitz Ronda Sur,6187.45,5 días (Mié-Dom). Camarero10 oficial
-2026-M10-Sem5,5,28/10/2026,01/11/2026,Octubre,2026,Blitz Ronda Sur,6869.40,5 días (Mié-Dom). Camarero10 oficial
+2026-M10-Sem5,5,28/10/2026,01/11/2026,Octubre,2026,Blitz Ronda Sur,6869.4,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem1,1,30/09/2026,04/10/2026,Octubre,2026,Blitz Juan de Borbón,9061.36,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem2,2,07/10/2026,11/10/2026,Octubre,2026,Blitz Juan de Borbón,8438.99,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem3,3,14/10/2026,18/10/2026,Octubre,2026,Blitz Juan de Borbón,8151.57,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem4,4,21/10/2026,25/10/2026,Octubre,2026,Blitz Juan de Borbón,8367.67,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem5,5,28/10/2026,01/11/2026,Octubre,2026,Blitz Juan de Borbón,9033.01,5 días (Mié-Dom). Camarero10 oficial
-2026-M11-Sem1,1,04/11/2026,08/11/2026,Noviembre,2026,Blitz Ronda Sur,0.0,Pendiente cierre ventas
-2026-M11-Sem1,1,04/11/2026,08/11/2026,Noviembre,2026,Blitz Juan de Borbón,0.0,Pendiente cierre ventas
+2026-M11-Sem1,1,04/11/2026,08/11/2026,Noviembre,2026,Blitz Ronda Sur,6300.8,5 días (Mié-Dom). Camarero10 oficial
+2026-M11-Sem1,1,04/11/2026,08/11/2026,Noviembre,2026,Blitz Juan de Borbón,8040.99,5 días (Mié-Dom). Camarero10 oficial
 2026-M11-Sem2,2,11/11/2026,15/11/2026,Noviembre,2026,Blitz Ronda Sur,0.0,Semana en curso
 2026-M11-Sem2,2,11/11/2026,15/11/2026,Noviembre,2026,Blitz Juan de Borbón,0.0,Semana en curso
