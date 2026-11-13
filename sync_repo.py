@@ -103,6 +103,35 @@ def delete_file_from_github(file_name, commit_msg=None):
         print(f"❌ Error al eliminar {clean_path} de GitHub: {e}")
         return False
 
+def descargar_archivos_de_github(carpetas_relativas):
+    """Descarga de GitHub a BASE_DIR cualquier archivo que falte en las carpetas de entrada."""
+    descargados = []
+    for carpeta in carpetas_relativas:
+        clean_folder = carpeta.replace("\\", "/").strip().strip("/")
+        url = f"https://api.github.com/repos/{REPO}/contents/{clean_folder}"
+        try:
+            req = urllib.request.Request(url, headers=headers, method="GET")
+            with urllib.request.urlopen(req, timeout=6) as resp:
+                items = json.loads(resp.read().decode("utf-8"))
+            local_folder = os.path.join(BASE_DIR, clean_folder)
+            os.makedirs(local_folder, exist_ok=True)
+            for it in items:
+                if it.get("type") == "file":
+                    nom = it.get("name")
+                    dl_url = it.get("download_url")
+                    ruta_local = os.path.join(local_folder, nom)
+                    if not os.path.isfile(ruta_local):
+                        req_dl = urllib.request.Request(dl_url, headers=headers)
+                        with urllib.request.urlopen(req_dl, timeout=12) as r_dl:
+                            data = r_dl.read()
+                        with open(ruta_local, "wb") as f_out:
+                            f_out.write(data)
+                        descargados.append(f"{clean_folder}/{nom}")
+                        print(f"📥 Descargado desde GitHub: {clean_folder}/{nom}")
+        except Exception:
+            pass
+    return descargados
+
 if __name__ == "__main__":
     files = sys.argv[1:] if len(sys.argv) > 1 else ["panel.py"]
     for f in files:
