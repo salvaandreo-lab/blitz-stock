@@ -46,11 +46,16 @@ def enviar_telegram(texto):
     payload = {
         "chat_id": chat_id,
         "text": texto,
-        "parse_mode": "Markdown"
+        "parse_mode": "HTML"
     }
-    data = urllib.parse.urlencode(payload).encode("utf-8")
+    data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     try:
-        req = urllib.request.Request(url, data=data, method="POST")
+        req = urllib.request.Request(
+            url, 
+            data=data, 
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            method="POST"
+        )
         with urllib.request.urlopen(req, timeout=5) as resp:
             print("[Telegram] Mensaje enviado con éxito.")
             return resp.status == 200
@@ -66,18 +71,19 @@ def procesar_nuevo_albaran(ruta_completa):
     
     print(f"\n[ALBARÁN DETECTADO] {nom_archivo} en {centro}")
     
-    # 1. ENVIAR AVISO INMEDIATO A TELEGRAM (SIN ESPERAS, < 1 seg)
+    # 1. ENVIAR AVISO INMEDIATO A TELEGRAM (SIN ESPERAS, < 1 seg, formato HTML seguro y UTF-8)
     mensaje = (
-        f"🔔 *¡TIENES UN ALBARÁN PENDIENTE!*\n\n"
-        f"📍 *Centro:* {centro}\n"
-        f"📄 *Archivo:* `{nom_archivo}`\n\n"
-        f"👀 _Foto subida desde el centro. Ya disponible en Blitz Stock para revisar y archivar._"
+        f"🔔 <b>¡TIENES UN ALBARÁN PENDIENTE!</b>\n\n"
+        f"📍 <b>Centro:</b> {centro}\n"
+        f"📄 <b>Archivo:</b> <code>{nom_archivo}</code>\n\n"
+        f"👀 <i>Foto subida desde el centro. Ya disponible en Blitz Stock para revisar y archivar.</i>"
     )
     enviar_telegram(mensaje)
     
-    # 2. Notificación local en Windows
+    # 2. Notificación local en Windows (no bloqueante)
     try:
-        toast("🍔 Blitz Stock", f"Nuevo albarán en {centro}: {nom_archivo}", icon="🍔", duration="short")
+        import threading
+        threading.Thread(target=lambda: toast("🍔 Blitz Stock", f"Nuevo albarán en {centro}: {nom_archivo}", icon="🍔", duration="short"), daemon=True).start()
     except Exception:
         pass
         
