@@ -109,9 +109,14 @@ def enviar_alerta_telegram_stock(df_bajo_minimo=None, origen="Panel"):
         "text": mensaje,
         "parse_mode": "Markdown"
     }
-    data = urllib.parse.urlencode(payload).encode("utf-8")
+    data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
     try:
-        req = urllib.request.Request(url, data=data, method="POST")
+        req = urllib.request.Request(
+            url, 
+            data=data, 
+            headers={"Content-Type": "application/json; charset=utf-8"},
+            method="POST"
+        )
         with urllib.request.urlopen(req, timeout=5) as resp:
             return resp.status == 200
     except Exception as e:
