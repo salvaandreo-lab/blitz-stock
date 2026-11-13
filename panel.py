@@ -1614,6 +1614,23 @@ if seccion_activa == "📡 Radar de Albaranes":
     col_k4.markdown(f'<div class="kpi-card"><div class="kpi-title">⚡ Motor IA Vision</div><div class="kpi-value" style="color:#10b981;font-size:1.4rem;margin-top:6px;">ACTIVO (v3.8)</div></div>', unsafe_allow_html=True)
     st.write("")
 
+    # Sincronización automática de albaranes desde GitHub
+    try:
+        from sync_repo import descargar_archivos_de_github
+        descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
+    except Exception:
+        pass
+
+    c_tit_cola, c_btn_sync = st.columns([4, 1])
+    with c_btn_sync:
+        if st.button("🔄 Refrescar Nube", use_container_width=True):
+            try:
+                from sync_repo import descargar_archivos_de_github
+                descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
+            except Exception:
+                pass
+            st.rerun()
+
     archivos_en_cola = []
     for carpeta in CARPETAS_ENTRADA:
         if os.path.exists(carpeta):
@@ -1624,7 +1641,13 @@ if seccion_activa == "📡 Radar de Albaranes":
     if len(archivos_en_cola) == 0:
         st.info("Bandeja limpia. Esperando nuevos albaranes...")
     else:
-        carpeta_origen, archivo_actual = archivos_en_cola[0]
+        if len(archivos_en_cola) > 1:
+            opciones_cola = [f"📍 {os.path.basename(c).replace('Entrada_', '').replace('_', ' ')} ➔ {f}" for c, f in archivos_en_cola]
+            sel_idx = st.selectbox("📑 Selecciona el albarán que deseas revisar:", range(len(archivos_en_cola)), format_func=lambda i: opciones_cola[i])
+            carpeta_origen, archivo_actual = archivos_en_cola[sel_idx]
+        else:
+            carpeta_origen, archivo_actual = archivos_en_cola[0]
+
         ruta_origen = os.path.join(carpeta_origen, archivo_actual)
         
         st.warning(f"Tienes {len(archivos_en_cola)} albarán(es) pendiente(s).")
