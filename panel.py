@@ -1591,10 +1591,33 @@ if seccion_activa == "📡 Radar de Albaranes":
     # ⚡ 1. Sincronización automática inmediata cada vez que entras a la app:
     # Descarga desde GitHub cualquier albarán nuevo que haya entrado desde los móviles
     try:
-        from sync_repo import descargar_archivos_de_github
-        descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
-    except Exception:
-        pass
+        import importlib
+        import sync_repo
+        importlib.reload(sync_repo)
+        sync_repo.descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
+    except Exception as e_sync_ini:
+        print(f"Error sincronizando al inicio: {e_sync_ini}")
+
+    # Barra de sincronización manual rápida
+    col_radar_title, col_radar_sync = st.columns([3, 1])
+    with col_radar_title:
+        st.caption("Bandeja de digitalización de albaranes escaneados en locales")
+    with col_radar_sync:
+        if st.button("🔄 Sincronizar Albaranes", use_container_width=True, help="Comprueba y descarga nuevos albaranes subidos desde los móviles a GitHub"):
+            with st.spinner("Sincronizando con GitHub..."):
+                try:
+                    import importlib
+                    import sync_repo
+                    importlib.reload(sync_repo)
+                    nuevos = sync_repo.descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
+                    if nuevos:
+                        st.success(f"¡{len(nuevos)} albarán(es) nuevo(s) descargado(s)!")
+                    else:
+                        st.info("No hay albaranes nuevos en la nube.")
+                except Exception as err:
+                    st.error(f"Error sincronizando: {err}")
+                time.sleep(0.5)
+                st.rerun()
 
     # Métricas Dinámicas (KPIs) - Visibles exclusivamente en Radar de Albaranes
     total_albaranes = 0
@@ -1642,6 +1665,21 @@ if seccion_activa == "📡 Radar de Albaranes":
     
     if len(archivos_en_cola) == 0:
         st.info("Bandeja limpia. Esperando nuevos albaranes...")
+        if st.button("🔄 Buscar y Descargar Albaranes Nuevos de la Nube", type="primary", use_container_width=True):
+            with st.spinner("Buscando albaranes en GitHub..."):
+                try:
+                    import importlib
+                    import sync_repo
+                    importlib.reload(sync_repo)
+                    nuevos = sync_repo.descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
+                    if nuevos:
+                        st.success(f"¡Se han descargado {len(nuevos)} albarán(es) nuevo(s)!")
+                    else:
+                        st.info("Todo al día, no hay albaranes pendientes en la nube.")
+                except Exception as e_desc:
+                    st.error(f"Error al sincronizar: {e_desc}")
+                time.sleep(0.5)
+                st.rerun()
     else:
         if len(archivos_en_cola) > 1:
             opciones_cola = [f"📍 {os.path.basename(c).replace('Entrada_', '').replace('_', ' ')} ➔ {f}" for c, f in archivos_en_cola]
