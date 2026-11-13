@@ -5,6 +5,7 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import sys
+import shutil
 
 TOKEN = os.environ.get("GITHUB_TOKEN", "") or ("ghp_" + "jQpQbpopJAvm18ZChSkktZKxe4xTdD1sgCMf")
 REPO = "salvaandreo-lab/blitz-stock"
@@ -104,11 +105,15 @@ def delete_file_from_github(file_name, commit_msg=None):
         return False
 
 def descargar_archivos_de_github(carpetas_relativas):
-    """Descarga de GitHub a BASE_DIR cualquier archivo que falte en las carpetas de entrada."""
+    """Sincroniza bidireccionalmente: descarga albaranes nuevos de GitHub y limpia del disco local lo que ya fue archivado/borrado."""
     descargados = []
+    carpeta_procesados = os.path.join(BASE_DIR, "Albaranes_Procesados")
+    os.makedirs(carpeta_procesados, exist_ok=True)
+
     for carpeta in carpetas_relativas:
         clean_folder = carpeta.replace("\\", "/").strip().strip("/")
         url = f"https://api.github.com/repos/{REPO}/contents/{clean_folder}"
+        archivos_en_github = set()
         try:
             req = urllib.request.Request(url, headers=headers, method="GET")
             with urllib.request.urlopen(req, timeout=6) as resp:
@@ -118,6 +123,7 @@ def descargar_archivos_de_github(carpetas_relativas):
             for it in items:
                 if it.get("type") == "file":
                     nom = it.get("name")
+                    archivos_en_github.add(nom)
                     dl_url = it.get("download_url")
                     ruta_local = os.path.join(local_folder, nom)
                     if not os.path.isfile(ruta_local):
@@ -128,6 +134,30 @@ def descargar_archivos_de_github(carpetas_relativas):
                             f_out.write(data)
                         descargados.append(f"{clean_folder}/{nom}")
                         print(f"📥 Descargado desde GitHub: {clean_folder}/{nom}")
+
+            # 🧹 Limpiar del disco local cualquier archivo viejo que ya no esté en GitHub
+            if os.path.exists(local_folder):
+                for f in os.listdir(local_folder):
+                    if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                        if f not in archivos_en_github:
+                            ruta_vieja = os.path.join(local_folder, f)
+                            ruta_proc = os.path.join(carpeta_procesados, f)
+                            try:
+                                shutil.move(ruta_vieja, ruta_proc)
+                                print(f"🧹 Archivo viejo movido a Procesados: {clean_folder}/{f}")
+                            except Exception:
+                                pass
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                # La carpeta no existe en GitHub: limpiar cualquier archivo local remanente
+                local_folder = os.path.join(BASE_DIR, clean_folder)
+                if os.path.exists(local_folder):
+                    for f in os.listdir(local_folder):
+                        if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                            try:
+                                shutil.move(os.path.join(local_folder, f), os.path.join(carpeta_procesados, f))
+                            except Exception:
+                                pass
         except Exception:
             pass
     return descargados
