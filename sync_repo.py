@@ -120,20 +120,21 @@ def descargar_archivos_de_github(carpetas_relativas):
                 items = json.loads(resp.read().decode("utf-8"))
             local_folder = os.path.join(BASE_DIR, clean_folder)
             os.makedirs(local_folder, exist_ok=True)
-            for it in items:
-                if it.get("type") == "file":
-                    nom = it.get("name")
-                    archivos_en_github.add(nom)
-                    dl_url = it.get("download_url")
-                    ruta_local = os.path.join(local_folder, nom)
-                    if not os.path.isfile(ruta_local):
-                        req_dl = urllib.request.Request(dl_url, headers=headers)
-                        with urllib.request.urlopen(req_dl, timeout=12) as r_dl:
-                            data = r_dl.read()
-                        with open(ruta_local, "wb") as f_out:
-                            f_out.write(data)
-                        descargados.append(f"{clean_folder}/{nom}")
-                        print(f"📥 Descargado desde GitHub: {clean_folder}/{nom}")
+            if isinstance(items, list):
+                for it in items:
+                    if it.get("type") == "file":
+                        nom = it.get("name")
+                        archivos_en_github.add(nom)
+                        dl_url = it.get("download_url")
+                        ruta_local = os.path.join(local_folder, nom)
+                        if not os.path.isfile(ruta_local):
+                            req_dl = urllib.request.Request(dl_url, headers=headers)
+                            with urllib.request.urlopen(req_dl, timeout=12) as r_dl:
+                                data = r_dl.read()
+                            with open(ruta_local, "wb") as f_out:
+                                f_out.write(data)
+                            descargados.append(f"{clean_folder}/{nom}")
+                            print(f"📥 Descargado desde GitHub: {clean_folder}/{nom}")
 
             # 🧹 Limpiar del disco local cualquier archivo viejo que ya no esté en GitHub
             if os.path.exists(local_folder):
