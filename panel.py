@@ -665,7 +665,20 @@ def confirmar_borrado_diccionario(datos_editados):
 # ==========================================
 # 3. INTERFAZ Y MEMORIA
 # ==========================================
-st.set_page_config(page_title="Blitz Stock", page_icon="🍔", layout="wide")
+# Cargar icono oficial de Blitz (B! roja)
+_ruta_ico_png = os.path.join(BASE_DIR, "blitz_icon.png")
+_ruta_ico_raw = os.path.join(BASE_DIR, "blitz_icon.ico")
+if os.path.isfile(_ruta_ico_png):
+    try:
+        _icono_page = Image.open(_ruta_ico_png)
+    except Exception:
+        _icono_page = _ruta_ico_png
+elif os.path.isfile(_ruta_ico_raw):
+    _icono_page = _ruta_ico_raw
+else:
+    _icono_page = "🍔"
+
+st.set_page_config(page_title="Blitz Stock", page_icon=_icono_page, layout="wide")
 
 # Ocultar unicamente menu de desarrollo y pie de pagina
 st.markdown("""
@@ -697,6 +710,13 @@ components.html(
             } catch (e) {}
         }
         setInterval(bloquearSugerenciasGoogle, 400);
+
+        // Keepalive silencioso: evita que Streamlit Cloud desconecte la sesión por inactividad mientras la pestaña esté abierta
+        setInterval(function() {
+            try {
+                window.parent.dispatchEvent(new Event('mousemove'));
+            } catch (e) {}
+        }, 20000);
     </script>
     """,
     width=0, height=0
@@ -810,12 +830,14 @@ def guardar_nueva_password(nueva_clave):
         f.writelines(lineas)
 
 def verificar_autenticacion():
-    # ⚡ Acceso directo automático sin contraseñas ni permisos (?admin=1 o ?admin)
+    # ⚡ Acceso directo y persistencia de sesión sin contraseñas repetidas (?admin=1 o ?auth=admin)
     if "admin" in st.query_params or st.query_params.get("auth") in ["Blitz008", "admin", "1", "si"]:
         st.session_state["autenticado"] = True
+        st.query_params["auth"] = "admin"
         return True
 
     if st.session_state.get("autenticado", False):
+        st.query_params["auth"] = "admin"
         return True
 
     cfg = obtener_configuracion_seguridad()
@@ -948,6 +970,7 @@ def verificar_autenticacion():
                         p_valida = cfg.get("password", "Blitz008")
                         if clave.strip() in [p_valida, p_valida + "."]:
                             st.session_state["autenticado"] = True
+                            st.query_params["auth"] = "admin"
                             st.rerun()
                         else:
                             st.error("❌ Contraseña incorrecta. Inténtalo de nuevo.")
@@ -1216,6 +1239,9 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     if st.button("🚪 Cerrar Sesión", use_container_width=True, key="btn_cerrar_sesion"):
         st.session_state["autenticado"] = False
+        for qk in ["auth", "admin"]:
+            if qk in st.query_params:
+                del st.query_params[qk]
         st.rerun()
 
 tema_activo = st.session_state.tema_activo
