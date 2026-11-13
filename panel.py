@@ -1583,6 +1583,14 @@ if "centro_destino" not in st.session_state:
 # SECCIÓN: CONTENIDO PRINCIPAL POR MENÚ LATERAL
 # ==========================================
 if seccion_activa == "📡 Radar de Albaranes":
+    # ⚡ 1. Sincronización automática inmediata cada vez que entras a la app:
+    # Descarga desde GitHub cualquier albarán nuevo que haya entrado desde los móviles
+    try:
+        from sync_repo import descargar_archivos_de_github
+        descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
+    except Exception:
+        pass
+
     # Métricas Dinámicas (KPIs) - Visibles exclusivamente en Radar de Albaranes
     total_albaranes = 0
     for carpeta in CARPETAS_ENTRADA:
@@ -1614,29 +1622,18 @@ if seccion_activa == "📡 Radar de Albaranes":
     col_k4.markdown(f'<div class="kpi-card"><div class="kpi-title">⚡ Motor IA Vision</div><div class="kpi-value" style="color:#10b981;font-size:1.4rem;margin-top:6px;">ACTIVO (v3.8)</div></div>', unsafe_allow_html=True)
     st.write("")
 
-    # Sincronización automática de albaranes desde GitHub
-    try:
-        from sync_repo import descargar_archivos_de_github
-        descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
-    except Exception:
-        pass
-
-    c_tit_cola, c_btn_sync = st.columns([4, 1])
-    with c_btn_sync:
-        if st.button("🔄 Refrescar Nube", use_container_width=True):
-            try:
-                from sync_repo import descargar_archivos_de_github
-                descargar_archivos_de_github(["Entrada_Juan_Borbon", "Entrada_Ronda_Sur", "Entrada_FoodTruck_1", "Entrada_FoodTruck_2", "Albaranes_Pendientes"])
-            except Exception:
-                pass
-            st.rerun()
-
     archivos_en_cola = []
     for carpeta in CARPETAS_ENTRADA:
         if os.path.exists(carpeta):
-            for f in sorted(os.listdir(carpeta)):
+            for f in os.listdir(carpeta):
                 if f.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
                     archivos_en_cola.append((carpeta, f))
+    
+    # 🕒 Ordenar SIEMPRE por fecha/hora más reciente primero (los albaranes recién llegados van arriba del todo)
+    def extraer_fecha_sort(item):
+        digits = re.findall(r'\d+', item[1])
+        return "".join(digits) if digits else item[1]
+    archivos_en_cola.sort(key=extraer_fecha_sort, reverse=True)
     
     if len(archivos_en_cola) == 0:
         st.info("Bandeja limpia. Esperando nuevos albaranes...")
