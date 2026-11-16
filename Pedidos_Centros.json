@@ -186,5 +186,241 @@
         "proveedor": "MAKRO"
       }
     ]
+  },
+  "juan_borbon": {
+    "centro": "Blitz Juan de Borbón",
+    "fecha": "16/11/2026 a las 08:50",
+    "recogida_aceite": "Sí",
+    "observaciones": "",
+    "items": [
+      {
+        "producto": "BONIATO",
+        "unidad": "CAJAS",
+        "cantidad": 2,
+        "proveedor": "MORALES"
+      },
+      {
+        "producto": "PATATAS FRITAS",
+        "unidad": "CAJAS",
+        "cantidad": 10,
+        "proveedor": "MORALES"
+      },
+      {
+        "producto": "BACON DADOS 10 KG",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "LUCAS CABALLERO"
+      },
+      {
+        "producto": "BACON LONCHAS 6 KG",
+        "unidad": "CAJAS",
+        "cantidad": 4,
+        "proveedor": "LUCAS CABALLERO"
+      },
+      {
+        "producto": "CARNE BURGUER 90 GRS",
+        "unidad": "CAJAS",
+        "cantidad": 10,
+        "proveedor": "PACO ROSA"
+      },
+      {
+        "producto": "CEBOLLA MORADA",
+        "unidad": "KG",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "LECHUGA",
+        "unidad": "BOLSAS",
+        "cantidad": 2,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "MAYONESA TRUFADA 6 UND",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "JASA"
+      },
+      {
+        "producto": "QUESO AHUMADO LONCHAS 12 UND",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "LUCAS CABALLERO"
+      },
+      {
+        "producto": "QUESO GOUDA LONCHAS 8 KG",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "PEDRO DIAZ"
+      },
+      {
+        "producto": "QUESO MONTERREY LONCHAS 8 UND",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "JASA"
+      },
+      {
+        "producto": "SALSA BURGUER 6 UND",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "LUCAS CABALLERO"
+      },
+      {
+        "producto": "SALSA CHEDDAR 3 UND",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "JASA"
+      },
+      {
+        "producto": "SALSA MAYO-CEBOLLA CAR-AJO 395 ML  10 UND",
+        "unidad": "CAJAS",
+        "cantidad": 2,
+        "proveedor": "JASA"
+      },
+      {
+        "producto": "SALSA RANCHERA 6 UND",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "PEDRO DIAZ"
+      },
+      {
+        "producto": "SALSA SMOKE BACON 6 UND",
+        "unidad": "CAJAS",
+        "cantidad": 1,
+        "proveedor": "JASA"
+      },
+      {
+        "producto": "SALSA SWEET CHILI",
+        "unidad": "BOTE",
+        "cantidad": 1,
+        "proveedor": "JASA"
+      },
+      {
+        "producto": "GUACAMOLE",
+        "unidad": "BOTE",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "MANTEQUILLA BLOQUE 1 KG",
+        "unidad": "KG",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "MAYONESA CUBO 5L",
+        "unidad": "CUBO",
+        "cantidad": 1,
+        "proveedor": "MORALES"
+      },
+      {
+        "producto": "QUESO CREMA",
+        "unidad": "BOTE",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "AGUA 1´5 LITROS 6 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 1,
+        "proveedor": "ESPUMOSOS"
+      },
+      {
+        "producto": "AGUA 500 ML 24 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 5,
+        "proveedor": "ESPUMOSOS"
+      },
+      {
+        "producto": "BOLSA ASA PERSONALIZADA",
+        "unidad": "CAJA",
+        "cantidad": 4,
+        "proveedor": "3 BIO"
+      },
+      {
+        "producto": "CARTÓN CONCHAS HAMBURGUESAS",
+        "unidad": "CAJAS",
+        "cantidad": 6,
+        "proveedor": "3 BIO"
+      },
+      {
+        "producto": "CEBOLLA CARAMELIZADA 10 UND",
+        "unidad": "CAJA",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "CHIPOTLE",
+        "unidad": "BOTE",
+        "cantidad": 2,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "COCA-COLA 2 LTRS 6 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 1,
+        "proveedor": "ESPUMOSOS"
+      },
+      {
+        "producto": "COCA-COLA 500 ML 24 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 1,
+        "proveedor": "ESPUMOSOS"
+      },
+      {
+        "producto": "COCA-COLA ZERO BOTE 24 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 3,
+        "proveedor": "ESPUMOSOS"
+      },
+      {
+        "producto": "FANTA LIMÓN BOTE 24 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 1,
+        "proveedor": "ESPUMOSOS"
+      },
+      {
+        "producto": "FANTA NARANJA BOTE 24 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 3,
+        "proveedor": "ESPUMOSOS"
+      },
+      {
+        "producto": "PANKO",
+        "unidad": "BOLSAS",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "PEPINILLO RODAJA 370GRS",
+        "unidad": "BOTE",
+        "cantidad": 5,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "SAL FINA 5KG",
+        "unidad": "BOLSA",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "FREGONA 2 MOCHOS",
+        "unidad": "BOLSAS",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "PAPEL ALUMINIO",
+        "unidad": "ROLLOS",
+        "cantidad": 6,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "DESENGRASANTE PLANCHA",
+        "unidad": "GARRAFA",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      }
+    ]
   }
 }
