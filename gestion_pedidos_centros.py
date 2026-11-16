@@ -123,16 +123,29 @@ def guardar_pedidos_archivo(pedidos_dict):
         print(f"[Error guardar pedidos] {e}")
         return False
 
-def obtener_articulos_maestros():
+def obtener_articulos_maestros(centro_key=None):
     """Obtiene el catálogo de artículos para pedidos, priorizando Catalogo_Pedidos.csv y garantizando unicidad."""
     if os.path.isfile(ARCHIVO_CATALOGO_PEDIDOS):
         try:
             df = pd.read_csv(ARCHIVO_CATALOGO_PEDIDOS)
             df = df.drop_duplicates(subset=["Producto"], keep="first")
             resultado = []
+            c_key = normalizar_clave_centro(centro_key) if centro_key else ""
             for _, r in df.iterrows():
+                nom = str(r["Producto"]).strip()
+                nom_upper = nom.upper()
+                
+                # Filtrar líneas de pedidos de carne según el centro (se hacen 2 pedidos semanales):
+                # - Ronda Sur: Martes y Viernes (se excluye Miércoles)
+                # - Juan de Borbón: Miércoles y Viernes (se excluye Martes)
+                if "CARNE BURGUER" in nom_upper:
+                    if c_key == "ronda_sur" and ("MIERCOLES" in nom_upper or "MIÉRCOLES" in nom_upper):
+                        continue
+                    if c_key == "juan_borbon" and "MARTES" in nom_upper:
+                        continue
+
                 resultado.append({
-                    "nombre": str(r["Producto"]).strip(),
+                    "nombre": nom,
                     "unidad": str(r.get("Unidad", "UD")).strip(),
                     "zona": str(r.get("Zona", "📦 Almacén Seco")).strip(),
                     "proveedor": str(r.get("Proveedor", "Varios")).strip()
@@ -464,7 +477,7 @@ def render_interfaz_centro(centro_param):
         st.subheader("📋 Pedido Semanal")
         st.markdown(f"Ajusta las cantidades que necesitas recibir en **{nombre_centro}**:")
 
-        articulos = obtener_articulos_maestros()
+        articulos = obtener_articulos_maestros(centro_key)
         if not articulos:
             st.error("No se han podido cargar los artículos desde el Diccionario (Equivalencias.csv).")
             return
