@@ -189,9 +189,9 @@
   },
   "juan_borbon": {
     "centro": "Blitz Juan de Borbón",
-    "fecha": "16/11/2026 a las 08:50",
-    "recogida_aceite": "Sí",
-    "observaciones": "",
+    "fecha": "22/11/2026 a las 18:41",
+    "recogida_aceite": "No",
+    "observaciones": "Papel film\nCuchillas para la plancha \nGrapas (staples)",
     "items": [
       {
         "producto": "BONIATO",
@@ -200,70 +200,76 @@
         "proveedor": "MORALES"
       },
       {
+        "producto": "HAMBURGUESA POLLO CRUNCHY",
+        "unidad": "BOLSAS",
+        "cantidad": 1,
+        "proveedor": "JASA"
+      },
+      {
         "producto": "PATATAS FRITAS",
         "unidad": "CAJAS",
-        "cantidad": 10,
+        "cantidad": 12,
         "proveedor": "MORALES"
+      },
+      {
+        "producto": "CROQUETAS JAMON 4 KG",
+        "unidad": "CAJAS",
+        "cantidad": 2,
+        "proveedor": "NICOLAS Y VALERO"
+      },
+      {
+        "producto": "TEQUEÑOS DE QUESO",
+        "unidad": "BOLSAS",
+        "cantidad": 1,
+        "proveedor": "MACANAO"
       },
       {
         "producto": "BACON DADOS 10 KG",
         "unidad": "CAJAS",
-        "cantidad": 1,
+        "cantidad": 3,
         "proveedor": "LUCAS CABALLERO"
       },
       {
-        "producto": "BACON LONCHAS 6 KG",
+        "producto": "CARNE BURGUER 90 GRS (MIÉRCOLES)",
         "unidad": "CAJAS",
-        "cantidad": 4,
-        "proveedor": "LUCAS CABALLERO"
-      },
-      {
-        "producto": "CARNE BURGUER 90 GRS",
-        "unidad": "CAJAS",
-        "cantidad": 10,
+        "cantidad": 3,
         "proveedor": "PACO ROSA"
       },
       {
-        "producto": "CEBOLLA MORADA",
-        "unidad": "KG",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
+        "producto": "CARNE BURGUER 90 GRS (VIERNES)",
+        "unidad": "CAJAS",
+        "cantidad": 5,
+        "proveedor": "PACO ROSA"
       },
       {
         "producto": "LECHUGA",
         "unidad": "BOLSAS",
-        "cantidad": 2,
+        "cantidad": 1,
         "proveedor": "MAKRO"
       },
       {
-        "producto": "MAYONESA TRUFADA 6 UND",
+        "producto": "PAN BURGUER HIGH NEGRO 48 UNIDADES",
         "unidad": "CAJAS",
         "cantidad": 1,
         "proveedor": "JASA"
       },
       {
-        "producto": "QUESO AHUMADO LONCHAS 12 UND",
+        "producto": "PAN POTATO ROLL 80 GRS 18 UNIDADES",
         "unidad": "CAJAS",
-        "cantidad": 1,
-        "proveedor": "LUCAS CABALLERO"
+        "cantidad": 20,
+        "proveedor": "CIELO BOCA"
       },
       {
-        "producto": "QUESO GOUDA LONCHAS 8 KG",
+        "producto": "PULLED PORK 500 GRS 12 BOLSAS",
         "unidad": "CAJAS",
         "cantidad": 1,
+        "proveedor": "JASA"
+      },
+      {
+        "producto": "QUESO CHEDDAR LONCHAS 8 UND",
+        "unidad": "CAJAS",
+        "cantidad": 2,
         "proveedor": "PEDRO DIAZ"
-      },
-      {
-        "producto": "QUESO MONTERREY LONCHAS 8 UND",
-        "unidad": "CAJAS",
-        "cantidad": 1,
-        "proveedor": "JASA"
-      },
-      {
-        "producto": "SALSA BURGUER 6 UND",
-        "unidad": "CAJAS",
-        "cantidad": 1,
-        "proveedor": "LUCAS CABALLERO"
       },
       {
         "producto": "SALSA CHEDDAR 3 UND",
@@ -274,36 +280,30 @@
       {
         "producto": "SALSA MAYO-CEBOLLA CAR-AJO 395 ML  10 UND",
         "unidad": "CAJAS",
-        "cantidad": 2,
+        "cantidad": 1,
         "proveedor": "JASA"
       },
       {
         "producto": "SALSA RANCHERA 6 UND",
         "unidad": "CAJAS",
-        "cantidad": 1,
+        "cantidad": 2,
         "proveedor": "PEDRO DIAZ"
       },
       {
-        "producto": "SALSA SMOKE BACON 6 UND",
-        "unidad": "CAJAS",
-        "cantidad": 1,
-        "proveedor": "JASA"
+        "producto": "TARTA QUESO LOTUS",
+        "unidad": "TARTAS",
+        "cantidad": 2,
+        "proveedor": "ANDRES MARMOL"
       },
       {
-        "producto": "SALSA SWEET CHILI",
-        "unidad": "BOTE",
+        "producto": "TARTA QUESO PISTACHO",
+        "unidad": "TARTAS",
         "cantidad": 1,
-        "proveedor": "JASA"
+        "proveedor": "ANDRES MARMOL"
       },
       {
-        "producto": "GUACAMOLE",
-        "unidad": "BOTE",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "MANTEQUILLA BLOQUE 1 KG",
-        "unidad": "KG",
+        "producto": "CEBOLLINO 125 GRS",
+        "unidad": "BANDEJAS",
         "cantidad": 1,
         "proveedor": "MAKRO"
       },
@@ -314,94 +314,28 @@
         "proveedor": "MORALES"
       },
       {
+        "producto": "NATA LIQUIDA 1 LITRO",
+        "unidad": "BOTELLAS",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
         "producto": "QUESO CREMA",
-        "unidad": "BOTE",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "AGUA 1´5 LITROS 6 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 1,
-        "proveedor": "ESPUMOSOS"
-      },
-      {
-        "producto": "AGUA 500 ML 24 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 5,
-        "proveedor": "ESPUMOSOS"
-      },
-      {
-        "producto": "BOLSA ASA PERSONALIZADA",
-        "unidad": "CAJA",
-        "cantidad": 4,
-        "proveedor": "3 BIO"
-      },
-      {
-        "producto": "CARTÓN CONCHAS HAMBURGUESAS",
-        "unidad": "CAJAS",
-        "cantidad": 6,
-        "proveedor": "3 BIO"
-      },
-      {
-        "producto": "CEBOLLA CARAMELIZADA 10 UND",
-        "unidad": "CAJA",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "CHIPOTLE",
         "unidad": "BOTE",
         "cantidad": 2,
         "proveedor": "MAKRO"
       },
       {
-        "producto": "COCA-COLA 2 LTRS 6 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 1,
-        "proveedor": "ESPUMOSOS"
+        "producto": "ACEITE FREIDORA",
+        "unidad": "GARRAFAS",
+        "cantidad": 2,
+        "proveedor": "MANZANO"
       },
       {
-        "producto": "COCA-COLA 500 ML 24 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 1,
-        "proveedor": "ESPUMOSOS"
-      },
-      {
-        "producto": "COCA-COLA ZERO BOTE 24 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 3,
-        "proveedor": "ESPUMOSOS"
-      },
-      {
-        "producto": "FANTA LIMÓN BOTE 24 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 1,
-        "proveedor": "ESPUMOSOS"
-      },
-      {
-        "producto": "FANTA NARANJA BOTE 24 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 3,
-        "proveedor": "ESPUMOSOS"
-      },
-      {
-        "producto": "PANKO",
+        "producto": "KIKOS",
         "unidad": "BOLSAS",
         "cantidad": 1,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "PEPINILLO RODAJA 370GRS",
-        "unidad": "BOTE",
-        "cantidad": 5,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "SAL FINA 5KG",
-        "unidad": "BOLSA",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
+        "proveedor": "JASA"
       },
       {
         "producto": "FREGONA 2 MOCHOS",
@@ -410,14 +344,32 @@
         "proveedor": "MAKRO"
       },
       {
-        "producto": "PAPEL ALUMINIO",
-        "unidad": "ROLLOS",
-        "cantidad": 6,
+        "producto": "GUANTES NITRILO TALLA L",
+        "unidad": "UNIDADES",
+        "cantidad": 3,
         "proveedor": "MAKRO"
       },
       {
-        "producto": "DESENGRASANTE PLANCHA",
-        "unidad": "GARRAFA",
+        "producto": "LIMPIA CRISTALES",
+        "unidad": "BOTELLAS",
+        "cantidad": 1,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "PAPEL ALUMINIO",
+        "unidad": "ROLLOS",
+        "cantidad": 5,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "ROLLO PAPEL COCINA 6 UND",
+        "unidad": "PAQUETE",
+        "cantidad": 2,
+        "proveedor": "MAKRO"
+      },
+      {
+        "producto": "BAYETAS",
+        "unidad": "BOLSA",
         "cantidad": 1,
         "proveedor": "MAKRO"
       }
