@@ -11,7 +11,7 @@ from datetime import timedelta
 import time
 import hashlib
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 import pandas as pd
 from google import genai
 
@@ -167,6 +167,27 @@ for carpeta in CARPETAS_ENTRADA + [CARPETA_PROCESADOS, CARPETA_DESCARTADOS]:
 # ==========================================
 # 🛡️ MOTOR ANTI-DUPLICADOS DE ALBARANES
 # ==========================================
+def preparar_imagen_ia(ruta_img, mejorar_nitidez=False):
+    """Abre la imagen, corrige orientacion EXIF y opcionalmente mejora nitidez, resolucion y contraste."""
+    img = Image.open(ruta_img)
+    try:
+        img = ImageOps.exif_transpose(img)
+    except Exception:
+        pass
+    if img.mode not in ("RGB", "L"):
+        img = img.convert("RGB")
+    if mejorar_nitidez:
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        img.thumbnail((2500, 2500), Image.Resampling.LANCZOS)
+        img = ImageOps.autocontrast(img, cutoff=1)
+        img = ImageEnhance.Contrast(img).enhance(1.5)
+        img = ImageEnhance.Sharpness(img).enhance(2.2)
+        img = img.filter(ImageFilter.UnsharpMask(radius=1.5, percent=120, threshold=3))
+    else:
+        img.thumbnail((2000, 2000), Image.Resampling.LANCZOS)
+    return img
+
 def calcular_hash_archivo(ruta):
     """Calcula el hash MD5 de un archivo para detectar imágenes idénticas."""
     if not os.path.isfile(ruta):
@@ -180,12 +201,15 @@ def calcular_hash_archivo(ruta):
     except Exception:
         return ""
 
-def verificar_albaran_duplicado(ruta_origen, proveedor, num_albaran, centro, total_bi, fecha_doc=""):
+def verificar_albaran_duplicado(ruta_origen, proveedor, num_albaran, centro, total_bi, fecha_doc="", pagina_actual=1, total_paginas=1, articulos=None):
     """
-    Comprueba si el albarán actual ya fue procesado o descartado mediante 3 niveles de defensa:
+    Comprueba si el albarán actual ya fue procesado o descartado mediante 5 niveles de defensa:
     1. Huella exacta del archivo de imagen (Hash MD5 en procesados o descartados).
     2. Coincidencia de Nº de Albarán y Proveedor en Registro_Albaranes_Compras.csv.
     3. Coincidencia de importe exacto + proveedor + centro en compras recientes.
+    4. Coincidencia en Historico_Precios.csv (mismo proveedor + centro + fecha + productos).
+    5. Coincidencia de Nº de Albarán en el registro auditado de albaranes previos.
+    Reconoce páginas 1/2 y 2/2 (especial Makro y Coca-Cola) para no bloquear la 2ª página como falso duplicado.
     Retorna: (es_duplicado: bool, motivo: str, tipo_alerta: str)
     """
     # 1. Comprobar huella digital de la imagen (Hash MD5)
@@ -225,6 +249,16 @@ def verificar_albaran_duplicado(ruta_origen, proveedor, num_albaran, centro, tot
                     # Coincidencia de Nº de Albarán y Proveedor
                     if num_norm and len(num_norm) >= 2 and (prov_norm in r_prov or r_prov in prov_norm):
                         if (r_num and r_num == num_norm) or (f"nº {num_norm}" in r_notas) or (f"nº: {num_norm}" in r_notas):
+                            # Si es la página 2 de 2 (o posterior) en un albarán multipágina
+                            if total_paginas > 1 and pagina_actual > 1:
+                                ya_esta_esta_pag = (f"pág {pagina_actual}/{total_paginas}" in r_notas or 
+                                                    f"pag {pagina_actual}/{total_paginas}" in r_notas or 
+                                                    f"página {pagina_actual}" in r_notas)
+                                if ya_esta_esta_pag:
+                                    return True, f"La **Página {pagina_actual} de {total_paginas}** de este albarán ya fue registrada anteriormente ({r_fecha} en {r_centro}).", "NUMERO_ALBARAN"
+                                else:
+                                    # La página anterior fue la 1/2 y ahora estamos en la 2/2 -> Continuación válida
+                                    continue
                             return True, f"Ya existe un albarán registrado de **{row.get('Proveedor')}** con el **Nº {num_albaran}** (archivado el {r_fecha} en {r_centro} por {r_bi} €).", "NUMERO_ALBARAN"
 
                     # 3. Coincidencia por Importe exacto + Proveedor + Centro
@@ -232,11 +266,77 @@ def verificar_albaran_duplicado(ruta_origen, proveedor, num_albaran, centro, tot
                         bi_float = float(r_bi)
                         if abs(bi_float - total_bi) < 0.05 and total_bi > 5.0:
                             if (prov_norm in r_prov or r_prov in prov_norm) and (centro_norm in normalizar_texto(r_centro) or normalizar_texto(r_centro) in centro_norm):
-                                return True, f"Coincidencia de importe idéntico (**{total_bi:.2f} €**), proveedor (**{row.get('Proveedor')}**) y centro (**{r_centro}**) con un albarán archivado el {r_fecha}.", "IMPORTE_EXACTO"
+                                if total_paginas > 1 and pagina_actual > 1:
+                                    pass
+                                else:
+                                    return True, f"Coincidencia de importe idéntico (**{total_bi:.2f} €**), proveedor (**{row.get('Proveedor')}**) y centro (**{r_centro}**) con un albarán archivado el {r_fecha}.", "IMPORTE_EXACTO"
                     except Exception:
                         pass
         except Exception as e:
             print(f"Error verificando duplicados en compras: {e}")
+
+    # 4. Comprobar contra Historico_Precios.csv (mismo proveedor + centro + fecha + productos coincidentes)
+    if os.path.isfile(ARCHIVO_HISTORICO_PRECIOS) and fecha_doc and proveedor and centro:
+        try:
+            fechas_candidatas = {str(fecha_doc).strip()}
+            try:
+                if "/" in str(fecha_doc):
+                    p_dia, p_mes, p_ano = str(fecha_doc).split("/")
+                    fechas_candidatas.add(f"{p_ano}-{p_mes.zfill(2)}-{p_dia.zfill(2)}")
+                elif "-" in str(fecha_doc):
+                    p_ano, p_mes, p_dia = str(fecha_doc).split("-")
+                    fechas_candidatas.add(f"{p_dia.zfill(2)}/{p_mes.zfill(2)}/{p_ano}")
+            except Exception:
+                pass
+
+            prods_albaran = set()
+            if articulos:
+                for art in articulos:
+                    nom_a = normalizar_texto(art.get("nombre", ""))
+                    if nom_a:
+                        prods_albaran.add(nom_a)
+
+            with open(ARCHIVO_HISTORICO_PRECIOS, mode='r', encoding='utf-8-sig') as f:
+                reader_hp = csv.DictReader(f)
+                prods_coincidentes = set()
+                for row_hp in reader_hp:
+                    hp_prov = normalizar_texto(row_hp.get('Proveedor', ''))
+                    hp_centro = normalizar_texto(row_hp.get('Centro', ''))
+                    hp_fecha = str(row_hp.get('Fecha', '')).strip()
+
+                    if (prov_norm in hp_prov or hp_prov in prov_norm) and (centro_norm in hp_centro or hp_centro in centro_norm):
+                        if hp_fecha in fechas_candidatas:
+                            hp_sinonimo = normalizar_texto(row_hp.get('Sinonimo', ''))
+                            hp_maestro = normalizar_texto(row_hp.get('Producto_Maestro', ''))
+                            if prods_albaran:
+                                for p_alb in prods_albaran:
+                                    if p_alb in hp_sinonimo or hp_sinonimo in p_alb or p_alb in hp_maestro or hp_maestro in p_alb:
+                                        prods_coincidentes.add(row_hp.get('Producto_Maestro', ''))
+                            else:
+                                prods_coincidentes.add(row_hp.get('Producto_Maestro', ''))
+
+                if len(prods_coincidentes) >= 2 or (len(prods_albaran) == 1 and len(prods_coincidentes) >= 1):
+                    if not (total_paginas > 1 and pagina_actual > 1):
+                        ejemplos = ", ".join(list(prods_coincidentes)[:3])
+                        return True, f"En **{centro}** ya figuran artículos archivados de **{proveedor}** con fecha **{fecha_doc}** ({len(prods_coincidentes)} productos ya en histórico: {ejemplos}). Este albarán ya fue procesado con anterioridad.", "HISTORICO_PRECIOS"
+        except Exception as e_hp:
+            print(f"Error verificando duplicados en histórico de precios: {e_hp}")
+
+    # 5. Comprobar contra auditoria_completa_albaranes.json si existe
+    audit_file = os.path.join(BASE_DIR, "auditoria_completa_albaranes.json")
+    if os.path.isfile(audit_file) and num_norm and len(num_norm) >= 2:
+        try:
+            with open(audit_file, mode='r', encoding='utf-8') as af:
+                audit_data = json.load(af)
+                for item in audit_data:
+                    it_num = str(item.get("numero_albaran", "")).strip().lower()
+                    it_prov = normalizar_texto(item.get("proveedor", ""))
+                    if (prov_norm in it_prov or it_prov in prov_norm) and (it_num and it_num == num_norm):
+                        it_f = item.get("fecha", "")
+                        it_arch = item.get("archivo", "")
+                        return True, f"Este documento (Nº **{num_albaran}** de **{item.get('proveedor')}**) ya fue registrado anteriormente (foto escaneada: '{it_arch}', fecha: {it_f}).", "NUMERO_ALBARAN_AUDITORIA"
+        except Exception:
+            pass
 
     return False, "", "OK"
 
@@ -505,18 +605,34 @@ def buscar_equivalencia(diccionario_eq, indice_norm, prov_key, prod_key, ud_leid
         if sn == prod_norm:
             return seleccionar_variante_optima(diccionario_eq[clave_original], ud_leida, precio_detectado), True
 
+    palabras_criticas = ["cheddar", "gouda", "bacon", "pollo", "mayonesa", "barbacoa", "cerdo", "ternera", "trufa", "cebolla", "guacamole", "boniato", "dulce", "zero"]
+
+    def _tiene_conflicto(s1, s2):
+        for w in palabras_criticas:
+            if (w in s1 and w not in s2) or (w in s2 and w not in s1):
+                return True
+        return False
+
+    def _tokens_clave(texto):
+        stopwords = {"de", "la", "el", "en", "con", "sin", "al", "del", "las", "los", "por", "para"}
+        t_clean = unicodedata.normalize("NFKD", str(texto or "")).encode("ASCII", "ignore").decode("utf-8").lower()
+        t_clean = re.sub(r'(\d+)[.,](\d+)', r'\1\2', t_clean)
+        palabras = re.findall(r'[a-z0-9]+', t_clean)
+        res = set()
+        for p in palabras:
+            if len(p) <= 1 or p in stopwords:
+                continue
+            if len(p) > 4 and p.endswith('s'):
+                p = p[:-1]
+            res.add(p)
+        return res
+
     # 2d) Match por subcadena dentro del mismo proveedor (resuelve prefijos de departamento como "PATATAS CONGELADAS...", "VERDURAS...", etc.)
     mejor_len_sub = 0
     mejor_clave_sub = None
-    palabras_criticas = ["cheddar", "gouda", "bacon", "pollo", "mayonesa", "barbacoa", "cerdo", "ternera", "trufa", "cebolla", "guacamole"]
     for (pn, sn), clave_original in indice_norm.items():
         if proveedores_compatibles(pn, prov_norm):
-            conflicto = False
-            for w in palabras_criticas:
-                if (w in prod_norm and w not in sn) or (w in sn and w not in prod_norm):
-                    conflicto = True
-                    break
-            if conflicto:
+            if _tiene_conflicto(prod_norm, sn):
                 continue
             if len(sn) >= 8 and (sn in prod_norm or prod_norm in sn):
                 if len(sn) > mejor_len_sub:
@@ -526,20 +642,38 @@ def buscar_equivalencia(diccionario_eq, indice_norm, prov_key, prod_key, ud_leid
     if mejor_clave_sub is not None:
         return seleccionar_variante_optima(diccionario_eq[mejor_clave_sub], ud_leida, precio_detectado), True
 
+    # 2e) Match por palabras clave dentro del mismo proveedor (resuelve descripciones ampliadas con palabras intercaladas)
+    tokens_prod = _tokens_clave(prod_key)
+    if len(tokens_prod) >= 2:
+        mejor_score_tok = 0.0
+        mejor_coincidencias = 0
+        mejor_clave_tok = None
+        for (pn, sn), clave_original in indice_norm.items():
+            if proveedores_compatibles(pn, prov_norm):
+                if _tiene_conflicto(prod_norm, sn):
+                    continue
+                tokens_sn = _tokens_clave(clave_original[1])
+                if len(tokens_sn) < 2:
+                    continue
+                inter = tokens_prod & tokens_sn
+                min_len = min(len(tokens_prod), len(tokens_sn))
+                ratio_tok = len(inter) / min_len if min_len > 0 else 0.0
+                if len(inter) >= 3 and ratio_tok >= 0.75:
+                    if (ratio_tok, len(inter)) > (mejor_score_tok, mejor_coincidencias):
+                        mejor_score_tok = ratio_tok
+                        mejor_coincidencias = len(inter)
+                        mejor_clave_tok = clave_original
+        if mejor_clave_tok is not None:
+            return seleccionar_variante_optima(diccionario_eq[mejor_clave_tok], ud_leida, precio_detectado), True
+
     # 3) Match dentro del mismo proveedor por similitud difusa (>= 82%), con protección de palabras críticas
     mejor_ratio = 0.0
     mejor_clave = None
-    palabras_criticas = ["cheddar", "gouda", "bacon", "pollo", "mayonesa", "barbacoa", "cerdo", "ternera", "trufa", "cebolla", "guacamole"]
     
     for (pn, sn), clave_original in indice_norm.items():
         if proveedores_compatibles(pn, prov_norm):
             # Prohibir cruces de productos distintos (ej. Cheddar vs Gouda)
-            conflicto = False
-            for w in palabras_criticas:
-                if (w in prod_norm and w not in sn) or (w in sn and w not in prod_norm):
-                    conflicto = True
-                    break
-            if conflicto:
+            if _tiene_conflicto(prod_norm, sn):
                 continue
                 
             ratio = difflib.SequenceMatcher(None, sn, prod_norm).ratio()
@@ -554,12 +688,7 @@ def buscar_equivalencia(diccionario_eq, indice_norm, prov_key, prod_key, ud_leid
     mejor_ratio_global = 0.0
     mejor_clave_global = None
     for (pn, sn), clave_original in indice_norm.items():
-        conflicto = False
-        for w in palabras_criticas:
-            if (w in prod_norm and w not in sn) or (w in sn and w not in prod_norm):
-                conflicto = True
-                break
-        if conflicto:
+        if _tiene_conflicto(prod_norm, sn):
             continue
             
         ratio = difflib.SequenceMatcher(None, sn, prod_norm).ratio()
@@ -1725,12 +1854,13 @@ if seccion_activa == "📡 Radar de Albaranes":
             st.session_state.centro_destino = ""
             st.session_state.num_albaran_ia = ""
             st.session_state.fecha_albaran_ia = ""
+            st.session_state.pagina_actual_ia = 1
+            st.session_state.total_paginas_ia = 1
+            st.session_state.archivo_segunda_pagina = ""
             st.session_state.archivo_actual = ruta_origen
 
         col_foto, col_datos = st.columns([1, 2])
         with col_foto:
-            st.image(ruta_origen, caption=f"En cola: {archivo_actual}", use_container_width=True)
-            
             # 🛡️ Comprobación previa de imagen idéntica (Hash MD5)
             es_dup_img, motivo_dup_img, _ = verificar_albaran_duplicado(ruta_origen, "", "", "", 0.0)
             if es_dup_img:
@@ -1752,6 +1882,60 @@ if seccion_activa == "📡 Radar de Albaranes":
                     st.session_state.ia_procesada = False
                     time.sleep(0.6)
                     st.rerun()
+
+            # 📑 GESTIÓN DE ALBARANES DE 2 PÁGINAS (MAKRO, COCA-COLA, ETC.)
+            otros_archivos = [f for c, f in archivos_en_cola if f != archivo_actual and c == carpeta_origen]
+            segunda_pag_sugerida = None
+            if otros_archivos:
+                nom_b, _ = os.path.splitext(archivo_actual)
+                for o_f in otros_archivos:
+                    if f"{nom_b} (1)" in o_f or ("(1)" in o_f and nom_b[:15] in o_f):
+                        segunda_pag_sugerida = o_f
+                        break
+                    elif nom_b[:17] in o_f:
+                        segunda_pag_sugerida = o_f
+                        break
+
+            chk_nitidez = st.checkbox(
+                "✨ Mejorar Nitidez y Contraste (Foto borrosa / tinta tenue)",
+                value=False,
+                key=f"chk_nitidez_{archivo_actual}",
+                help="Aumenta la resolución (2500px), el contraste y el enfoque de la foto antes de enviarla a la IA."
+            )
+
+            chk_multipagina = st.checkbox(
+                "📑 Este albarán tiene 2 páginas (Makro / Coca-Cola 1/2 y 2/2)",
+                value=bool(st.session_state.get("archivo_segunda_pagina")),
+                key=f"chk_multi_{archivo_actual}",
+                help="Actívalo si este albarán consta de 2 hojas para procesar ambas juntas y sumar todos los productos en un único paso."
+            )
+
+            ruta_segunda_pag = None
+            if chk_multipagina and otros_archivos:
+                idx_def = 0
+                if segunda_pag_sugerida and segunda_pag_sugerida in otros_archivos:
+                    idx_def = otros_archivos.index(segunda_pag_sugerida)
+                sel_pag2 = st.selectbox(
+                    "📄 Selecciona la Página 2 (2/2):",
+                    otros_archivos,
+                    index=idx_def,
+                    key=f"sel_pag2_{archivo_actual}"
+                )
+                ruta_segunda_pag = os.path.join(carpeta_origen, sel_pag2)
+                st.session_state.archivo_segunda_pagina = ruta_segunda_pag
+            elif not chk_multipagina:
+                st.session_state.archivo_segunda_pagina = ""
+
+            img_preview_1 = preparar_imagen_ia(ruta_origen, mejorar_nitidez=True) if chk_nitidez else ruta_origen
+            if ruta_segunda_pag and os.path.isfile(ruta_segunda_pag):
+                img_preview_2 = preparar_imagen_ia(ruta_segunda_pag, mejorar_nitidez=True) if chk_nitidez else ruta_segunda_pag
+                tab_p1, tab_p2 = st.tabs(["📄 Pág. 1 (1/2)", "📄 Pág. 2 (2/2)"])
+                with tab_p1:
+                    st.image(img_preview_1, caption=f"Página 1/2: {archivo_actual}", use_container_width=True)
+                with tab_p2:
+                    st.image(img_preview_2, caption=f"Página 2/2: {os.path.basename(ruta_segunda_pag)}", use_container_width=True)
+            else:
+                st.image(img_preview_1, caption=f"En cola: {archivo_actual}" + (" (Nitidez Mejorada)" if chk_nitidez else ""), use_container_width=True)
             
         with col_datos:
             centros_blitz = [
@@ -1826,8 +2010,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                             raise ValueError("Clave API de Google no configurada.")
 
                         cliente_ia_activo = genai.Client(api_key=clave_activa)
-                        img = Image.open(ruta_origen)
-                        img.thumbnail((1500, 1500))
+                        img = preparar_imagen_ia(ruta_origen, mejorar_nitidez=chk_nitidez)
                         
                         prompt_estricto = """
                         Eres un OCR experto de facturas y albaranes de hostelería. Lee este documento con máxima precisión.
@@ -1841,21 +2024,34 @@ if seccion_activa == "📡 Radar de Albaranes":
                         7. REGLA DE LÍNEAS DE REGALO / PROMOCIONES: Si un albarán tiene líneas del mismo producto con precio 0.00 € (ej. regalo, promoción 10+1), extráelas también con su cantidad real y precio 0.00.
                         8. REGLA DE COMPROBACIÓN MATEMÁTICA Y LEGIBILIDAD (DOBLE CHECK OBLIGATORIO): En albaranes con impresión matricial, números poco nítidos o tinta tenue (como albaranes de MORALES, Hermanos Morales, tickets de caja, etc.), verifica SIEMPRE matemáticamente con las columnas de Importe: precio_final = importe_linea / cantidad (o precio x cantidad = importe). Si el número impreso es ambiguo (por ejemplo parece 4.05 pero 12 x 4.50 = 54.00), usa SIEMPRE el precio matemáticamente coherente con el importe total (4.50).
                         9. REGLA DE CONTEXTO DE HAMBURGUESERÍA (NUNCA SALMÓN): Este negocio es una hamburguesería gourmet (Blitz Burger). En albaranes de charcutería/embutidos (como MORALES, etc.) donde aparezca una palabra cortada o poco nítida en el margen izquierdo como '[...]ON AHUMADO LONCHAS' o '...N AHUMADO LONCHAS' (a precio ~4.50 €/kg), se trata SIEMPRE de 'BACON AHUMADO LONCHAS', JAMÁS de salmón. El salmón no se utiliza en hamburguesería y tiene un precio muy superior.
+                        10. REGLA DE NÚMERO DE PÁGINA (ESPECIAL MAKRO Y COCA-COLA): En proveedores como MAKRO, COCA-COLA (y en cualquier otro albarán), busca en la esquina superior derecha la numeración de página. MAKRO suele poner 'Página: 1/2', 'Página: 2/2', etc. COCA-COLA suele poner en el cuadro superior derecho 'Página: 1/2', 'Página: 2/2', etc. Extrae el número de página actual (pagina_actual) como entero y el total de páginas (total_paginas) como entero. Si solo hay 1 página o no indica nada, pon pagina_actual: 1 y total_paginas: 1.
+                        11. REGLA DE MÚLTIPLES IMÁGENES / PÁGINAS ADJUNTAS: Si se proporcionan 2 imágenes correspondientes a páginas 1 y 2 de un mismo albarán, combina y extrae TODOS los artículos de ambas páginas en la lista 'articulos' sin omitir ninguno.
                         
                         Devuelve ÚNICAMENTE un bloque JSON. Prohibido texto explicativo. Formato:
                         {
                             "proveedor": "Nombre del proveedor",
                             "numero_albaran": "Número o serie del albarán (ej. '48291', 'ALB-1092', '00342', etc.) o cadena vacía si no aparece",
                             "fecha_albaran": "Fecha que figura en el albarán en formato DD/MM/AAAA o cadena vacía",
+                            "pagina_actual": 1,
+                            "total_paginas": 1,
                             "articulos": [
                                 {"nombre": "Producto Ejemplo", "cantidad": 1.0, "unidad": "CAJA", "precio_final": 4.75}
                             ]
                         }
                         """
                         
+                        contents_ia = [prompt_estricto, img]
+                        ruta_segunda_pag = st.session_state.get("archivo_segunda_pagina", "")
+                        if ruta_segunda_pag and os.path.isfile(ruta_segunda_pag):
+                            img2 = preparar_imagen_ia(ruta_segunda_pag, mejorar_nitidez=chk_nitidez)
+                            contents_ia.append(img2)
+                        
                         import time
                         # Cadena de modelos de máxima resiliencia ante picos de demanda (503 / 429)
-                        modelos_a_probar = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-3.8-flash']
+                        if chk_nitidez:
+                            modelos_a_probar = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest', 'gemini-flash-lite-latest']
+                        else:
+                            modelos_a_probar = ['gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-3.8-flash']
                         respuesta = None
                         ultimo_error = None
                         
@@ -1864,13 +2060,15 @@ if seccion_activa == "📡 Radar de Albaranes":
                                 try:
                                     respuesta = cliente_ia_activo.models.generate_content(
                                         model=mod,
-                                        contents=[prompt_estricto, img]
+                                        contents=contents_ia
                                     )
                                     if respuesta and respuesta.text:
                                         break
                                 except Exception as api_error:
                                     ultimo_error = api_error
                                     err_msg = str(api_error).lower()
+                                    if any(s in err_msg for s in ['404', 'not_found']):
+                                        break
                                     # Si la cuota diaria está agotada (429/quota), saltar de inmediato al siguiente modelo
                                     if any(s in err_msg for s in ['429', 'resourceexhausted', 'quota']):
                                         break
@@ -1898,6 +2096,23 @@ if seccion_activa == "📡 Radar de Albaranes":
                         st.session_state.num_albaran_ia = str(datos_ia.get("numero_albaran", "") or "").strip()
                         st.session_state.fecha_albaran_ia = str(datos_ia.get("fecha_albaran", "") or "").strip()
                         
+                        # Manejo inteligente de páginas (1/2, 2/2, etc.)
+                        try:
+                            p_act = int(datos_ia.get("pagina_actual", 1) or 1)
+                        except Exception:
+                            p_act = 1
+                        try:
+                            p_tot = int(datos_ia.get("total_paginas", 1) or 1)
+                        except Exception:
+                            p_tot = 1
+                            
+                        if ruta_segunda_pag and os.path.isfile(ruta_segunda_pag):
+                            p_act = 1
+                            p_tot = 2
+                            
+                        st.session_state.pagina_actual_ia = p_act
+                        st.session_state.total_paginas_ia = p_tot
+                        
                         # CÁLCULO INTELIGENTE DE PROMOCIONES CIELO DE BOCA (OK)
                         articulos_crudos = datos_ia.get("articulos", [])
                         prov_nombre = str(prov_canonico).upper()
@@ -1924,8 +2139,8 @@ if seccion_activa == "📡 Radar de Albaranes":
             if st.session_state.ia_procesada:
                 st.divider()
                 
-                # Cabecera con metadatos del albarán (Nº de Albarán y Fecha)
-                col_enc1, col_enc2 = st.columns([1, 1])
+                # Cabecera con metadatos del albarán (Nº de Albarán, Fecha y Páginas)
+                col_enc1, col_enc2, col_enc3 = st.columns([1.2, 1, 1])
                 with col_enc1:
                     num_alb_val = st.text_input(
                         "📄 Nº de Albarán / Documento:", 
@@ -1941,8 +2156,43 @@ if seccion_activa == "📡 Radar de Albaranes":
                         key=f"input_fec_alb_{archivo_actual}"
                     )
                     st.session_state.fecha_albaran_ia = fec_alb_val.strip()
+                with col_enc3:
+                    pag_act_val = st.session_state.get("pagina_actual_ia", 1)
+                    pag_tot_val = st.session_state.get("total_paginas_ia", 1)
+                    if st.session_state.get("archivo_segunda_pagina"):
+                        pag_display = "Págs 1 y 2 (Completo)"
+                    else:
+                        pag_display = f"Página {pag_act_val} de {pag_tot_val} ({pag_act_val}/{pag_tot_val})"
+                    st.text_input(
+                        "📑 Páginas Reconocidas:", 
+                        value=pag_display, 
+                        disabled=True, 
+                        key=f"input_pag_val_{archivo_actual}",
+                        help="Numeración detectada arriba a la derecha (ej. 1/2, 2/2)."
+                    )
+
+                # Alertas visuales para albaranes multipágina
+                if st.session_state.get("archivo_segunda_pagina"):
+                    st.success(f"📑 **Albarán Completo (2 Páginas Procesadas Juntas):** Se han extraído e integrado los artículos de ambas hojas (1/2 y 2/2) de {st.session_state.proveedor_ia}.")
+                elif pag_tot_val > 1:
+                    if pag_act_val == 1:
+                        st.info(f"📑 **Albarán Multipágina Detectado (Página 1/{pag_tot_val}):** En la parte superior derecha figura **1/{pag_tot_val}**. Recuerda que puedes unir la página 2 activando '¿Este albarán tiene 2 páginas?' a la izquierda para procesar todo junto, o bien procesar la página 2/2 a continuación.")
+                    elif pag_act_val > 1:
+                        st.success(f"📑 **Albarán Multipágina Detectado (Página {pag_act_val}/{pag_tot_val}):** En la parte superior derecha figura **{pag_act_val}/{pag_tot_val}**. Se registrarán los artículos adicionales de esta segunda hoja.")
 
                 st.subheader(f"🏢 Proveedor: **{st.session_state.proveedor_ia}** ➔ 📍 Destino: **{st.session_state.centro_destino}**")
+
+                # Sincronizar correcciones manuales de líneas antes de calcular totales y mapear
+                for idx_sync, art_sync in enumerate(st.session_state.articulos_ia):
+                    k_c = f"ed_cant_{archivo_actual}_{idx_sync}"
+                    k_u = f"ed_ud_{archivo_actual}_{idx_sync}"
+                    k_p = f"ed_prec_{archivo_actual}_{idx_sync}"
+                    if k_c in st.session_state:
+                        art_sync["cantidad"] = st.session_state[k_c]
+                    if k_u in st.session_state and str(st.session_state[k_u]).strip():
+                        art_sync["unidad"] = str(st.session_state[k_u]).strip().upper()
+                    if k_p in st.session_state:
+                        art_sync["precio_final"] = st.session_state[k_p]
 
                 # Calcular Base Imponible estimada para comprobación de duplicados
                 total_bi_preview = 0.0
@@ -1954,19 +2204,24 @@ if seccion_activa == "📡 Radar de Albaranes":
                         except: p_art = 0.0
                         total_bi_preview += round(c_art * p_art, 2)
 
-                # 🛡️ COMPROBACIÓN INTELIGENTE DE DUPLICADOS
+                # 🛡️ COMPROBACIÓN INTELIGENTE DE DUPLICADOS (5 NIVELES)
                 es_dup, motivo_dup, tipo_dup = verificar_albaran_duplicado(
                     ruta_origen=ruta_origen,
                     proveedor=st.session_state.proveedor_ia,
                     num_albaran=st.session_state.get("num_albaran_ia", ""),
                     centro=st.session_state.centro_destino,
                     total_bi=total_bi_preview,
-                    fecha_doc=st.session_state.get("fecha_albaran_ia", "")
+                    fecha_doc=st.session_state.get("fecha_albaran_ia", ""),
+                    pagina_actual=st.session_state.get("pagina_actual_ia", 1),
+                    total_paginas=st.session_state.get("total_paginas_ia", 1),
+                    articulos=st.session_state.articulos_ia
                 )
 
                 if es_dup:
                     st.error(f"🚨 **ALERTA DE ALBARÁN DUPLICADO:**\n\n{motivo_dup}")
                     st.warning("⚠️ **Atención:** Para evitar duplicar stock e importe de compras, utiliza el botón de descartar al final.")
+                elif not st.session_state.get("num_albaran_ia"):
+                    st.warning("⚠️ **Aviso de Seguridad:** No se ha indicado el Nº de Albarán. Es muy recomendable escribirlo arriba para que el sistema pueda detectar si este documento se vuelve a escanear en el futuro.")
                 
 
                 diccionario_eq, indice_norm = cargar_equivalencias()
@@ -1982,6 +2237,15 @@ if seccion_activa == "📡 Radar de Albaranes":
                     prod_key = prod.strip().lower()
                     
                     st.write(f"📦 **Extraído:** {cant} *{prod}* - Precio leído: **{precio_detectado:.2f} €**")
+                    with st.expander("✏️ Corregir cantidad o precio manualmente (si algún dígito salió borroso)", expanded=False):
+                        c_ed1, c_ed2, c_ed3 = st.columns([1, 1, 1])
+                        try: c_init = float(articulo.get("cantidad", 0.0) or 0.0)
+                        except: c_init = 0.0
+                        try: p_init = float(articulo.get("precio_final", 0.0) or 0.0)
+                        except: p_init = 0.0
+                        c_ed1.number_input("Cantidad:", min_value=0.0, value=c_init, step=0.1, format="%.2f", key=f"ed_cant_{archivo_actual}_{i}")
+                        c_ed2.text_input("Unidad albarán:", value=ud_leida, key=f"ed_ud_{archivo_actual}_{i}")
+                        c_ed3.number_input("Precio neto (€):", min_value=0.0, value=p_init, step=0.01, format="%.2f", key=f"ed_prec_{archivo_actual}_{i}")
                     
                     eq_info, encontrado = buscar_equivalencia(diccionario_eq, indice_norm, prov_key, prod_key, ud_leida, precio_detectado)
                     if encontrado:
@@ -2375,6 +2639,16 @@ if seccion_activa == "📡 Radar de Albaranes":
                         ruta_destino = os.path.join(CARPETA_PROCESADOS, f"{base_n}_{int(time.time())}{ext_n}")
                     shutil.move(ruta_origen, ruta_destino)
                     
+                    # Si se procesó con segunda página adjunta, archivar también el archivo de la página 2
+                    ruta_pag2 = st.session_state.get("archivo_segunda_pagina", "")
+                    if ruta_pag2 and os.path.isfile(ruta_pag2):
+                        nom_pag2 = os.path.basename(ruta_pag2)
+                        ruta_dst2 = os.path.join(CARPETA_PROCESADOS, nom_pag2)
+                        if os.path.exists(ruta_dst2):
+                            b2, e2 = os.path.splitext(nom_pag2)
+                            ruta_dst2 = os.path.join(CARPETA_PROCESADOS, f"{b2}_{int(time.time())}{e2}")
+                        shutil.move(ruta_pag2, ruta_dst2)
+                    
                     # Imputar albarán a Control de Consumos y Compras vs Ventas
                     try:
                         import importlib
@@ -2392,14 +2666,27 @@ if seccion_activa == "📡 Radar de Albaranes":
                         f_doc = str(st.session_state.get("fecha_albaran_ia", "")).strip()
                         fecha_registro = f_doc if f_doc else datetime.date.today().strftime("%d/%m/%Y")
                         num_alb = str(st.session_state.get("num_albaran_ia", "")).strip()
-                        notas_alb = f"Albarán escaneado de {st.session_state.proveedor_ia}" + (f" (Nº {num_alb})" if num_alb else "")
+                        
+                        p_act_reg = st.session_state.get("pagina_actual_ia", 1)
+                        p_tot_reg = st.session_state.get("total_paginas_ia", 1)
+                        if ruta_pag2:
+                            sufijo_pag = " (Completo 2 Págs)"
+                            archivo_guardado = f"{archivo_actual} + {os.path.basename(ruta_pag2)}"
+                        elif p_tot_reg > 1:
+                            sufijo_pag = f" (Pág {p_act_reg}/{p_tot_reg})"
+                            archivo_guardado = archivo_actual
+                        else:
+                            sufijo_pag = ""
+                            archivo_guardado = archivo_actual
+                            
+                        notas_alb = f"Albarán escaneado de {st.session_state.proveedor_ia}" + (f" (Nº {num_alb}{sufijo_pag})" if num_alb else sufijo_pag)
                         
                         modulo_consumos.registrar_albaran_archivado(
                             fecha=fecha_registro,
                             proveedor=st.session_state.proveedor_ia,
                             centro=st.session_state.centro_destino,
                             base_imponible=total_bi_albaran,
-                            archivo=archivo_actual,
+                            archivo=archivo_guardado,
                             notas=notas_alb,
                             num_albaran=num_alb
                         )
@@ -2412,6 +2699,9 @@ if seccion_activa == "📡 Radar de Albaranes":
                             from sync_repo import delete_file_from_github, sync_file
                             rel_origen = os.path.relpath(ruta_origen, BASE_DIR)
                             delete_file_from_github(rel_origen)
+                            if ruta_pag2:
+                                rel_pag2 = os.path.relpath(ruta_pag2, BASE_DIR)
+                                delete_file_from_github(rel_pag2)
                             sync_file("Stock_Actual.csv")
                             sync_file("Historico_Precios.csv")
                             sync_file("Registro_Albaranes_Compras.csv")
@@ -2423,6 +2713,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                     
                     st.session_state.ia_procesada = False
                     st.session_state.centro_destino = ""
+                    st.session_state.archivo_segunda_pagina = ""
                     st.success("✅ Albarán archivado, stock sumado, imputado a compras y aviso enviado por Telegram.")
                     import time; time.sleep(0.8)
                     st.rerun()
