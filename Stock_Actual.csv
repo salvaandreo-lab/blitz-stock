@@ -1,10 +1,10 @@
 ﻿Centro,Producto_Maestro,Referencia,Cantidad_Stock,Unidad_Inventario
 Blitz  Juan de Borbón,PAPEL HIGIENICO,3.0,0.0,ROLLOS
 Blitz  Juan de Borbón,ROLLO PAPEL COCINA,4.0,30.0,ROLLOS
-Blitz  Juan de Borbón,QUESO CREMA,5.0,0.0,BOTE
+Blitz  Juan de Borbón,QUESO CREMA,5.0,2.0,BOTE
 Blitz  Juan de Borbón,QUESO CHEDDAR LONCHAS,1.0,160.0,BANDEJAS
-Blitz  Juan de Borbón,PATATAS FRITAS,2.0,387.0,BOLSAS
-Blitz  Juan de Borbón,BONIATO,6.0,12.0,BOLSAS
+Blitz  Juan de Borbón,PATATAS FRITAS,2.0,402.0,BOLSAS
+Blitz  Juan de Borbón,BONIATO,6.0,16.0,BOLSAS
 Blitz  Juan de Borbón,LECHUGA,7.0,8.0,BOLSAS
 Blitz  Juan de Borbón,GUACAMOLE,8.0,3.0,BOTE
 Blitz  Juan de Borbón,TOMATE CONFITADO,9.0,42.0,BOTE
@@ -29,8 +29,8 @@ Blitz  Juan de Borbón,PULLED PORK 500 GRS,28.0,44.0,BOLSAS
 Blitz  Juan de Borbón,PAN BURGUER HIGH NEGRO 48 UNIDADES,29.0,1.0,CAJAS
 Blitz  Juan de Borbón,PAN POTATO ROLL 80 GRS 18 UNIDADES,30.0,139.0,CAJAS
 Blitz  Juan de Borbón,CARNE BURGUER 90 GRS,31.0,50.0,CAJAS
-Blitz  Juan de Borbón,MAYONESA HEINZ CUBO 5L,33.0,15.0,CUBO
-Blitz  Juan de Borbón,BACON LONCHAS,34.0,116.0,KG
+Blitz  Juan de Borbón,MAYONESA HEINZ CUBO 5L,33.0,16.0,CUBO
+Blitz  Juan de Borbón,BACON LONCHAS,34.0,140.0,KG
 Blitz  Juan de Borbón,SALCHICHA FRANKFURT,35.0,39.0,KG
 Blitz  Juan de Borbón,NUGGETS POLLO,36.0,1.0,CAJAS
 Blitz  Juan de Borbón,ALITAS POLLO TEX-MEX,37.0,10.0,KG
