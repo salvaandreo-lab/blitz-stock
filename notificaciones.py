@@ -105,7 +105,8 @@ def limpiar_albaranes_archivados_local():
                 for r in reader:
                     arch = r.get("Archivo", "").strip()
                     if arch:
-                        archivos_procesados.add(arch)
+                        for a in arch.split("+"):
+                            archivos_procesados.add(a.strip())
         except Exception:
             pass
             
