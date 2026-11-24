@@ -1,4 +1,4 @@
-Id_Albaran,Fecha,Proveedor,Centro,Base_Imponible,Semana_Operativa,Archivo,Num_Albaran,Notas
+﻿Id_Albaran,Fecha,Proveedor,Centro,Base_Imponible,Semana_Operativa,Archivo,Num_Albaran,Notas
 OCT-BAL-001,04/10/2026,Paco Rosa,Blitz Ronda Sur,658.98,2026-M10-Sem1,,,Carga Balance Octubre
 OCT-BAL-002,04/10/2026,Jasa,Blitz Ronda Sur,206.94,2026-M10-Sem1,,,Carga Balance Octubre
 OCT-BAL-003,04/10/2026,Cielo de Boca,Blitz Ronda Sur,227.00,2026-M10-Sem1,,,Carga Balance Octubre
@@ -136,5 +136,30 @@ ALB-261112160924,12/11/2026,Makro,Blitz Juan de Borbón,60.18,2026-M11-Sem2,Esca
 ALB-261112161001,12/11/2026,Makro,Blitz Juan de Borbón,317.39,2026-M11-Sem2,Escaneado_ 20261112-1352-01.jpg,9-255722753,Albarán escaneado de Makro (Nº 9-255722753)
 ALB-261112161341,12/11/2026,Makro,Blitz Juan de Borbón,62.63,2026-M11-Sem2,Escaneado_ 20261112-1458-02.jpg,,Albarán escaneado de Makro
 ALB-261112161803,12/11/2026,Varios,Blitz Juan de Borbón,63.03,2026-M11-Sem2,Escaneado_ 20261112-1516-02.jpg,,Albarán escaneado de Varios
-ALB-261112162243,12/11/2026,Makro,Blitz Juan de Borbón,63.03,2026-M11-Sem2,Escaneado_ 20261112-1530.jpg,,Albarán escaneado de Makro
-ALB-261124120949,17/11/26,Pedro Díaz,Blitz Juan de Borbón,62.50,2026-M11-Sem3,Escaneado_ 20261118-1317.jpg,A26/50051,Albarán escaneado de Pedro Díaz (Nº A26/50051)
+ALB-HIST-0138,04/11/2026,Pedro Diaz,Blitz Juan de Borbón,48.80,2026-M11-Sem1,Escaneado_ 20261105-1405 (1).jpg,A26/48078,Albarán escaneado de Pedro Diaz (Nº A26/48078)
+ALB-HIST-0139,03/11/2026,Aceites Manzano,Blitz Juan de Borbón,119.25,2026-M11-Sem1,Escaneado_ 20261105-1405.jpg,14.832,Albarán escaneado de Aceites Manzano (Nº 14.832)
+ALB-HIST-0140,06/11/2026,La Vaca Rosa,Blitz Juan de Borbón,676.26,2026-M11-Sem1,Escaneado_ 20261106-1344.jpg,007219,Albarán escaneado de La Vaca Rosa (Nº 007219)
+ALB-HIST-0141,03/11/2026,Aceites Manzano,Blitz Ronda Sur,119.25,2026-M11-Sem1,Escaneado_20261105-1250.jpg,14.831,Albarán escaneado de Aceites Manzano (Nº 14.831)
+ALB-HIST-0142,24/11/2026,Makro,Blitz Juan de Borbón,311.13,2026-M11-Sem4,Escaneado_20261105-1435 (1).jpg,9-253575860,Albarán escaneado de Makro (Nº 9-253575860)
+ALB-HIST-0143,06/11/2026,La Vaca Rosa,Blitz Ronda Sur,563.55,2026-M11-Sem1,Escaneado_20261106-1235.jpg,007222,Albarán escaneado de La Vaca Rosa (Nº 007222)
+ALB-HIST-0144,06/11/2026,Coca-Cola,Blitz Ronda Sur,114.10,2026-M11-Sem1,Escaneado_20261106-1424.jpg,4538642480,Albarán escaneado de Coca-Cola (Nº 4538642480)
+ALB-HIST-0145,03/07/2023,Jasa / Joaquin Ayora,Blitz Juan de Borbón,184.33,2023-M07-Sem2,Escaneado_20261106-1819.jpg,ALV261100449,Albarán escaneado de Jasa / Joaquin Ayora (Nº ALV261100449)
+ALB-HIST-0146,10-11-2026,Lucas Caballero,Blitz Juan de Borbón,54.00,2026-M11-Sem2,Escaneado_ 20261111-1116.jpg,10350,Albarán escaneado de Lucas Caballero (Nº 10350)
+ALB-HIST-0147,10/11/2026,La Vaca Rosa,Blitz Juan de Borbón,333.53,2026-M11-Sem2,Escaneado_ 20261111-1121.jpg,007261,Albarán escaneado de La Vaca Rosa (Nº 007261)
+ALB-HIST-0148,10/11/2026,La Vaca Rosa,Blitz Juan de Borbón,448.54,2026-M11-Sem2,Escaneado_ 20261111-1122.jpg,1-005056,Albarán escaneado de La Vaca Rosa (Nº 1-005056)
+ALB-HIST-0149,10/11/2026,Jasa / Joaquin Ayora,Blitz Juan de Borbón,279.39,2026-M11-Sem2,Escaneado_ 20261111-1123.jpg,ALV261110474,Albarán escaneado de Jasa / Joaquin Ayora (Nº ALV261110474)
+ALB-HIST-0150,10/11/2026,Macanao,Blitz Juan de Borbón,380.80,2026-M11-Sem2,Escaneado_ 20261111-1124.jpg,2026/3215,Albarán escaneado de Macanao (Nº 2026/3215)
+ALB-HIST-0151,11/11/2026,Cielo de Boca,Blitz Juan de Borbón,340.50,2026-M11-Sem2,Escaneado_ 20261111-1158 (1).jpg,A26/24785,Albarán escaneado de Cielo de Boca (Nº A26/24785)
+ALB-HIST-0152,10/11/2026,Pedro Diaz,Blitz Juan de Borbón,213.70,2026-M11-Sem2,Escaneado_ 20261111-1158.jpg,A26/48973,Albarán escaneado de Pedro Diaz (Nº A26/48973)
+ALB-HIST-0153,06/11/2026,La Vaca Rosa,Blitz Juan de Borbón,563.55,2026-M11-Sem1,Escaneado_20261106-1903 (1).jpg,BR0012,Albarán escaneado de La Vaca Rosa (Nº BR0012)
+ALB-HIST-0154,06/11/2026,La Vaca Rosa,Blitz Ronda Sur,563.55,2026-M11-Sem1,Escaneado_20261106-2008 (1).jpg,1 007222,Albarán escaneado de La Vaca Rosa (Nº 1 007222)
+ALB-HIST-0155,24/11/2026,Makro,Blitz Juan de Borbón,311.13,2026-M11-Sem4,Escaneado_20261111-1118 (2).jpg,16/785321,Albarán escaneado de Makro (Nº 16/785321)
+ALB-HIST-0156,09/11/2026,Jasa / Joaquin Ayora,Blitz Ronda Sur,200.97,2026-M11-Sem2,Escaneado_20261111-1120 (1).jpg,ALV261108787,Albarán escaneado de Jasa / Joaquin Ayora (Nº ALV261108787)
+ALB-HIST-0157,10/11/2026,Cielo de Boca,Blitz Juan de Borbón,240.00,2026-M11-Sem2,Escaneado_20261111-1122 (1).jpg,A26/24728,Albarán escaneado de Cielo de Boca (Nº A26/24728)
+ALB-HIST-0158,10/11/2026,Macanao,Blitz Ronda Sur,224.40,2026-M11-Sem2,Escaneado_20261111-1124.jpg,2026/3214,Albarán escaneado de Macanao (Nº 2026/3214)
+ALB-HIST-0159,03/11/2026,Cielo de Boca,Blitz Ronda Sur,354.00,2026-M11-Sem1,Escaneado_20261106-1820.jpg,A26/24180,Albarán escaneado de Cielo de Boca (Nº A26/24180)
+ALB-HIST-0160,09/11/2026,Riscales Alimentación S.L.,Blitz Ronda Sur,98.23,2026-M11-Sem2,Escaneado_20261111-1122.jpg,NE26024559,Albarán escaneado de Riscales Alimentación S.L. (Nº NE26024559)
+ALB-HIST-0161,30/10/2026,La Vaca Rosa,Blitz Juan de Borbón,451.99,2026-M10-Sem5,Escaneado_20261106-1820 (1).jpg,006986,Albarán escaneado de La Vaca Rosa (Nº 006986)
+ALB-HIST-0162,09-11-2026,LUCAS CABALLERO SL,Blitz Ronda Sur,119.01,2026-M11-Sem2,Escaneado_20261111-1123 (1).jpg,10300,Albarán escaneado de LUCAS CABALLERO SL (Nº 10300)
+ALB-HIST-0163,09/11/2026,Morales,Blitz Ronda Sur,128.50,2026-M11-Sem2,Escaneado_20261111-1123.jpg,MA-39256,Albarán escaneado de Morales (Nº MA-39256)
+ALB-HIST-0164,06/11/2026,Andres Marmol,Blitz Ronda Sur,52.00,2026-M11-Sem1,Escaneado_20261111-1120.jpg,SF 236,Albarán escaneado de Andres Marmol (Nº SF 236)
