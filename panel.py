@@ -2464,13 +2464,20 @@ if seccion_activa == "📡 Radar de Albaranes":
                     else:
                         st.warning(f"🛑 ALERTA: Producto nuevo detectado en albarán.")
                         
-                        # Extraer lista de productos maestros ya existentes en el diccionario
+                        # Extraer lista de productos maestros ya existentes en el diccionario (con ref, unidad y escandallo)
                         maestros_unicos = {}
+                        maestros_meta = {}
                         for data in diccionario_eq.values():
                             m = data.get("producto_maestro", "").strip()
                             r = data.get("referencia", "").strip()
                             if m:
                                 maestros_unicos[m] = r
+                                if m not in maestros_meta:
+                                    maestros_meta[m] = {
+                                        "uinv": str(data.get("unidad_inv", "")).strip().upper(),
+                                        "rend": float(data.get("rendimiento", 1.0) or 1.0),
+                                        "urec": str(data.get("unidad_receta", "")).strip().upper(),
+                                    }
                                 
                         opciones = ["➕ Crear Producto Completamente Nuevo"] + sorted(list(maestros_unicos.keys()))
                         
@@ -2521,23 +2528,27 @@ if seccion_activa == "📡 Radar de Albaranes":
                                 if ref_str.isdigit():
                                     max_ref = max(max_ref, int(ref_str))
                             ref_final = f"{max_ref + 1:04d}"
-                            c_ref.text_input("Ref. Auto:", value=ref_final, disabled=True, key=f"ref_nuevo_{i}")
+                            c_ref.text_input("Ref. Auto:", value=ref_final, disabled=True, key=f"ref_nuevo_{i}_{maestro_final}")
                         else:
-                            c_ref.text_input("Ref. Blitz:", value=ref_final, disabled=True, key=f"ref_existente_{i}")
+                            c_ref.text_input("Ref. Blitz:", value=ref_final, disabled=True, key=f"ref_existente_{i}_{ref_final}")
                             
-                        factor_nuevo = c_fact.number_input("Mult.:", min_value=0.0001, value=1.0, format="%.4f", key=f"fact_{i}")
-                        idx = formatos_unidades.index(ud_leida) if ud_leida in formatos_unidades else 0
-                        unidad_inv_nueva = c_uni.selectbox("Unidad:", formatos_unidades, index=idx, key=f"uinv_{i}")
+                        meta_sel = maestros_meta.get(maestro_final, {}) if (not es_nuevo and maestro_final) else {}
+                        uinv_def = meta_sel.get("uinv") if meta_sel.get("uinv") in formatos_unidades else (ud_leida if ud_leida in formatos_unidades else formatos_unidades[0])
+                        factor_nuevo = c_fact.number_input("Mult.:", min_value=0.0001, value=1.0, format="%.4f", key=f"fact_{i}_{maestro_final}")
+                        idx = formatos_unidades.index(uinv_def) if uinv_def in formatos_unidades else 0
+                        unidad_inv_nueva = c_uni.selectbox("Unidad:", formatos_unidades, index=idx, key=f"uinv_{i}_{maestro_final}")
                         
                         with st.expander("🍔 Datos para Escandallos (Camarero10) - Opcional"):
                             col_r1, col_r2 = st.columns(2)
-                            rend_nuevo = col_r1.number_input("Unidades por envase (Rendimiento):", min_value=0.01, value=1.0, key=f"rend_{i}")
+                            rend_def = meta_sel.get("rend", 1.0) if meta_sel else 1.0
+                            rend_nuevo = col_r1.number_input("Unidades por envase (Rendimiento):", min_value=0.01, value=float(rend_def), key=f"rend_{i}_{maestro_final}")
                             
                             opciones_receta = ["UNIDADES", "LONCHAS", "GRS", "KG", "ML", "L", "CAJAS", "BANDEJAS", "BOLSAS"]
                             if unidad_inv_nueva not in opciones_receta:
                                 opciones_receta.append(unidad_inv_nueva)
-                            idx_receta = opciones_receta.index(unidad_inv_nueva)
-                            urec_nueva = col_r2.selectbox("Unidad de consumo:", opciones_receta, index=idx_receta, key=f"urec_{i}")
+                            urec_def = meta_sel.get("urec") if (meta_sel and meta_sel.get("urec") in opciones_receta) else unidad_inv_nueva
+                            idx_receta = opciones_receta.index(urec_def)
+                            urec_nueva = col_r2.selectbox("Unidad de consumo:", opciones_receta, index=idx_receta, key=f"urec_{i}_{maestro_final}")
                         
                         if st.button("Guardar en Diccionario", key=f"btn_guardar_{i}"):
                             if maestro_final:
@@ -2550,7 +2561,8 @@ if seccion_activa == "📡 Radar de Albaranes":
                                         factor_nuevo, unidad_inv_nueva, precio_norm, rend_nuevo, urec_nueva
                                     )
                                 else:
-                                    guardar_nueva_equivalencia(st.session_state.proveedor_ia, prod, maestro_final, ref_final, ud_leida, factor_nuevo, unidad_inv_nueva, precio_norm, rend_nuevo, urec_nueva)
+                                    ud_compra_guardar = unidad_inv_nueva if ud_leida in ["UNID", "UND", "UDS", "UD", ""] and unidad_inv_nueva == "CAJAS" else ud_leida
+                                    guardar_nueva_equivalencia(st.session_state.proveedor_ia, prod, maestro_final, ref_final, ud_compra_guardar, factor_nuevo, unidad_inv_nueva, precio_norm, rend_nuevo, urec_nueva)
                                     st.success("¡Vinculado con éxito!")
                                     import time
                                     time.sleep(0.5)
