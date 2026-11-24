@@ -701,6 +701,14 @@ def buscar_equivalencia(diccionario_eq, indice_norm, prov_key, prod_key, ud_leid
     
     return None, False
 
+def _sincronizar_equivalencias_nube(motivo="Actualizacion de Equivalencias.csv"):
+    """Sube Equivalencias.csv a GitHub para que las altas/cambios desde la web no se pierdan al reiniciar."""
+    try:
+        from sync_repo import sync_file
+        sync_file("Equivalencias.csv", motivo)
+    except Exception as e_sync:
+        print(f"Error sincronizando Equivalencias.csv a GitHub: {e_sync}")
+
 def guardar_nueva_equivalencia(proveedor, sinonimo, maestro, referencia, unidad_compra, factor, unidad_inv, precio_actual=0.0, rendimiento=1.0, unidad_receta=""):
     proveedor = normalizar_proveedor(proveedor)
     archivo_nuevo = not os.path.isfile(ARCHIVO_EQUIVALENCIAS) or os.path.getsize(ARCHIVO_EQUIVALENCIAS) == 0
@@ -716,12 +724,35 @@ def guardar_nueva_equivalencia(proveedor, sinonimo, maestro, referencia, unidad_
             cambio_columnas = True
         if cambio_columnas:
             df.to_csv(ARCHIVO_EQUIVALENCIAS, index=False, encoding='utf-8-sig')
+        # Evitar filas duplicadas si ya existe mismo proveedor + sinónimo + unidad de compra
+        p_norm = normalizar_texto(proveedor)
+        s_norm = normalizar_texto(sinonimo)
+        u_norm = str(unidad_compra).strip().upper()
+        ya_existe = df.apply(
+            lambda r: normalizar_texto(r.get("Proveedor", "")) == p_norm
+            and normalizar_texto(r.get("Sinonimo_Proveedor", "")) == s_norm
+            and str(r.get("Unidad_Compra", "")).strip().upper() == u_norm,
+            axis=1
+        )
+        if ya_existe.any():
+            for idx in df[ya_existe].index:
+                df.loc[idx, "Producto_Maestro_Blitz"] = maestro
+                df.loc[idx, "Referencia_Blitz"] = referencia
+                df.loc[idx, "Factor_Multiplicador"] = str(factor)
+                df.loc[idx, "Unidad_Inventario"] = unidad_inv
+                df.loc[idx, "Precio_Actual"] = str(precio_actual)
+                df.loc[idx, "Rendimiento"] = str(rendimiento)
+                df.loc[idx, "Unidad_Receta"] = unidad_receta
+            df.to_csv(ARCHIVO_EQUIVALENCIAS, index=False, encoding='utf-8-sig')
+            _sincronizar_equivalencias_nube(f"Actualizada equivalencia: {sinonimo} -> {maestro}")
+            return
             
     with open(ARCHIVO_EQUIVALENCIAS, mode='a', newline='', encoding='utf-8-sig') as f:
         writer = csv.writer(f)
         if archivo_nuevo:
             writer.writerow(["Proveedor", "Sinonimo_Proveedor", "Producto_Maestro_Blitz", "Referencia_Blitz", "Unidad_Compra", "Factor_Multiplicador", "Unidad_Inventario", "Precio_Actual", "Rendimiento", "Unidad_Receta"])
         writer.writerow([proveedor, sinonimo, maestro, referencia, unidad_compra, factor, unidad_inv, precio_actual, rendimiento, unidad_receta])
+    _sincronizar_equivalencias_nube(f"Nueva equivalencia: {sinonimo} -> {maestro}")
 
 def actualizar_precio_en_csv(proveedor, sinonimo, nuevo_precio, referencia="", precio_kilo=None):
     if not os.path.isfile(ARCHIVO_EQUIVALENCIAS): return
@@ -746,6 +777,7 @@ def actualizar_precio_en_csv(proveedor, sinonimo, nuevo_precio, referencia="", p
             else:
                 df.loc[idx, "Precio_Actual"] = f"{float(nuevo_precio):.2f}"
         df.to_csv(ARCHIVO_EQUIVALENCIAS, index=False, encoding='utf-8-sig')
+        _sincronizar_equivalencias_nube(f"Actualizacion de precio: {sinonimo}")
         p_hist = precio_kilo if precio_kilo is not None else nuevo_precio
         u_hist = "KG" if precio_kilo is not None else ""
         registrar_en_historico_precios(proveedor, sinonimo, maestro="", ref=referencia, precio=p_hist, unidad=u_hist)
@@ -786,6 +818,7 @@ def confirmar_borrado_diccionario(datos_editados):
     if col1.button("✅ Sí, Borrar", use_container_width=True):
         df_final = datos_editados[datos_editados["Seleccionar"] == False].drop(columns=["Seleccionar"])
         df_final.to_csv(ARCHIVO_EQUIVALENCIAS, index=False, encoding='utf-8-sig')
+        _sincronizar_equivalencias_nube("Borrado de filas en Equivalencias.csv")
         st.success("✅ Productos eliminados.")
         import time; time.sleep(0.5); st.rerun()
     if col2.button("❌ No / Cancelar", use_container_width=True):
@@ -2818,7 +2851,8 @@ elif seccion_activa == "📚 Gestor de Diccionario":
             if st.button("💾 Guardar Cualquier Cambio (Edición manual)"):
                 df_final = datos_editados.drop(columns=["Seleccionar"])
                 df_final.to_csv(ARCHIVO_EQUIVALENCIAS, index=False, encoding='utf-8-sig')
-                st.success("✅ Diccionario guardado.")
+                _sincronizar_equivalencias_nube("Edicion manual de Equivalencias.csv")
+                st.success("✅ Diccionario guardado y sincronizado con la nube.")
                 
         except Exception as e:
             st.error(f"⚠️ Error CSV: {e}")
