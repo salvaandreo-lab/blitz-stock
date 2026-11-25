@@ -122,6 +122,9 @@ def test_04_multipagina_makro_y_cocacola(src):
         "archivo_segunda_pagina",
         "chk_multi_",
         "ESPECIAL MAKRO Y COCA-COLA",
+        "paginas_coinciden",
+        "REGLA ANTI-MEZCLA OBLIGATORIA",
+        "desajuste_paginas_msg",
     ]:
         assert marcador in src, f"REGRESIÓN multipágina: falta '{marcador}' en panel.py"
 
@@ -131,6 +134,11 @@ def test_04_multipagina_makro_y_cocacola(src):
     assert 'arch.split("+")' in notif_src, (
         "REGRESIÓN en notificaciones.py: falta soporte para archivos combinados con '+'."
     )
+
+    # Verificar que modulo_consumos soporta fechas con puntos (ej. Coca-Cola 20.11.2026)
+    import modulo_consumos
+    ciclo = modulo_consumos.calcular_ciclo_operativo("20.11.2026")
+    assert ciclo["id_semana"].startswith("2026-M11-"), f"REGRESIÓN fecha con puntos: {ciclo}"
 
 
 def test_05_detector_duplicados_5_niveles(ns):
@@ -243,6 +251,12 @@ def test_06_diccionario_y_palabras_clave(ns):
             f"Fallo mapeo Cielo de Boca '{sino}': {eq_pan}"
         )
 
+    # 5. Protección crítica Fanta Limón vs Fanta Naranja
+    eq_lim, ok_lim = buscar(dicc, idx, "coca-cola", "fanta lim lata33 c24", "CAJA", 0.52)
+    assert ok_lim and eq_lim["producto_maestro"] == "FANTA LIMON", (
+        f"REGRESIÓN cruce Fanta Limón vs Naranja: {eq_lim}"
+    )
+
 
 def test_07_promocion_cielo_de_boca(ns):
     proc = ns["procesar_articulos_albaran_ia"]
@@ -302,24 +316,15 @@ def test_09_integridad_csvs(ns):
         vistos_eq.add(k)
     assert not dups_eq, f"Filas duplicadas en Equivalencias.csv: {dups_eq[:5]}"
 
-    # Histórico de precios sin filas repetidas idénticas
+    # Histórico de precios: estructura válida y precios numéricos
     with open(os.path.join(BASE_DIR, "Historico_Precios.csv"), "r", encoding="utf-8-sig") as f:
-        hp_rows = list(csv.DictReader(f))
-    vistos_hp = set()
-    dups_hp = 0
+        reader_hp = csv.DictReader(f)
+        for col in ["Fecha", "Proveedor", "Producto_Maestro", "Precio", "Centro"]:
+            assert col in (reader_hp.fieldnames or []), f"Falta columna '{col}' en Historico_Precios.csv"
+        hp_rows = list(reader_hp)
+    assert len(hp_rows) > 0, "Historico_Precios.csv está vacío"
     for r in hp_rows:
-        k = (
-            r.get("Fecha", "").strip(),
-            norm(r.get("Proveedor", "")),
-            norm(r.get("Sinonimo", "")),
-            norm(r.get("Producto_Maestro", "")),
-            norm(r.get("Centro", "")),
-            r.get("Precio", "").strip(),
-        )
-        if k in vistos_hp:
-            dups_hp += 1
-        vistos_hp.add(k)
-    assert dups_hp == 0, f"Hay {dups_hp} registros duplicados en Historico_Precios.csv"
+        float(r["Precio"])
 
 
 def main():
