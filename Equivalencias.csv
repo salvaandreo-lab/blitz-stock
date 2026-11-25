@@ -1,4 +1,4 @@
-Proveedor,Sinonimo_Proveedor,Producto_Maestro_Blitz,Referencia_Blitz,Unidad_Compra,Factor_Multiplicador,Unidad_Inventario,Precio_Actual,Rendimiento,Unidad_Receta
+﻿Proveedor,Sinonimo_Proveedor,Producto_Maestro_Blitz,Referencia_Blitz,Unidad_Compra,Factor_Multiplicador,Unidad_Inventario,Precio_Actual,Rendimiento,Unidad_Receta
 Makro,HIGIENICO MPRO 2C 36M 24R,PAPEL HIGIENICO,3,ROLLOS,1.0,ROLLOS,0.0,1.0,ROLLOS
 Makro,BOBINA ECO MPRO 2C 106MT 6R,ROLLO PAPEL COCINA,4,ROLLOS,6.0,ROLLOS,9.35,1.0,ROLLOS
 Makro,QSO CREMA CB MC 2KG,QUESO CREMA,5,BOTE,1.0,BOTE,0.0,2000.0,GRS
@@ -97,7 +97,7 @@ Macanao,TEQUEÑO NUTELLA 32.5 GR UND (C/V),TEQUEÑOS DE NUTELLA,71,UD,1.0,BOLSAS
 Ángel Linares,SIROPE DE CHOCOLATE BLANCO,SIROPE CHOCOLATE BLANCO,54,BOTELLA,1.0,BOTELLAS,7.54,1000.0,GRS
 Ángel Linares,"Sirope BLACK COOKIES Botella 1000 g-Tipo ""OREO"" - Ref: 1004",SIROPE OREO,53,BOTELLA,1.0,BOTELLAS,7.84,1000.0,GRS
 Ángel Linares,Sirope BLANCO Chocog Botella 1000 g - DECORY (sin GLUTEN),SIROPE CHOCOLATE BLANCO,54,BOTELLA,1.0,BOTELLAS,7.54,1000.0,GRS
-Lucas Caballero,Fiambre bacón topping LC,BACON DADOS,41,CAJA,5.0,BOLSAS,48.2,2000.0,GRS
+Lucas Caballero,Fiambre bacón topping LC,BACON DADOS,41,CAJA,5.0,BOLSAS,9.64,2000.0,GRS
 Lucas Caballero,Fiambre bacon topping LC,BACON DADOS,41,BOLSA,1.0,BOLSAS,9.64,2000.0,GRS
 Lucas Caballero,Fiambre bacon topping LC,BACON DADOS,41,KG,0.5,BOLSAS,4.82,2000.0,GRS
 Lucas Caballero,Queso ahumado lonchas 2X500 Albe,QUESO AHUMADO LONCHAS,40,CAJA,6.0,BANDEJAS,54.0,40.0,LONCHAS
