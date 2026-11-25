@@ -606,7 +606,7 @@ def buscar_equivalencia(diccionario_eq, indice_norm, prov_key, prod_key, ud_leid
         if sn == prod_norm:
             return seleccionar_variante_optima(diccionario_eq[clave_original], ud_leida, precio_detectado), True
 
-    palabras_criticas = ["cheddar", "gouda", "bacon", "pollo", "mayonesa", "barbacoa", "cerdo", "ternera", "trufa", "cebolla", "guacamole", "boniato", "dulce", "zero"]
+    palabras_criticas = ["cheddar", "gouda", "bacon", "pollo", "mayonesa", "barbacoa", "cerdo", "ternera", "trufa", "cebolla", "guacamole", "boniato", "dulce", "zero", "limon", "naranja"]
 
     def _tiene_conflicto(s1, s2):
         for w in palabras_criticas:
@@ -1891,6 +1891,7 @@ if seccion_activa == "📡 Radar de Albaranes":
             st.session_state.pagina_actual_ia = 1
             st.session_state.total_paginas_ia = 1
             st.session_state.archivo_segunda_pagina = ""
+            st.session_state.desajuste_paginas_msg = ""
             st.session_state.archivo_actual = ruta_origen
 
         col_foto, col_datos = st.columns([1, 2])
@@ -2067,7 +2068,8 @@ if seccion_activa == "📡 Radar de Albaranes":
                         8. REGLA DE COMPROBACIÓN MATEMÁTICA Y LEGIBILIDAD (DOBLE CHECK OBLIGATORIO): En albaranes con impresión matricial, números poco nítidos o tinta tenue (como albaranes de MORALES, Hermanos Morales, tickets de caja, etc.), verifica SIEMPRE matemáticamente con las columnas de Importe: precio_final = importe_linea / cantidad (o precio x cantidad = importe). Si el número impreso es ambiguo (por ejemplo parece 4.05 pero 12 x 4.50 = 54.00), usa SIEMPRE el precio matemáticamente coherente con el importe total (4.50).
                         9. REGLA DE CONTEXTO DE HAMBURGUESERÍA (NUNCA SALMÓN): Este negocio es una hamburguesería gourmet (Blitz Burger). En albaranes de charcutería/embutidos (como MORALES, etc.) donde aparezca una palabra cortada o poco nítida en el margen izquierdo como '[...]ON AHUMADO LONCHAS' o '...N AHUMADO LONCHAS' (a precio ~4.50 €/kg), se trata SIEMPRE de 'BACON AHUMADO LONCHAS', JAMÁS de salmón. El salmón no se utiliza en hamburguesería y tiene un precio muy superior.
                         10. REGLA DE NÚMERO DE PÁGINA (ESPECIAL MAKRO Y COCA-COLA): En proveedores como MAKRO, COCA-COLA (y en cualquier otro albarán), busca en la esquina superior derecha la numeración de página. MAKRO suele poner 'Página: 1/2', 'Página: 2/2', etc. COCA-COLA suele poner en el cuadro superior derecho 'Página: 1/2', 'Página: 2/2', etc. Extrae el número de página actual (pagina_actual) como entero y el total de páginas (total_paginas) como entero. Si solo hay 1 página o no indica nada, pon pagina_actual: 1 y total_paginas: 1.
-                        11. REGLA DE MÚLTIPLES IMÁGENES / PÁGINAS ADJUNTAS: Si se proporcionan 2 imágenes correspondientes a páginas 1 y 2 de un mismo albarán, combina y extrae TODOS los artículos de ambas páginas en la lista 'articulos' sin omitir ninguno.
+                        11. REGLA DE MÚLTIPLES IMÁGENES / PÁGINAS ADJUNTAS: Si se proporcionan 2 imágenes juntas, verifica PRIMERO que ambas correspondan al MISMO proveedor y al MISMO número de albarán. Si ambas corresponden al mismo documento, combina y extrae TODOS los artículos de ambas páginas en 'articulos' y pon "paginas_coinciden": true.
+                        12. REGLA ANTI-MEZCLA OBLIGATORIA: Si se proporcionan 2 imágenes juntas pero pertenecen a PROVEEDORES DISTINTOS (ej. Coca-Cola y La Vaca Rosa) o a NÚMEROS DE ALBARÁN DISTINTOS, pon OBLIGATORIAMENTE "paginas_coinciden": false, explica ambos documentos en "motivo_desajuste" (ej. "Hoja 1 es de COCA-COLA Nº 4539017000 y Hoja 2 es de LA VACA ROSA Nº 1-005392"), y extrae ÚNICAMENTE los artículos de la primera imagen sin mezclar productos de la segunda.
                         
                         Devuelve ÚNICAMENTE un bloque JSON. Prohibido texto explicativo. Formato:
                         {
@@ -2076,6 +2078,8 @@ if seccion_activa == "📡 Radar de Albaranes":
                             "fecha_albaran": "Fecha que figura en el albarán en formato DD/MM/AAAA o cadena vacía",
                             "pagina_actual": 1,
                             "total_paginas": 1,
+                            "paginas_coinciden": true,
+                            "motivo_desajuste": "",
                             "articulos": [
                                 {"nombre": "Producto Ejemplo", "cantidad": 1.0, "unidad": "CAJA", "precio_final": 4.75}
                             ]
@@ -2149,8 +2153,17 @@ if seccion_activa == "📡 Radar de Albaranes":
                             p_tot = 1
                             
                         if ruta_segunda_pag and os.path.isfile(ruta_segunda_pag):
-                            p_act = 1
-                            p_tot = 2
+                            if datos_ia.get("paginas_coinciden") is False:
+                                motivo_des = str(datos_ia.get("motivo_desajuste") or "Las dos hojas pertenecen a proveedores o albaranes distintos.")
+                                st.session_state.desajuste_paginas_msg = motivo_des
+                                st.session_state.archivo_segunda_pagina = ""
+                                st.session_state[f"chk_multi_{archivo_actual}"] = False
+                            else:
+                                st.session_state.desajuste_paginas_msg = ""
+                                p_act = 1
+                                p_tot = 2
+                        else:
+                            st.session_state.desajuste_paginas_msg = ""
                             
                         st.session_state.pagina_actual_ia = p_act
                         st.session_state.total_paginas_ia = p_tot
@@ -2214,6 +2227,12 @@ if seccion_activa == "📡 Radar de Albaranes":
                     )
 
                 # Alertas visuales para albaranes multipágina
+                if st.session_state.get("desajuste_paginas_msg"):
+                    st.error(
+                        f"🚨 **ATENCIÓN — PÁGINAS DE ALBARANES DISTINTOS:**\n\n"
+                        f"{st.session_state.desajuste_paginas_msg}\n\n"
+                        f"Se ha desvinculado automáticamente la segunda foto para no mezclar proveedores ni sacarla de la cola. Estás viendo únicamente los productos de la hoja 1."
+                    )
                 if st.session_state.get("archivo_segunda_pagina"):
                     st.success(f"📑 **Albarán Completo (2 Páginas Procesadas Juntas):** Se han extraído e integrado los artículos de ambas hojas (1/2 y 2/2) de {st.session_state.proveedor_ia}.")
                 elif pag_tot_val > 1:
@@ -2774,6 +2793,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                             sync_file("Stock_Actual.csv")
                             sync_file("Historico_Precios.csv")
                             sync_file("Registro_Albaranes_Compras.csv")
+                            sync_file("Equivalencias.csv")
                         except Exception as e_sync:
                             print(f"Error sincronizando archivo a GitHub: {e_sync}")
                     
