@@ -28,7 +28,7 @@ Blitz  Juan de Borbón,HAMBURGUESA POLLO CRUNCHY,27.0,8.0,BOLSAS
 Blitz  Juan de Borbón,PULLED PORK 500 GRS,28.0,68.0,BOLSAS
 Blitz  Juan de Borbón,PAN BURGUER HIGH NEGRO 48 UNIDADES,29.0,1.0,CAJAS
 Blitz  Juan de Borbón,PAN POTATO ROLL 80 GRS 18 UNIDADES,30.0,194.0,CAJAS
-Blitz  Juan de Borbón,CARNE BURGUER 90 GRS,31.0,43.0,CAJAS
+Blitz  Juan de Borbón,CARNE BURGUER 90 GRS,31.0,50.0,CAJAS
 Blitz  Juan de Borbón,MAYONESA HEINZ CUBO 5L,33.0,16.0,CUBO
 Blitz  Juan de Borbón,BACON LONCHAS,34.0,164.0,KG
 Blitz  Juan de Borbón,SALCHICHA FRANKFURT,35.0,39.0,KG
@@ -203,10 +203,10 @@ Food Truck Pequeña,TEQUEÑOS DE QUESO,70.0,0.0,BOLSAS
 Food Truck Pequeña,TEQUEÑOS DE NUTELLA,71.0,0.0,BOLSAS
 Food Truck Pequeña,SIROPE OREO,53.0,0.0,BOTELLAS
 Food Truck Pequeña,SIROPE CHOCOLATE BLANCO,54.0,0.0,BOTELLAS
-Blitz  Juan de Borbón,COCA-COLA 500 ML,,72.0,
-Blitz  Juan de Borbón,AGUA 500 ML,,144.0,
-Blitz  Juan de Borbón,AGUA 1´5 LITROS,,12.0,
-Blitz  Juan de Borbón,COCA-COLA 2 LTRS,,6.0,
+Blitz  Juan de Borbón,COCA-COLA 500 ML,,96.0,
+Blitz  Juan de Borbón,AGUA 500 ML,,264.0,
+Blitz  Juan de Borbón,AGUA 1´5 LITROS,,18.0,
+Blitz  Juan de Borbón,COCA-COLA 2 LTRS,,12.0,
 Blitz  Juan de Borbón,PAN BURGUER BRIOXE BAKER,,436.0,
 Blitz  Juan de Borbón,TARTA QUESO CLASICA,61.0,2.0,TARTAS
 Blitz  Juan de Borbón,TARTA QUESO LOTUS,62.0,2.0,TARTAS
@@ -279,3 +279,6 @@ Blitz Ronda Sur,VASOS PLASTICO,,1.0,
 Blitz Ronda Sur,AMONIACO,,12.0,
 Blitz Ronda Sur,ETIQUETAS FECHAS,,2.0,
 Blitz  Juan de Borbón,ETIQUETAS FECHAS,,2.0,
+Blitz  Juan de Borbón,COCA-COLA ZERO BOTE,,72.0,
+Blitz  Juan de Borbón,FANTA NARANJA BOTE,,72.0,
+Blitz  Juan de Borbón,FANTA LIMON,,24.0,
