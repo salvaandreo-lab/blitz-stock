@@ -62,25 +62,35 @@ function vigilarAlbaranes() {
           continue;
         }
 
-        // 4. Verificar si ya existe en GitHub
-        const githubPath = `${folderName}/${fileName}`;
-        const existeEnGithub = comprobarExisteEnGithub(githubPath);
+        // 4. Resolver nombre único en GitHub (si el escáner guardó varias fotos en el mismo minuto con igual nombre)
+        let githubPath = `${folderName}/${fileName}`;
+        let nombreFinal = fileName;
+        if (comprobarExisteEnGithub(githubPath)) {
+          const dotIdx = fileName.lastIndexOf(".");
+          const sufijo = "_" + fileId.slice(-4);
+          nombreFinal = dotIdx > 0 ? fileName.slice(0, dotIdx) + sufijo + fileName.slice(dotIdx) : fileName + sufijo;
+          githubPath = `${folderName}/${nombreFinal}`;
+        }
 
+        const existeEnGithub = comprobarExisteEnGithub(githubPath);
         if (!existeEnGithub) {
-          Logger.log(`Nuevo albarán detectado: ${fileName} en ${centroNombre}`);
+          Logger.log(`Nuevo albarán detectado: ${nombreFinal} en ${centroNombre}`);
           
           // Enviar aviso a Telegram
-          enviarTelegram(centroNombre, fileName);
+          enviarTelegram(centroNombre, nombreFinal);
           
           // Subir imagen a GitHub
-          const subido = subirAGithub(file, githubPath, `Nuevo albarán en ${centroNombre}: ${fileName}`);
+          const subido = subirAGithub(file, githubPath, `Nuevo albarán en ${centroNombre}: ${nombreFinal}`);
           if (subido) {
             Logger.log(`Subido con éxito a GitHub: ${githubPath}`);
+            processedIds.push(fileId);
+          } else {
+            Logger.log(`Reintentará en el próximo ciclo: ${githubPath}`);
           }
+        } else {
+          // Ya subido en una ejecución previa
+          processedIds.push(fileId);
         }
-        
-        // Guardar ID como procesado
-        processedIds.push(fileId);
       }
     }
   }
