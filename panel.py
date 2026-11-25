@@ -254,9 +254,10 @@ def verificar_albaran_duplicado(ruta_origen, proveedor, num_albaran, centro, tot
                                 ya_esta_esta_pag = (f"pág {pagina_actual}/{total_paginas}" in r_notas or 
                                                     f"pag {pagina_actual}/{total_paginas}" in r_notas or 
                                                     f"página {pagina_actual}" in r_notas)
+                                es_solo_pag1 = ("pág 1/" in r_notas or "pag 1/" in r_notas or "página 1/" in r_notas)
                                 if ya_esta_esta_pag:
                                     return True, f"La **Página {pagina_actual} de {total_paginas}** de este albarán ya fue registrada anteriormente ({r_fecha} en {r_centro}).", "NUMERO_ALBARAN"
-                                else:
+                                elif es_solo_pag1:
                                     # La página anterior fue la 1/2 y ahora estamos en la 2/2 -> Continuación válida
                                     continue
                             return True, f"Ya existe un albarán registrado de **{row.get('Proveedor')}** con el **Nº {num_albaran}** (archivado el {r_fecha} en {r_centro} por {r_bi} €).", "NUMERO_ALBARAN"
@@ -1917,17 +1918,24 @@ if seccion_activa == "📡 Radar de Albaranes":
                     st.rerun()
 
             # 📑 GESTIÓN DE ALBARANES DE 2 PÁGINAS (MAKRO, COCA-COLA, ETC.)
-            otros_archivos = [f for c, f in archivos_en_cola if f != archivo_actual and c == carpeta_origen]
-            segunda_pag_sugerida = None
-            if otros_archivos:
-                nom_b, _ = os.path.splitext(archivo_actual)
-                for o_f in otros_archivos:
-                    if f"{nom_b} (1)" in o_f or ("(1)" in o_f and nom_b[:15] in o_f):
-                        segunda_pag_sugerida = o_f
-                        break
-                    elif nom_b[:17] in o_f:
-                        segunda_pag_sugerida = o_f
-                        break
+            # Al escanear siempre las 2 páginas juntas, la otra hoja es la inmediatamente anterior o siguiente en la cola
+            archivos_mismo_centro = [f for c, f in archivos_en_cola if c == carpeta_origen]
+            idx_en_centro = archivos_mismo_centro.index(archivo_actual) if archivo_actual in archivos_mismo_centro else -1
+            vecino_anterior = archivos_mismo_centro[idx_en_centro - 1] if idx_en_centro > 0 else None
+            vecino_siguiente = archivos_mismo_centro[idx_en_centro + 1] if (0 <= idx_en_centro and idx_en_centro + 1 < len(archivos_mismo_centro)) else None
+
+            vecinos_prioritarios = []
+            etiquetas_vecinos = {}
+            if vecino_siguiente:
+                vecinos_prioritarios.append(vecino_siguiente)
+                etiquetas_vecinos[vecino_siguiente] = f"➡️ Siguiente escaneo: {vecino_siguiente}"
+            if vecino_anterior:
+                vecinos_prioritarios.append(vecino_anterior)
+                etiquetas_vecinos[vecino_anterior] = f"⬅️ Escaneo anterior: {vecino_anterior}"
+
+            otros_restantes = [f for f in archivos_mismo_centro if f != archivo_actual and f not in vecinos_prioritarios]
+            otros_archivos = vecinos_prioritarios + otros_restantes
+            segunda_pag_sugerida = otros_archivos[0] if otros_archivos else None
 
             chk_nitidez = st.checkbox(
                 "✨ Mejorar Nitidez y Contraste (Foto borrosa / tinta tenue)",
@@ -1937,10 +1945,10 @@ if seccion_activa == "📡 Radar de Albaranes":
             )
 
             chk_multipagina = st.checkbox(
-                "📑 Este albarán tiene 2 páginas (Makro / Coca-Cola 1/2 y 2/2)",
+                "📑 Este albarán tiene 2 páginas (unir con foto anterior o siguiente)",
                 value=bool(st.session_state.get("archivo_segunda_pagina")),
                 key=f"chk_multi_{archivo_actual}",
-                help="Actívalo si este albarán consta de 2 hojas para procesar ambas juntas y sumar todos los productos en un único paso."
+                help="Actívalo para unir esta hoja con la página anterior o siguiente escaneada junto a ella (1/2 y 2/2) y procesarlas juntas."
             )
 
             ruta_segunda_pag = None
@@ -1949,9 +1957,10 @@ if seccion_activa == "📡 Radar de Albaranes":
                 if segunda_pag_sugerida and segunda_pag_sugerida in otros_archivos:
                     idx_def = otros_archivos.index(segunda_pag_sugerida)
                 sel_pag2 = st.selectbox(
-                    "📄 Selecciona la Página 2 (2/2):",
+                    "📄 Selecciona la otra página (anterior o siguiente en cola):",
                     otros_archivos,
                     index=idx_def,
+                    format_func=lambda f_op: etiquetas_vecinos.get(f_op, f_op),
                     key=f"sel_pag2_{archivo_actual}"
                 )
                 ruta_segunda_pag = os.path.join(carpeta_origen, sel_pag2)
@@ -1962,11 +1971,11 @@ if seccion_activa == "📡 Radar de Albaranes":
             img_preview_1 = preparar_imagen_ia(ruta_origen, mejorar_nitidez=True) if chk_nitidez else ruta_origen
             if ruta_segunda_pag and os.path.isfile(ruta_segunda_pag):
                 img_preview_2 = preparar_imagen_ia(ruta_segunda_pag, mejorar_nitidez=True) if chk_nitidez else ruta_segunda_pag
-                tab_p1, tab_p2 = st.tabs(["📄 Pág. 1 (1/2)", "📄 Pág. 2 (2/2)"])
+                tab_p1, tab_p2 = st.tabs(["📄 Hoja actual", "📄 Otra página (1/2 o 2/2)"])
                 with tab_p1:
-                    st.image(img_preview_1, caption=f"Página 1/2: {archivo_actual}", use_container_width=True)
+                    st.image(img_preview_1, caption=f"Hoja actual: {archivo_actual}", use_container_width=True)
                 with tab_p2:
-                    st.image(img_preview_2, caption=f"Página 2/2: {os.path.basename(ruta_segunda_pag)}", use_container_width=True)
+                    st.image(img_preview_2, caption=f"Segunda hoja: {os.path.basename(ruta_segunda_pag)}", use_container_width=True)
             else:
                 st.image(img_preview_1, caption=f"En cola: {archivo_actual}" + (" (Nitidez Mejorada)" if chk_nitidez else ""), use_container_width=True)
             
@@ -2034,7 +2043,7 @@ if seccion_activa == "📡 Radar de Albaranes":
                         else:
                             st.error("Por favor, introduce una clave API válida de Google.")
 
-            if st.button("🧠 Procesar con Inteligencia Artificial", type="primary"):
+            if st.button("🧠 Procesar con Inteligencia Artificial", type="primary") or st.session_state.pop("auto_procesar_multi", False):
                 st.session_state.centro_destino = centro_seleccionado
                 with st.spinner('Analizando documento con Visión Artificial...'):
                     try:
@@ -2209,9 +2218,24 @@ if seccion_activa == "📡 Radar de Albaranes":
                     st.success(f"📑 **Albarán Completo (2 Páginas Procesadas Juntas):** Se han extraído e integrado los artículos de ambas hojas (1/2 y 2/2) de {st.session_state.proveedor_ia}.")
                 elif pag_tot_val > 1:
                     if pag_act_val == 1:
-                        st.info(f"📑 **Albarán Multipágina Detectado (Página 1/{pag_tot_val}):** En la parte superior derecha figura **1/{pag_tot_val}**. Recuerda que puedes unir la página 2 activando '¿Este albarán tiene 2 páginas?' a la izquierda para procesar todo junto, o bien procesar la página 2/2 a continuación.")
+                        st.info(f"📑 **Albarán Multipágina Detectado (Página 1/{pag_tot_val}):** En la parte superior derecha figura **1/{pag_tot_val}**.")
                     elif pag_act_val > 1:
-                        st.success(f"📑 **Albarán Multipágina Detectado (Página {pag_act_val}/{pag_tot_val}):** En la parte superior derecha figura **{pag_act_val}/{pag_tot_val}**. Se registrarán los artículos adicionales de esta segunda hoja.")
+                        st.info(f"📑 **Albarán Multipágina Detectado (Página {pag_act_val}/{pag_tot_val}):** En la parte superior derecha figura **{pag_act_val}/{pag_tot_val}**.")
+                    if otros_archivos:
+                        c_unir1, c_unir2 = st.columns([2, 1])
+                        sel_vecina = c_unir1.selectbox(
+                            "🔗 Unir con la otra página (anterior o siguiente en cola):",
+                            otros_archivos,
+                            index=0,
+                            format_func=lambda f_op: etiquetas_vecinos.get(f_op, f_op),
+                            key=f"sel_vecina_post_{archivo_actual}"
+                        )
+                        if c_unir2.button("🔗 Unir y Procesar Juntas", key=f"btn_unir_post_{archivo_actual}", use_container_width=True):
+                            st.session_state[f"chk_multi_{archivo_actual}"] = True
+                            st.session_state[f"sel_pag2_{archivo_actual}"] = sel_vecina
+                            st.session_state.archivo_segunda_pagina = os.path.join(carpeta_origen, sel_vecina)
+                            st.session_state.auto_procesar_multi = True
+                            st.rerun()
 
                 st.subheader(f"🏢 Proveedor: **{st.session_state.proveedor_ia}** ➔ 📍 Destino: **{st.session_state.centro_destino}**")
 
