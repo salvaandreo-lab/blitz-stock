@@ -110,7 +110,7 @@ def calcular_ciclo_operativo(fecha_obj):
     """
     if isinstance(fecha_obj, str):
         try:
-            f_clean = str(fecha_obj).strip()
+            f_clean = str(fecha_obj).strip().replace(".", "/")
             if "/" in f_clean:
                 partes = f_clean.split("/")
                 if len(partes[0]) == 4:
