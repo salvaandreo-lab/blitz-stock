@@ -291,175 +291,37 @@
   },
   "juan_borbon": {
     "centro": "Blitz Juan de Borbón",
-    "fecha": "22/11/2026 a las 18:44",
+    "fecha": "25/11/2026 a las 11:18",
     "recogida_aceite": "No",
-    "observaciones": "Papel film\nCuchillas para la plancha \nGrapas (staples)",
+    "observaciones": "",
     "items": [
       {
-        "producto": "BONIATO",
-        "unidad": "CAJAS",
-        "cantidad": 2,
-        "proveedor": "MORALES"
-      },
-      {
-        "producto": "HAMBURGUESA POLLO CRUNCHY",
-        "unidad": "BOLSAS",
-        "cantidad": 1,
-        "proveedor": "JASA"
-      },
-      {
-        "producto": "PATATAS FRITAS",
-        "unidad": "CAJAS",
-        "cantidad": 12,
-        "proveedor": "MORALES"
-      },
-      {
-        "producto": "CROQUETAS JAMON 4 KG",
-        "unidad": "CAJAS",
-        "cantidad": 2,
-        "proveedor": "NICOLAS Y VALERO"
-      },
-      {
-        "producto": "TEQUEÑOS DE QUESO",
-        "unidad": "BOLSAS",
-        "cantidad": 1,
-        "proveedor": "MACANAO"
-      },
-      {
-        "producto": "BACON DADOS 10 KG",
-        "unidad": "CAJAS",
-        "cantidad": 3,
-        "proveedor": "LUCAS CABALLERO"
-      },
-      {
-        "producto": "CARNE BURGUER 90 GRS (MIÉRCOLES)",
-        "unidad": "CAJAS",
-        "cantidad": 3,
-        "proveedor": "PACO ROSA"
-      },
-      {
-        "producto": "CARNE BURGUER 90 GRS (VIERNES)",
-        "unidad": "CAJAS",
-        "cantidad": 5,
-        "proveedor": "PACO ROSA"
-      },
-      {
-        "producto": "LECHUGA",
-        "unidad": "BOLSAS",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "PAN BURGUER HIGH NEGRO 48 UNIDADES",
+        "producto": "SALSA SMOKE BACON 6 UND",
         "unidad": "CAJAS",
         "cantidad": 1,
         "proveedor": "JASA"
-      },
-      {
-        "producto": "PAN POTATO ROLL 80 GRS 18 UNIDADES",
-        "unidad": "CAJAS",
-        "cantidad": 20,
-        "proveedor": "CIELO BOCA"
-      },
-      {
-        "producto": "PULLED PORK 500 GRS 12 BOLSAS",
-        "unidad": "CAJAS",
-        "cantidad": 1,
-        "proveedor": "JASA"
-      },
-      {
-        "producto": "QUESO CHEDDAR LONCHAS 8 UND",
-        "unidad": "CAJAS",
-        "cantidad": 2,
-        "proveedor": "PEDRO DIAZ"
-      },
-      {
-        "producto": "SALSA CHEDDAR 3 UND",
-        "unidad": "CAJAS",
-        "cantidad": 1,
-        "proveedor": "JASA"
-      },
-      {
-        "producto": "SALSA MAYO-CEBOLLA CAR-AJO 395 ML  10 UND",
-        "unidad": "CAJAS",
-        "cantidad": 1,
-        "proveedor": "JASA"
-      },
-      {
-        "producto": "SALSA RANCHERA 6 UND",
-        "unidad": "CAJAS",
-        "cantidad": 2,
-        "proveedor": "PEDRO DIAZ"
-      },
-      {
-        "producto": "TARTA QUESO LOTUS",
-        "unidad": "TARTAS",
-        "cantidad": 2,
-        "proveedor": "ANDRES MARMOL"
-      },
-      {
-        "producto": "TARTA QUESO PISTACHO",
-        "unidad": "TARTAS",
-        "cantidad": 1,
-        "proveedor": "ANDRES MARMOL"
-      },
-      {
-        "producto": "CEBOLLINO 125 GRS",
-        "unidad": "BANDEJAS",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "NATA LIQUIDA 1 LITRO",
-        "unidad": "BOTELLAS",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
       },
       {
         "producto": "ACEITE FREIDORA",
         "unidad": "GARRAFAS",
-        "cantidad": 2,
+        "cantidad": 1,
         "proveedor": "MANZANO"
       },
       {
-        "producto": "KIKOS",
-        "unidad": "BOLSAS",
+        "producto": "CACAHUETE FRITO CON MIEL Y SAL",
+        "unidad": "KG",
         "cantidad": 1,
         "proveedor": "JASA"
       },
       {
-        "producto": "FREGONA 2 MOCHOS",
-        "unidad": "BOLSAS",
-        "cantidad": 1,
-        "proveedor": "MAKRO"
-      },
-      {
         "producto": "GUANTES NITRILO TALLA L",
         "unidad": "UNIDADES",
-        "cantidad": 3,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "LIMPIA CRISTALES",
-        "unidad": "BOTELLAS",
         "cantidad": 1,
         "proveedor": "MAKRO"
       },
       {
-        "producto": "PAPEL ALUMINIO",
-        "unidad": "ROLLOS",
-        "cantidad": 5,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "ROLLO PAPEL COCINA 6 UND",
-        "unidad": "PAQUETE",
-        "cantidad": 2,
-        "proveedor": "MAKRO"
-      },
-      {
-        "producto": "BAYETAS",
-        "unidad": "BOLSA",
+        "producto": "LAVAVAJILLAS MANUAL 10 UND",
+        "unidad": "CAJAS",
         "cantidad": 1,
         "proveedor": "MAKRO"
       }
