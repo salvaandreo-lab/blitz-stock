@@ -1,4 +1,4 @@
-﻿Id_Semana,Num_Semana,Fecha_Inicio,Fecha_Fin,Mes,Año,Centro,Ventas,Observaciones
+Id_Semana,Num_Semana,Fecha_Inicio,Fecha_Fin,Mes,Año,Centro,Ventas,Observaciones
 2026-M10-Sem1,1,30/09/2026,04/10/2026,Octubre,2026,Blitz Ronda Sur,7048.32,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem2,2,07/10/2026,11/10/2026,Octubre,2026,Blitz Ronda Sur,5825.0,5 días (Mié-Dom). Camarero10 oficial
 2026-M10-Sem3,3,14/10/2026,18/10/2026,Octubre,2026,Blitz Ronda Sur,5471.3,5 días (Mié-Dom). Camarero10 oficial
@@ -13,3 +13,5 @@
 2026-M11-Sem1,1,04/11/2026,08/11/2026,Noviembre,2026,Blitz Juan de Borbón,8040.99,5 días (Mié-Dom). Camarero10 oficial
 2026-M11-Sem2,2,11/11/2026,15/11/2026,Noviembre,2026,Blitz Ronda Sur,5870.95,5 días (Mié-Dom). Camarero10 oficial
 2026-M11-Sem2,2,11/11/2026,15/11/2026,Noviembre,2026,Blitz Juan de Borbón,9166.59,5 días (Mié-Dom). Camarero10 oficial
+2026-M11-Sem3,3,18/11/2026,22/11/2026,Noviembre,2026,Blitz Ronda Sur,6602.89,5 días (Mié-Dom). Camarero10 oficial
+2026-M11-Sem3,3,18/11/2026,22/11/2026,Noviembre,2026,Blitz Juan de Borbón,7398.19,5 días (Mié-Dom). Camarero10 oficial
